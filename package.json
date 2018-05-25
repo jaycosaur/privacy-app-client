@@ -1,0 +1,37 @@
+{
+  "name": "poliglot-client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "antd": "^3.5.2",
+    "aws-amplify": "^0.3.3",
+    "echarts": "^4.1.0",
+    "echarts-for-react": "^2.0.11",
+    "emojione": "^3.1.4",
+    "firebase": "^5.0.3",
+    "history": "^4.7.2",
+    "nivo": "^0.31.0",
+    "react": "^16.3.2",
+    "react-calendar-heatmap": "^1.6.3",
+    "react-dom": "^16.3.2",
+    "react-emojione": "^5.0.0",
+    "react-moment": "^0.7.0",
+    "react-redux": "^5.0.7",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^5.0.0-alpha.9",
+    "react-scripts": "1.1.4",
+    "redux": "^4.0.0",
+    "redux-devtools-extension": "^2.13.2",
+    "redux-logger": "^3.0.6",
+    "redux-promise-middleware": "^5.1.1",
+    "redux-thunk": "^2.2.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "deploy": "firebase deploy",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
