@@ -12,20 +12,20 @@ export default (props) => {
     <Row gutter={16} style={{width: "100%"}}>
         <Col span={6} style={{height: "100vh", background: primaryThemeShades[3], boxShadow: "5px 0 5px -5px #333", zIndex: 50}}>
             <div style={{padding: 8}}>
+                <p style={{color: "white"}}>Policy and Legisation Tracker</p>
                 <Input.Search
                     placeholder="Enter some keywords"
                     onSearch={value => console.log(value)}
                     enterButton
-                    size="large"
                     style={{marginBottom: 16, borderRadius: 0}}
                 />
                 
                 
                 <CardWrapper style={{background: themeColors[3]}} bodyStyle={{textAlign: "center", padding: 0}}>
-                    <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1.5em", background: "white", color: themeColors[0]}}><Icon type="link" /></Card.Grid>
-                    <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1.5em", background: "white", color: themeColors[0]}}><Icon type="share-alt" /></Card.Grid>
-                    <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1.5em", background: "white", color: themeColors[0]}}><Icon type="tag" /></Card.Grid>
-                    <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1.5em", background: "white", color: themeColors[0]}}><Icon type="setting" /></Card.Grid>
+                    <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1em", background: "white", color: themeColors[0]}}><Icon type="link" /></Card.Grid>
+                    <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1em", background: "white", color: themeColors[0]}}><Icon type="share-alt" /></Card.Grid>
+                    <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1em", background: "white", color: themeColors[0]}}><Icon type="tag" /></Card.Grid>
+                    <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1em", background: "white", color: themeColors[0]}}><Icon type="setting" /></Card.Grid>
                 </CardWrapper>
                 <CardWrapper>
                 <Card.Meta

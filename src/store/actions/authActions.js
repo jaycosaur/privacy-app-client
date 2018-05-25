@@ -24,8 +24,27 @@ export const doFetchUserFromLocalStorage = () => {
         type: 'FETCH_USER_FROM_LOCAL',
         payload: {
             userFound: currentUser?true:false,
-            useritem: currentUser
+            useritem: currentUser,
         }
+    }
+}
+
+export const signInWithUserInfo = (info) => {
+    return {
+        type: 'SIGNIN_USER_FROM_LOCAL',
+        payload: info,
+    }
+}
+
+export const attemptingSignIn = () => {
+    return {
+        type: 'SIGNIN_USER_PENDING'
+    }
+}
+
+export const failedSignIn = () => {
+    return {
+        type: 'SIGNIN_USER_REJECTED'
     }
 }
 

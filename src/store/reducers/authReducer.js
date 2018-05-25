@@ -32,6 +32,8 @@ export default(state = defaultState, action) => {
             return {...state, isSigningOut: false}
         case 'FETCH_USER_FROM_LOCAL':
             return {...state, isSigningIn: false, isSignedIn: action.payload.userFound, user: action.payload.useritem}
+        case 'SIGNIN_USER_FROM_LOCAL':
+            return {...state, isSigningIn: false, isSignedIn: true, user: action.payload}
         case 'PASSWORD_RESET_PENDING':
             return {...state, isSendingResetEmail: true, resetEmailSent: false, resetEmailError: false, resetEmailErrorMessage: null}
         case 'PASSWORD_RESET_FULFILLED':

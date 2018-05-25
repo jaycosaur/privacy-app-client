@@ -12,13 +12,21 @@ import TopNavBar from './containers/TopNavBar'
 import { ConnectedRouter } from 'react-router-redux'
 import * as actions from './store/actions/authActions'
 import PopOverModel from './views/PopOverModal'
+import {auth} from './config/firebase'
 
 
 const { Header, Content, Footer } = Layout;
 
 class App extends Component {
     componentWillMount(){
-      this.props.doFetchUserFromLocalStorage()
+      this.props.attemptingSignIn()
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          this.props.signInWithUserInfo(user)
+        } else {
+          this.props.failedSignIn()
+        }
+      })
     }
     render(){
       return (
@@ -42,6 +50,7 @@ class App extends Component {
 const mapStateToProps = (state, ownProps) => {
   return {
     isSignedIn: state.user.isSignedIn,
+    isSigningIn: state.user.isSigningIn,
   }
 }
 
