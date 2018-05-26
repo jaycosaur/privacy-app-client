@@ -1,1 +1,23 @@
 @import '~antd/dist/antd.css';
+
+.search-sider-input .ant-input {
+    border-radius: 0px;
+    border: none;
+}
+
+
+.search-sider-input .ant-input-search-button {
+    border-radius: 0px;
+    background-color: rgb(21, 255, 135);
+    border-color: rgb(21, 255, 135);
+    color: rgb(49, 82, 127);
+    font-weight: 800;
+}
+
+.search-sider-input .ant-input-search-button :hover{
+    border-radius: 0px;
+    background-color: rgb(49, 82, 127);
+    border-color: rgb(49, 82, 127);
+    color: rgb(21, 255, 135);
+    font-weight: 800;
+}

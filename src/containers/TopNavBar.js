@@ -23,14 +23,14 @@ const NavBar = (props) => {
             >
             {props.isSignedIn
                 ?
-                <Link to="/"><span style={{float: "left", fontSize: "2em", color: "white", marginRight: "3em"}}><strong>POLITY</strong></span></Link>
+                <Link to="/"><span style={{float: "left", fontSize: "2em", color: "white", marginRight: "3em", fontWeight: 700}}>POLITY</span></Link>
                 :
-                <Link to="/"><span style={{float: "left", fontSize: "2em", color: themeColors[0], marginRight: "3em"}}><img src="img/poliglot-logo-small.png" height={40} /></span></Link>
+                <Link to="/"><span style={{float: "left", fontSize: "2em", color: themeColors[0], marginRight: "3em", fontWeight: 700}}>POLITY</span></Link>
             }
-            {props.isSignedIn&&<Menu.Item key="1"><Link to="/policy-tracker"><Icon type="global" /> TRACK POLICY</Link></Menu.Item>}
-            {props.isSignedIn&&<Menu.Item key="twitter-tracker"><Link to="/twitter-tracker"><Icon type="twitter" /> TRACK TWITTER</Link></Menu.Item>}
-            {props.isSignedIn&&<Menu.Item key="watchlist"><Link to="/watching"><Icon type="schedule" /> YOUR WATCHLIST</Link></Menu.Item>}
-            {props.isSignedIn&&<Menu.Item key="4"><Link to="/myaccount"><Icon type="user" /> ACCOUNT</Link></Menu.Item>}
+            {props.isSignedIn&&<Menu.Item key="1"><Link to="/policy-tracker"><small><Icon type="global" /> TRACK POLICY</small></Link></Menu.Item>}
+            {props.isSignedIn&&<Menu.Item key="twitter-tracker"><Link to="/twitter-tracker"><small><Icon type="twitter" /> TRACK TWITTER</small></Link></Menu.Item>}
+            {props.isSignedIn&&<Menu.Item key="watchlist"><Link to="/watching"><small><Icon type="schedule" /> YOUR WATCHLIST</small></Link></Menu.Item>}
+            {props.isSignedIn&&<Menu.Item key="4"><Link to="/myaccount"><small><Icon type="user" /> ACCOUNT</small></Link></Menu.Item>}
             <span style={{float: 'right', margin: "auto"}}>
                 {!props.isSignedIn?
                     <Link to="/signin"><Button size="large" style={{borderColor: "#61FFAE", background: "#15FF87"}}><strong>SIGN-IN</strong></Button></Link>

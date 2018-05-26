@@ -38,9 +38,7 @@ class App extends Component {
               <PopOverModel />
               <Routes isSignedIn={this.props.isSignedIn}/>
             </Content>
-            <Footer style={{ textAlign: 'center', background: "#0B3C7F", color: "#61FFAE" }}>
-              Polity is a product by ExamineChange an Advo{emojify(':cat:')} Company - Powered by Avocados {emojify(':avocado:')} | © 2018
-            </Footer>
+            <FooterComponent />
           </Layout>
         </ConnectedRouter>
       );
@@ -57,3 +55,16 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(mapStateToProps, actions)(App)
 
 
+const FooterComponent = (props) => (
+  <Footer style={{ textAlign: 'center', background: "#0B3C7F", color: "#61FFAE" }}>
+    <div>
+    </div>
+    <div>
+      <p style={{fontWeight: 700, fontSize: "2em", margin: 0, color: "white"}}>POLITY</p>
+      <p style={{margin: 0}}>Powered by avocados <a href="https://en.wikipedia.org/wiki/Avocado">{emojify(':avocado:',{style: {height: 16}})}</a></p>
+      <p style={{margin: 0}}><small>Copyright © 2018 ExamineChange Pty. Ltd. All rights reserved.</small></p>
+    </div>
+    <div>
+    </div>
+  </Footer>
+)

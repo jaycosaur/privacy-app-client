@@ -34,9 +34,9 @@ const CardItem = (props) => (
     <Card 
         bordered={false} 
         hoverable 
-        style={{width: "30%",  background:  props.background, padding:0}}
-        bodyStyle={{height: 300, padding: 0}}>
-        <div style={{height: 60, background: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center"}}>
+        style={{width: "30%",  background:  props.background, padding:0, borderRadius: 8}}
+        bodyStyle={{height: 300, padding: 0, borderRadius: 8}}>
+        <div style={{height: 60, background: "rgba(0,0,0,0.4)", display: "flex", justifyContent: "center", alignItems: "center", borderRadius: "8px 8px 0 0"}}>
             <h1 style={{color: "white", fontWeight: 600, margin: 0}}>{props.title}</h1>
         </div>
         <div style={{background: "rgba(256,256,256,0.4)", height: 240, padding: 24, display: "flex", justifyContent: "space-between", alignItems: "space-between", flexDirection: "column"}}>
