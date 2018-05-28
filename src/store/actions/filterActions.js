@@ -11,3 +11,22 @@ export const removeFilter = (filterId) => {
         payload: filterId
     }
 }
+
+export const handleKeywordInputChange = (item) => {
+    return {
+        type: 'KEYWORD_INPUT_CHANGE',
+        payload: item
+    }
+}
+
+export const submitPolicySearch = () => {
+    return {
+        type: 'SUBMIT_POLICY_SEARCH'
+    }
+}
+
+export const createPolicyWatch = (data) => {
+    return {
+        type: 'CREATE_POLICY_WATCH'
+    }
+}

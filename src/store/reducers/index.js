@@ -3,11 +3,15 @@ import { routerReducer } from 'react-router-redux'
 import user from './authReducer'
 import popover from './popoverModalReducer'
 import filter from './filterReducer'
+import news from './newsReducer'
+import watchlist from './watchlistReducer'
 
 const rootReducer = combineReducers({
     user,
+    news,
     popover,
     filter,
+    watchlist,
     router: routerReducer
 })
 

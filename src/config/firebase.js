@@ -5,5 +5,4 @@ let fire = firebase.initializeApp(FIREBASE_CONFIG);
 
 export default fire
 export const auth = firebase.auth()
-export const fireRef = firebase.database().ref();
-export const todosRef = fireRef.child("todos");
+export const db = firebase.firestore()

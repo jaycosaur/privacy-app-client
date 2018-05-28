@@ -6,12 +6,13 @@ import { themeColors, highlightThemeShades, primaryThemeShades } from './../them
 import SearchFilter from './../components/SearchFilter'
 import { connect } from 'react-redux'
 import * as accountActions from './../store/actions/accountActions'
+import * as actions from './../store/actions/filterActions'
 
 const SearchTopBar = (props) => (
     <Card bodyStyle={{padding: "4px 16px"}}>
         <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
             <div style={{display: "flex", alignItems: "center"}}>
-                <Button style={{marginRight: 8, background: highlightThemeShades[2], border: themeColors[2]}}><strong>Search Again</strong></Button>
+                <Button onClick={e => props.submitPolicySearch('woot')} style={{marginRight: 8, background: highlightThemeShades[2], border: themeColors[2]}}><strong>Search Again</strong></Button>
                 <div style={{fontWeight: 900,  color: primaryThemeShades[3]}}>244 Results</div>
             </div>
             <div style={{display: "flex", alignItems: "center"}}>
@@ -23,7 +24,6 @@ const SearchTopBar = (props) => (
                     <strong>Create Watch</strong>
                 </Button>
             </div>
-            
         </div>
     </Card>
 )
@@ -33,4 +33,4 @@ const mapStateToProps = (state, ownProps) => {
         prop: state.prop
     }
 }
-export default connect(mapStateToProps, accountActions)(SearchTopBar)
+export default connect(mapStateToProps, {...accountActions, ...actions})(SearchTopBar)

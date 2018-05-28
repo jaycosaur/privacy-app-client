@@ -11,6 +11,7 @@
     "firebase": "^5.0.3",
     "history": "^4.7.2",
     "nivo": "^0.31.0",
+    "npm": "^6.1.0",
     "react": "^16.3.2",
     "react-calendar-heatmap": "^1.6.3",
     "react-dom": "^16.3.2",

@@ -14,7 +14,7 @@ const NavBar = (props) => {
             <Menu
             theme={props.isSignedIn?"dark":"light"}
             mode="horizontal"
-            defaultSelectedKeys={['1']}
+            defaultSelectedKeys={['home']}
             style={{ 
                 lineHeight: '64px', 
                 background: props.isSignedIn?themeColors[0]:"white",
@@ -27,9 +27,11 @@ const NavBar = (props) => {
                 :
                 <Link to="/"><span style={{float: "left", fontSize: "2em", color: themeColors[0], marginRight: "3em", fontWeight: 700}}>POLITY</span></Link>
             }
+            {props.isSignedIn&&<Menu.Item key="home"><Link to="/home"><small><Icon type="home" /> HOME</small></Link></Menu.Item>}
             {props.isSignedIn&&<Menu.Item key="1"><Link to="/policy-tracker"><small><Icon type="global" /> TRACK POLICY</small></Link></Menu.Item>}
-            {props.isSignedIn&&<Menu.Item key="twitter-tracker"><Link to="/twitter-tracker"><small><Icon type="twitter" /> TRACK TWITTER</small></Link></Menu.Item>}
-            {props.isSignedIn&&<Menu.Item key="watchlist"><Link to="/watching"><small><Icon type="schedule" /> YOUR WATCHLIST</small></Link></Menu.Item>}
+            {props.isSignedIn&&<Menu.Item key="news"><Link to="/news"><small><Icon type="table" /> TRACK NEWS</small></Link></Menu.Item>}
+            {props.isSignedIn&&<Menu.Item key="twitter-tracker" disabled><Link to="/twitter-tracker"><small><Icon type="twitter" /> TRACK TWITTER</small></Link></Menu.Item>}
+            {props.isSignedIn&&<Menu.Item key="watchlist"><Link to="/watchlist"><small><Icon type="eye-o" /> YOUR WATCHLIST</small></Link></Menu.Item>}
             {props.isSignedIn&&<Menu.Item key="4"><Link to="/myaccount"><small><Icon type="user" /> ACCOUNT</small></Link></Menu.Item>}
             <span style={{float: 'right', margin: "auto"}}>
                 {!props.isSignedIn?

@@ -1,5 +1,6 @@
 const defaultState = {
-    filters: []
+    filters: [],
+    keywordInput: null
 }
 
 const defaultFilter= {
@@ -22,6 +23,11 @@ export default(state = defaultState, action) => {
             return {
                 ...state,
                 filters: [...state.filters.slice(0, action.payload),...state.filters.slice(action.payload + 1)]
+            }
+        case 'KEYWORD_INPUT_CHANGE':
+            return {
+                ...state,
+                keywordInput: action.payload
             }
         default: 
             return state

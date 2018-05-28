@@ -8,6 +8,8 @@ import Signin from './views/Signin'
 import ResetPassword from './views/ResetPassword'
 import ConfirmResetPassword from './views/ConfirmResetPassword'
 import AuthHome from './views/AuthHome'
+import AggregatedNews from './views/AggregatedNews'
+import Watchlist from './views/Watchlist'
 
 import { connect } from 'react-redux'
 
@@ -32,6 +34,8 @@ const Routes = (props) => {
         <AuthenticatedRoute key="1234" path='/accountsetup/youreallsetup' props={{isSignedIn: props.isSignedIn}} component={OnboardingSelectType}/>
         <AuthenticatedRoute key="12345" path='/home' props={{isSignedIn: props.isSignedIn}} component={AuthHome}/>
         <AuthenticatedRoute key="policy-tracker" path='/policy-tracker' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
+        <AuthenticatedRoute key="news" path='/news' props={{isSignedIn: props.isSignedIn}} component={AggregatedNews}/>
+        <AuthenticatedRoute key="watchlist" path='/watchlist' props={{isSignedIn: props.isSignedIn}} component={Watchlist}/>
         <AuthenticatedRoute key="123456" path='/item' props={{isSignedIn: props.isSignedIn}} component={ItemView}/>
         <AuthenticatedRoute key="profile-page" path='/myaccount' props={{isSignedIn: props.isSignedIn}} component={ProfileView}/>
     </Switch>

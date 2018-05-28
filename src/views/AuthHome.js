@@ -1,6 +1,7 @@
 import React from 'react'
 import { themeColors, highlightThemeShades, primaryThemeShades } from './../theme'
 import { Card, Button, Divider } from 'antd'
+import { Link } from 'react-router-dom'
 
 export default () => {
   return (
@@ -13,14 +14,14 @@ export default () => {
         </div>
         <div style={{width: "100%", marginTop: -80, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center"}}>
             <div style={{display: "flex", width: "80%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 32}}>
-                <CardItem background={highlightThemeShades[1]} title="Policy and Legislation"/>
-                <CardItem background={highlightThemeShades[2]} title="Twitter and News"/>
-                <CardItem background={highlightThemeShades[4]} title="Email Alerts"/>
+                <CardItem background={highlightThemeShades[1]} title="Policy and Legislation" path="/policy-tracker"/>
+                <CardItem background={highlightThemeShades[2]} title="Twitter and News" path="/news"/>
+                <CardItem background={highlightThemeShades[4]} title="Email Alerts" path="/watchlist"/>
             </div>
             <div style={{display: "flex", width: "80%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 32}}>
-                <CardItem background={primaryThemeShades[1]} title="Watchlist"/>
-                <CardItem background={primaryThemeShades[2]} title="Account Settings"/>
-                <CardItem background={primaryThemeShades[4]} title="Upgrade Plan"/>
+                <CardItem background={primaryThemeShades[1]} title="Watchlist" path="/watchlist"/>
+                <CardItem background={primaryThemeShades[2]} title="Account Settings" path="/myaccount"/>
+                <CardItem background={primaryThemeShades[4]} title="Upgrade Plan" path="/myaccount"/>
             </div>
         </div>
         <div style={{marginBottom: 32, padding: 30}}>
@@ -46,7 +47,7 @@ const CardItem = (props) => (
                 </p>
             </div>
             <div>
-                <Button style={{float: "right", fontWeight: 500}} ghost>Let's go</Button>
+                <Link to={props.path}><Button style={{float: "right", fontWeight: 500}} ghost>Let's go</Button></Link>
             </div>
         </div>
 

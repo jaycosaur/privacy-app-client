@@ -6,22 +6,15 @@ import { themeColors, highlightThemeShades, primaryThemeShades } from './../them
 import SearchFilter from './../components/SearchFilter'
 import SearchTopBar from './../components/SearchTopBar'
 import DateChartContainer from './../components/DateChartContainer'
+import PolicySiderKeywordSearchInput from './../components/PolicySiderKeywordSearchInput'
 
-export default (props) => {
+const SearchView = (props) => {
   return (
     <Row style={{width: "100%"}}>
         <Col span={6} style={{height: "100vh", background: primaryThemeShades[3], boxShadow: "5px 0 5px -5px #333", zIndex: 50, overflowY: "scroll"}}>
             <div style={{padding: 8}}>
                 <Divider style={{marginTop: 0, marginBottom: 8}}><span style={{color: "white"}}><small>Policy and Legisation Tracker</small></span></Divider>
-                <div className="search-sider-input">
-                    <Input.Search
-                        placeholder="Search keywords & topics"
-                        onSearch={value => console.log(value)}
-                        enterButton
-                        style={{marginBottom: 8, borderRadius: 0}}
-                        id="search-sider-input"
-                    />
-                </div>
+                <PolicySiderKeywordSearchInput />
                 <CardWrapper style={{background: themeColors[3], border: "none"}} bodyStyle={{textAlign: "center", padding: 0}}>
                     <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1em", background: "white", color: themeColors[0]}}><Icon type="link" /></Card.Grid>
                     <Card.Grid style={{width: '25%',textAlign: 'center', fontSize: "1em", background: "white", color: themeColors[0]}}><Icon type="share-alt" /></Card.Grid>
@@ -77,3 +70,5 @@ export default (props) => {
     </Row>
   )
 }
+
+export default SearchView
