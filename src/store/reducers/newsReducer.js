@@ -5,6 +5,8 @@ const defaultState = {
     isUnsaved: false,
     lastUpdate: null,
     receiveEmailAlerts: false,
+    isFetchingRss: false,
+    rssItems: []
 }
 
 export default(state = defaultState, action) => {
@@ -48,6 +50,22 @@ export default(state = defaultState, action) => {
             return {
                 ...state,
                 isFetching: false
+            }
+        case 'FETCH_NEWS_RSS_PENDING':
+            return {
+                ...state,
+                isFetchingRss: true
+            }
+        case 'FETCH_NEWS_RSS_FULFILLED':
+            return {
+                ...state,
+                isFetchingRss: false,
+                rssItems: [...action.payload]
+            }
+        case 'FETCH_NEWS_RSS_REJECTED':
+            return {
+                ...state,
+                isFetchingRss: false
             }
         default: 
             return state

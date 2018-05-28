@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import * as actions from './../store/actions/watchlistActions'
-import { Select, Radio, Row, Col, Button, List, Avatar, Card, Icon, Layout, Badge } from 'antd';
+import { Select, Radio, Row, Col, Button, List, Avatar, Card, Icon, Layout, Badge, Popconfirm } from 'antd';
 import { themeColors, highlightThemeShades, primaryThemeShades } from './../theme'
 import Loader from './../components/FullPageLoader'
 import { Link } from 'react-router-dom'
@@ -61,7 +61,9 @@ class WatchlistView extends React.Component {
                                 actions={
                                     [
                                         <Button size="small"><Icon type="setting" /> Settings</Button>, 
-                                        <Button loading={this.props.isDeleting===item.id} onClick={e=> this.props.deleteWatchlistItem(item.id)} size="small" type="danger" ghost><Icon type="delete" /> Delete Watch</Button>]}>
+                                        <Popconfirm title="Are you sure delete this Watch?" onConfirm={e=> this.props.deleteWatchlistItem(item.id)} okText="Yes" cancelText="No">
+                                            <Button loading={this.props.isDeleting===item.id} size="small" type="danger" ghost>{this.props.isDeleting!==item.id&&<Icon type="delete" />} Delete Watch</Button>
+                                        </Popconfirm>]}>
                                 <List.Item.Meta 
                                     avatar={<Badge count={Math.round(Math.random()*20)}overflowCount={10} style={{ backgroundColor: '#52c41a' }}><Avatar size="large" shape="square" icon="global" /></Badge>}
                                     title={<Link to={`/policy-tracker/${item.id}`}>{item.title}</Link>}
