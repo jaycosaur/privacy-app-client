@@ -12,6 +12,27 @@ export const removeFilter = (filterId) => {
     }
 }
 
+export const handleFilterFieldChange = (filterId, field) => {
+    return {
+        type: 'CHANGE_FILTER_FIELD',
+        payload: {filterId, field}
+    }
+}
+
+export const handleFilterOperationChange = (filterId, operation) => {
+    return {
+        type: 'CHANGE_FILTER_OPERATION',
+        payload: {filterId, operation}
+    }
+}
+
+export const handleFilterInputChange = (filterId, input) => {
+    return {
+        type: 'CHANGE_FILTER_INPUT',
+        payload: {filterId, input}
+    }
+}
+
 export const handleKeywordInputChange = (item) => {
     return {
         type: 'KEYWORD_INPUT_CHANGE',

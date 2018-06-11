@@ -31,7 +31,11 @@ export const fetchNewsViaRSS = () => {
             } catch(err) {
                 reject(err)
             }
-            
         })}
 }
 
+export const fetchNewsViaAlgolia = () => {
+    return {
+        type: 'FETCH_NEWS_ITEMS',
+        payload: "Trump"
+}}

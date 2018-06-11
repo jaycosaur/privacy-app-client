@@ -30,7 +30,6 @@ const NavBar = (props) => {
             {props.isSignedIn&&<Menu.Item key="home"><Link to="/home"><small><Icon type="home" /> HOME</small></Link></Menu.Item>}
             {props.isSignedIn&&<Menu.Item key="1"><Link to="/policy-tracker"><small><Icon type="global" /> TRACK POLICY</small></Link></Menu.Item>}
             {props.isSignedIn&&<Menu.Item key="news"><Link to="/news"><small><Icon type="table" /> TRACK NEWS</small></Link></Menu.Item>}
-            {props.isSignedIn&&<Menu.Item key="twitter-tracker" disabled><Link to="/twitter-tracker"><small><Icon type="twitter" /> TRACK TWITTER</small></Link></Menu.Item>}
             {props.isSignedIn&&<Menu.Item key="watchlist"><Link to="/watchlist"><small><Icon type="eye-o" /> YOUR WATCHLIST</small></Link></Menu.Item>}
             {props.isSignedIn&&<Menu.Item key="4"><Link to="/myaccount"><small><Icon type="user" /> ACCOUNT</small></Link></Menu.Item>}
             <span style={{float: 'right', margin: "auto"}}>

@@ -34,9 +34,9 @@ const OrganisationContents = (props) =>
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        isLoading: state.popover.isLoading,
         watchAlertTitle: state.popover.selectedModalFields.watchAlertTitle,
-        watchAlertFrequency: state.popover.selectedModalFields.watchAlertFrequency
+        watchAlertFrequency: state.popover.selectedModalFields.watchAlertFrequency,
+        isLoading: state.watchlist.isCreatingWatchlist
     }
 }
 

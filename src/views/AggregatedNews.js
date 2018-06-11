@@ -1,12 +1,12 @@
 import React from 'react'
-import Iframe from 'react-iframe'
 
-import { Select, Radio, Row, Col, Button, List, Avatar, Card, Icon } from 'antd';
+import { Select, Radio, Row, Col, Button, List, Avatar, Card, Icon, Tooltip } from 'antd';
 import { themeColors, highlightThemeShades, primaryThemeShades } from './../theme'
 import * as actions from './../store/actions/newsActions'
 import { connect } from 'react-redux'
 import Loader from './../components/FullPageLoader'
 import Moment from 'react-moment'
+import * as moment from 'moment'
 
 const Option = Select.Option;
 
@@ -30,50 +30,10 @@ class InputDiv extends React.Component {
           value={this.props.value}
           style={{ width: '100%' }}
         >
-          {children}
         </Select>
     )
   }
 }
-
-const data = [
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-  {
-    title: 'Ant Design Title 1',
-  },
-  {
-    title: 'Ant Design Title 2',
-  },
-  {
-    title: 'Ant Design Title 3',
-  },
-  {
-    title: 'Ant Design Title 4',
-  },
-];
 
 const NewsSourceAvatar = (props) => <Avatar shape="square" size="large" src={props.src} style={{margin: "0px 8px"}}>SITE</Avatar>
 
@@ -83,7 +43,6 @@ class NewsView extends React.Component {
   }
   componentDidMount(){
     this.props.fetchNewsSettings()
-    this.props.fetchNewsViaRSS()
   }
 
   selectStory = (id) => {
@@ -95,6 +54,22 @@ class NewsView extends React.Component {
   }
 
   render() {
+    const src2avatar = (src) => {
+      switch(src){
+        case "canberratimes":
+          return "https://images-na.ssl-images-amazon.com/images/I/515Xyd2a1DL.png"
+        case "abcnews":
+          return "https://crunchbase-production-res.cloudinary.com/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco/v1487974641/m4xu8idtom4cbfrpjeja.png"
+        case "sbsnews":
+          return "https://static-s.aa-cdn.net/img/ios/432849691/7106e1ff4da146f99e943b750cd558d8?v=1"
+        case "smh":
+          return "https://startme.com/favicon/smh.com.au"
+        case "theage":
+          return "http://www.allyoucanread.com/images/fi/theage_com_au.ico"
+        default:
+          return null
+      }
+    }
     return (
       !this.props.isFetching?<Row>
         <Row style={{width: "100%", padding: "32px 140px", background: primaryThemeShades[3]}}>
@@ -122,23 +97,23 @@ class NewsView extends React.Component {
         <Row style={{width: "100%", padding: "32px 140px"}}>
             <Card style={{borderRadius: 8}}>
                 <List
-                    itemLayout="vertical"
-                    dataSource={this.props.rssItems}
+                    itemLayout="horizontal"
+                    dataSource={this.props.rssItems.sort((a,b)=>moment(b.isoDate).isAfter(a.isoDate))}
                     loading={this.props.isFetchingRss}
                     renderItem={(item,i) => (
-                    <List.Item>
+                    <List.Item key={item.objectID}>
                         <List.Item.Meta 
-                            title={<a href={item.url} target="_blank"><Avatar src="https://images-na.ssl-images-amazon.com/images/I/515Xyd2a1DL.png" shape="square"/> {item.title} <a href={item.url} target="_blank"><Icon type="share-alt" /> share</a></a>}
-                            description={<p><strong>Posted <Moment unix fromNow>{item.created/1000}</Moment>.</strong> - {item.description} {this.state.selectedStory===i?<a onClick={e => this.deSelectStory()}>Hide Story</a>:<a onClick={e => this.selectStory(i)}>View Story</a>}</p>}
-                            
+                            avatar={<Avatar src={src2avatar(item.source)} shape="square"/>}
+                            title={<a href={item.link} target="_blank">{item.title} <a href={item.link} target="_blank"><Icon type="share-alt" /> share</a></a>}
+                            description={
+                              <p>
+                                <Tooltip title={<small>Posted <Moment format="dddd DD MMMM YYYY hh:mm a">{item.isoDate}</Moment></small>}>
+                                  <strong>Posted <Moment fromNow>{item.isoDate}</Moment></strong>
+                                </Tooltip> 
+                                - {item.content}
+                                <small>{item.creator&&` (by ${item.creator})`}</small>
+                              </p>}
                         />
-                          {this.state.selectedStory===i&&<Iframe url={item.url}
-                            width="100%"
-                            height="450px"
-                            id="myId"
-                            className="myClassname"
-                            display="initial"
-                            position="relative"/>}
                     </List.Item>
                     )}
                 />

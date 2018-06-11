@@ -67,6 +67,22 @@ export default(state = defaultState, action) => {
                 ...state,
                 isFetchingRss: false
             }
+        case 'FETCH_NEWS_ITEMS_PENDING':
+            return {
+                ...state,
+                isFetchingRss: true
+            }
+        case 'FETCH_NEWS_ITEMS_FULFILLED':
+            return {
+                ...state,
+                isFetchingRss: false,
+                rssItems: [...action.payload.hits]
+            }
+        case 'FETCH_NEWS_ITEMS_REJECTED':
+            return {
+                ...state,
+                isFetchingRss: false
+            }
         default: 
             return state
     }

@@ -5,7 +5,8 @@ const defaultState = {
     isUnsaved: false,
     lastUpdate: null,
     receiveEmailAlerts: false,
-    isDeleting: false
+    isDeleting: false,
+    isCreatingWatchlist: false
 }
 
 export default(state = defaultState, action) => {
@@ -43,6 +44,16 @@ export default(state = defaultState, action) => {
             return {
                 ...state,
                 isDeleting: false
+            }
+        case 'CREATE_POLICY_WATCH_PENDING':
+            return {
+                ...state,
+                isCreatingWatchlist: true
+            }
+        case 'CREATE_POLICY_WATCH_FULFILLED':
+            return {
+                ...state,
+                isCreatingWatchlist: false
             }
         default: 
             return state

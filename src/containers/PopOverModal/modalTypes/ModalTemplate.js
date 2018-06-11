@@ -7,7 +7,7 @@ const ModalTemplate = (props) => (
       onOk={props.handleOk}
       onCancel={props.doCloseModal}
       closable
-      footer={<Button key="submit" type="primary" onClick={props.handleOk}>{props.submitTitle}</Button>}
+      footer={<Button key="submit" type="primary" onClick={props.handleOk} loading={props.isLoading}>{props.submitTitle}</Button>}
       style={{borderRadius: 0, top: 240}}
       confirmLoading={props.isLoading}
     >

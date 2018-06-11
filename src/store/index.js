@@ -6,7 +6,7 @@ import promise from 'redux-promise-middleware'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import createHistory from 'history/createBrowserHistory'
 import { routerMiddleware } from 'react-router-redux'
-import {policySearchMiddleware, createPolicyWatchMiddleware, getWatchlistItems, saveNewsSettingMiddleware, getNewsSettingItems, deleteWatchlistItem} from './middleware/'
+import {fetchLegislationItems, fetchNewsItems, getWatchlistItem, policySearchMiddleware, createPolicyWatchMiddleware, getWatchlistItems, saveNewsSettingMiddleware, getNewsSettingItems, deleteWatchlistItem} from './middleware/'
 
 export const history = createHistory()
 const middleware = applyMiddleware(
@@ -19,6 +19,9 @@ const middleware = applyMiddleware(
     getWatchlistItems(),
     saveNewsSettingMiddleware(),
     getNewsSettingItems(),
-    deleteWatchlistItem())
+    deleteWatchlistItem(),
+    getWatchlistItem(),
+    fetchNewsItems(),
+    fetchLegislationItems())
 
 export default createStore(reducer, composeWithDevTools(middleware));
