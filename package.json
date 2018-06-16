@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@nivo/pie": "^0.42.1",
+    "@nivo/waffle": "^0.42.1",
     "algoliasearch": "^3.27.1",
     "antd": "^3.5.2",
     "aws-amplify": "^0.3.3",

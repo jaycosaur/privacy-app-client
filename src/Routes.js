@@ -10,6 +10,8 @@ import ConfirmResetPassword from './views/ConfirmResetPassword'
 import AuthHome from './views/AuthHome'
 import AggregatedNews from './views/AggregatedNews'
 import Watchlist from './views/Watchlist'
+import Tasklist from './views/ProjectTaskList'
+import NotFound from './views/NotFound'
 
 import { connect } from 'react-redux'
 
@@ -39,6 +41,8 @@ const Routes = (props) => {
         <AuthenticatedRoute key="watchlist" path='/watchlist' props={{isSignedIn: props.isSignedIn}} component={Watchlist}/>
         <AuthenticatedRoute key="123456" path='/item' props={{isSignedIn: props.isSignedIn}} component={ItemView}/>
         <AuthenticatedRoute key="profile-page" path='/myaccount' props={{isSignedIn: props.isSignedIn}} component={ProfileView}/>
+        <AuthenticatedRoute key="task-list" path='/tasklist' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
+        <Route key="not-found" component={NotFound}/>
     </Switch>
   )
 }
