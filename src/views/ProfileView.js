@@ -1,7 +1,10 @@
 import React from 'react'
-import { Row, Col, Divider, Card, Button, Icon, Avatar, Modal } from 'antd'
+import { Row, Divider } from 'antd'
 import * as actions from './../store/actions/accountActions'
 import { connect } from 'react-redux'
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader'
+import Avatar from '@material-ui/core/Avatar';
 
 const detailsData = [
     {
@@ -65,16 +68,21 @@ const billingData = [
 const MenuItem = (props) => {
     return (
         <Card
-            style={{ width: "40%", margin: 8 }}
+            style={{ width: "40%", margin: 8}}
             hoverable
             key={props.itemKey}
             onClick={e => props.clickHandler(props.itemKey)}
         >
-            <Card.Meta
-                avatar={<Avatar size="large" icon={props.avatar||"notification"} />}
-                title={props.title||"Card title"}
-                description={props.description||"This is the description"}
-            />
+
+        <CardHeader
+            avatar={
+              <Avatar aria-label="Recipe" >
+                R
+              </Avatar>
+            }
+            title={props.title}
+            subheader={props.description}
+          />
         </Card>
     )
 }

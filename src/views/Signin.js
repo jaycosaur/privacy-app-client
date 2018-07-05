@@ -1,11 +1,13 @@
 import React from 'react'
-import { Col, Row, Card, message } from 'antd'
+import { Col, Row, message } from 'antd'
 import { themeColors, primaryThemeShades, highlightThemeShades } from './../theme'
-import polyglotLogo from './../assets/poliglot-logo.svg'
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Checkbox } from 'antd';
 import { connect } from 'react-redux'
 import * as authActions from './../store/actions/authActions'
 import { Link } from 'react-router-dom'
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Button from '@material-ui/core/Button';
 
 const FormItem = Form.Item;
 
@@ -44,8 +46,8 @@ class NormalLoginForm extends React.Component {
               <Checkbox disabled>Remember me</Checkbox>
             )}
             <div><Link to="/signin/resetpassword">Forgot password</Link></div>
-            <Button loading={this.props.isLoading} style={{marginTop: 16, width: "100%", background: highlightThemeShades[2], border: themeColors[2], height: 64}} size="large" htmlType="submit" className="login-form-button">
-              <strong>SIGN-IN</strong>
+            <Button variant="contained" color="secondary" disabled={this.props.isLoading} onClick={this.handleSubmit} variant="extendedFab" style={{marginTop: 16, width: "100%", height: 64}} htmlType="submit" className="login-form-button">
+              <strong>SIGN-IN</strong>{this.props.isLoading&&"..."}
             </Button>
           </FormItem>
         </Form>
@@ -62,20 +64,33 @@ const Signin = (props) => {
     }
 
     return (
-      <div style={{padding: "32px", paddingTop: 0}}>
+      <div style={{padding: "32px", paddingTop: 0,
+
+        background: "rgba(98,58,162,1)",
+        background: "-moz-linear-gradient(45deg, rgba(98,58,162,1) 0%, rgba(249,119,148,1) 100%)",
+        background: "-webkit-gradient(left bottom, right top, color-stop(0%, rgba(98,58,162,1)), color-stop(100%, rgba(249,119,148,1)))",
+        background: "-webkit-linear-gradient(45deg, rgba(98,58,162,1) 0%, rgba(249,119,148,1) 100%)",
+        background: "-o-linear-gradient(45deg, rgba(98,58,162,1) 0%, rgba(249,119,148,1) 100%)",
+        background: "-ms-linear-gradient(45deg, rgba(98,58,162,1) 0%, rgba(249,119,148,1) 100%)",
+        background: "linear-gradient(45deg, rgba(98,58,162,1) 0%, rgba(249,119,148,1) 100%)",
+        filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#623aa2', endColorstr='#f97794', GradientType=1 )",
+      
+      
+      }}>
         <Row style={{minHeight: "90vh", display: "flex", alignItems: "center"}}>
             <Col span={16} style={{padding: "16px 32px", paddingRight: 64}}>
                 <h1 style={{color: "#fff", fontSize: "10em", marginBottom: 32}}>I'm Polity.</h1>
-                <h1 style={{color: "#fff", fontWeight: 200, paddingBottom: 64}}>
-                    A web-based legal technology that tracks and alerts you of policy changes, 
-                    analyses and measures public sentiment and dialogue on important issues, and allows advocacy groups, non-for-profits, 
-                    and researchers to put their finger on the pulse and engage broadly with citizens.</h1>
+                <h1 style={{color: "#fff", fontSize: "3em", fontWeight: 300, paddingBottom: 64}}>
+                  A regulatory intelligence platform powered by AI.
+                </h1>
             </Col>
             <Col span={8}>
                 <Card hoverable >
+                  <CardContent>
                     <h1 style={{color: primaryThemeShades[0], fontSize: "4em", marginBottom: 16}}>Sign-in</h1>
                     <p style={{marginBottom: 32}}>We are currently undergoing an invite only BETA. If you would like to be part of this BETA please drop us a line <a>here.</a></p>
                     <WrappedNormalLoginForm isLoading={props.isSigningIn} handleSubmit={props.signInWithEmailAndPassword}/>
+                  </CardContent>
                 </Card>
             </Col>
         </Row>

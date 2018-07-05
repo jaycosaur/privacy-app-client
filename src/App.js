@@ -14,6 +14,25 @@ import * as actions from './store/actions/authActions'
 import PopOverModel from './views/PopOverModal'
 import {auth} from './config/firebase'
 
+import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#9366d4',
+      main: '#623aa2',
+      dark: '#310e72',
+      contrastText: 'ffffff',
+    },
+    secondary: {
+      light: '#ffa9c4',
+      main: '#f97794',
+      dark: '#c34666',
+      contrastText: '#000',
+    },
+  },
+});
+
 
 const { Header, Content, Footer } = Layout;
 
@@ -31,15 +50,15 @@ class App extends Component {
     render(){
       return (
         <ConnectedRouter history={this.props.history}>
-          <Layout className="layout" style={{background: this.props.isSignedIn?null:themeColors[0] }}>
-            <BackTop />
-            <TopNavBar />
-            <Content style={{paddingTop: 64, minHeight: 650}}>
-              <PopOverModel />
-              <Routes isSignedIn={this.props.isSignedIn}/>
-            </Content>
-            <FooterComponent />
-          </Layout>
+          <MuiThemeProvider theme={theme}>
+            <Layout className="layout" style={{background: this.props.isSignedIn?null:themeColors[0] }}>
+              <TopNavBar />
+              <Content style={{paddingTop: 64, minHeight: 650}}>
+                <PopOverModel />
+                <Routes isSignedIn={this.props.isSignedIn}/>
+              </Content>
+            </Layout>
+          </MuiThemeProvider>
         </ConnectedRouter>
       );
     }
@@ -56,11 +75,9 @@ export default connect(mapStateToProps, actions)(App)
 
 
 const FooterComponent = (props) => (
-  <Footer style={{ textAlign: 'center', background: "#0B3C7F", color: "#61FFAE" }}>
+  <Footer style={{ textAlign: 'center', background: "#fff", color: "#0c0c0c" }}>
     <div>
-    </div>
-    <div>
-      <p style={{fontWeight: 700, fontSize: "2em", margin: 0, color: "white"}}>POLITY</p>
+      <p style={{fontWeight: 700, fontSize: "2em", margin: 0, color: "#623aa2"}}>POLITY</p>
       <p style={{margin: 0}}>Powered by avocados <a href="https://en.wikipedia.org/wiki/Avocado">{emojify(':avocado:',{style: {height: 16}})}</a></p>
       <p style={{margin: 0}}><small>Copyright © 2018 ExamineChange Pty. Ltd. All rights reserved.</small></p>
     </div>

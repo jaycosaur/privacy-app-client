@@ -11,6 +11,7 @@ import AuthHome from './views/AuthHome'
 import AggregatedNews from './views/AggregatedNews'
 import Watchlist from './views/Watchlist'
 import Tasklist from './views/ProjectTaskList'
+import ContactsView from './views/ContactsView'
 import NotFound from './views/NotFound'
 
 import { connect } from 'react-redux'
@@ -42,6 +43,8 @@ const Routes = (props) => {
         <AuthenticatedRoute key="123456" path='/item' props={{isSignedIn: props.isSignedIn}} component={ItemView}/>
         <AuthenticatedRoute key="profile-page" path='/myaccount' props={{isSignedIn: props.isSignedIn}} component={ProfileView}/>
         <AuthenticatedRoute key="task-list" path='/tasklist' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
+        <AuthenticatedRoute key="contacts" path='/contacts' exact props={{isSignedIn: props.isSignedIn}} component={ContactsView}/>
+        <AuthenticatedRoute key="contacts-id" path='/contacts/{cid}/' props={{isSignedIn: props.isSignedIn}} component={ContactsView}/>
         <Route key="not-found" component={NotFound}/>
     </Switch>
   )
