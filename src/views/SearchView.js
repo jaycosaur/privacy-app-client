@@ -1,26 +1,40 @@
 import React from 'react'
-import ItemList from './../containers/ItemList'
+import ItemList from '../containers/ItemList/'
 import SearchFilter from './../components/SearchFilter'
-import SearchTopBar from './../components/SearchTopBar'
 import Drawer from '@material-ui/core/Drawer';
-import PolicySiderKeywordSearchInput from './../components/PolicySiderKeywordSearchInput'
 import { getWatchlistItem, clearFilterData } from './../store/actions/watchlistActions'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/IconButton';
 import LinkIcon from '@material-ui/icons/Link';
+import SearchIcon from '@material-ui/icons/Search';
+
 import SettingsIcon from '@material-ui/icons/Settings';
 import ShareIcon from '@material-ui/icons/Share';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
+import StarIcon from '@material-ui/icons/Star';
+import DescriptionIcon from '@material-ui/icons/Description';
+import SpeakerNotesIcon from '@material-ui/icons/SpeakerNotes';
+import TimelineIcon from '@material-ui/icons/Timeline';
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+
+
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import PolicyTrackerTopActionBar from './../containers/PolicyTrackerTopActionBar'
+import Typography from '@material-ui/core/Typography';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 
 const styles = theme => ({
     root: {
@@ -49,19 +63,27 @@ const styles = theme => ({
     },
     drawerPaper: {
         position: 'relative',
-        width: 300,   },
+        width: 250,   },
     content: {
         flexGrow: 1,
-        padding: theme.spacing.unit * 3,
         minWidth: 0, // So the Typography noWrap works
         height: "85vh", overflowY: "scroll",
         zIndex: 1
       },
+    contentMaxWidth: {
+        maxWidth: 1600
+    },
     trendingCardContainer: {
         padding: theme.spacing.unit,
     },
     trendingCard: {
         marginBottom: theme.spacing.unit,
+    },
+    contentPadded: {
+        padding: theme.spacing.unit * 3,
+    },
+    drawerBottomNav: {
+        width: "100%"
     }
 
     
@@ -78,7 +100,7 @@ class SearchView extends React.Component{
     }
 
     render(){
-        const { classes } = this.props
+        const { classes, shouldShowFilter } = this.props
         return (
             <div className={classes.root}>
                 <Drawer 
@@ -86,38 +108,57 @@ class SearchView extends React.Component{
                     className={classes.sider}
                     classes={{
                         paper: classes.drawerPaper,
-                        }}>
-                        <AppBar position="static" color="default">
-                            <Toolbar>
-                                <Typography variant="subheading" color="inherit">
-                                    Trending Legislation
-                                </Typography>
-                            </Toolbar>
-                        </AppBar>
-                        <div className={classes.actionContainer}>
-                            <Tooltip title="Link to this page">
-                                <Button variant="contained" color="primary" aria-label="add" className={classes.button}>
-                                    <LinkIcon />
-                                </Button>
-                            </Tooltip>
-                            <Tooltip title="Share this watchlist">
-                                <Button variant="contained" color="primary" aria-label="add" className={classes.button}>
-                                    <ShareIcon />
-                                </Button>
-                            </Tooltip>
-                            <Tooltip title="Star this watchlist">
-                                <Button variant="contained" color="primary" aria-label="add" className={classes.button}>
-                                    <StarBorderIcon />
-                                </Button>
-                            </Tooltip>
-                            <Tooltip title="Watchlist settings">
-                                <Button variant="contained" color="primary" aria-label="add" className={classes.button}>
-                                    <SettingsIcon />
-                                </Button>
-                            </Tooltip>
-                        </div>
+                    }}>
+                    <AppBar position="static" color="secondary" elevation={0}>
+                        <Toolbar>
+                            <SearchIcon />
+                            <Typography variant="subheading" color="inherit">
+                                Polity Search
+                            </Typography>
+                        </Toolbar>
+                    </AppBar>
+                        <List dense={true}>
+                            <ListItem button>
+                                <ListItemIcon><TimelineIcon /></ListItemIcon>
+                                <ListItemText primary="Regulatory Developments" />
+                            </ListItem>
+                            <ListItem button>
+                                <ListItemIcon><SpeakerNotesIcon /></ListItemIcon>
+                                <ListItemText primary="Media & Commentary" />
+                            </ListItem>
+                            <ListItem button>
+                                <ListItemIcon><DescriptionIcon /></ListItemIcon>
+                                <ListItemText primary="Research & Reports" />
+                            </ListItem>
+                            <Divider />
+                            <ListItem button>
+                                <ListItemIcon><StarIcon /></ListItemIcon>
+                                <ListItemText primary="Your Watchlists" />
+                            </ListItem>
+                            <ListItem button>
+                                <ListItemIcon><StarIcon /></ListItemIcon>
+                                <ListItemText primary="Flagged Items" />
+                            </ListItem>
+                            <ListItem button>
+                                <ListItemIcon><StarIcon /></ListItemIcon>
+                                <ListItemText primary="Recent Searches" />
+                            </ListItem>
+                        </List>
                         <Divider/>
-                        <div className={classes.trendingCardContainer}>
+                        <BottomNavigation
+                            value={1}
+                            onChange={(e)=>console.log(e)}
+                            showLabels
+                            className={classes.drawerBottomNav}
+                        >
+                            <BottomNavigationAction label="Link" icon={<LinkIcon />} />
+                            <BottomNavigationAction label="Share" icon={<ShareIcon />} />
+                            <BottomNavigationAction label="Favourite" icon={<StarBorderIcon />} />
+                            <BottomNavigationAction label="Settings" icon={<SettingsIcon />} />
+
+                        </BottomNavigation>
+                        
+                        {false&&<div className={classes.trendingCardContainer}>
                             {[...Array(5)].map((i,j)=>(
                                 <Card key={j} className={classes.trendingCard}>
                                     <CardHeader
@@ -130,23 +171,17 @@ class SearchView extends React.Component{
                                     />
                                 </Card>
                             ))}
-                        </div>
+                        </div>}
                 </Drawer>
-                <div>
-                    <AppBar position="static" color="default">
-                        <Toolbar>
-                            <Typography variant="subheading" color="inherit">
-                                Policy and Legisation Tracker
-                            </Typography>
-                            <div>
-                                <PolicySiderKeywordSearchInput />
-                            </div>
-                            <SearchTopBar />
-                        </Toolbar>
-                    </AppBar>
+                <div style={{flexGrow: 1}}>
+                    <PolicyTrackerTopActionBar />
                     <main className={classes.content}>
-                        <SearchFilter />
-                        <ItemList />
+                        {shouldShowFilter&&<div className={classes.contentPadded}>
+                            <SearchFilter />
+                        </div>}
+                        <div className={classes.contentMaxWidth}>
+                            <ItemList />
+                        </div>
                     </main>
                 </div>
             </div>
@@ -154,6 +189,12 @@ class SearchView extends React.Component{
     }
 }
 
+const mapStateToProps = (state, ownProps) => {
+    return {
+        shouldShowFilter: state.filter.showFilter
+    }
+}
+
 const SearchViewWithStyles = withStyles(styles)(SearchView)
 
-export default connect(null, {getWatchlistItem, clearFilterData})(SearchViewWithStyles)
+export default connect(mapStateToProps, {getWatchlistItem, clearFilterData})(SearchViewWithStyles)

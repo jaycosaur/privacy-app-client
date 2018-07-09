@@ -11,3 +11,10 @@ export const submitSearchNews = ({query, filters}) => {
         payload: newsIndex.search({query: query})
     }
 }
+
+export const globalSearch = (payload) => {
+    return {
+        type: 'SEARCH_GLOBAL',
+        payload: payload
+    }
+}

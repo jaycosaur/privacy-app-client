@@ -11,6 +11,17 @@ const defaultState = {
     additionalUserInfo: null,
     credential: null,
     user: null,
+    accountInformation: {
+        isLoading: false,
+        info: {},
+        lastLoaded: null
+    },
+    accountSetup: {
+        userIsSetup: false,
+        setupStep: "lets-setup-your-account",
+        stepNumber: 0,
+        numberOfSteps: 6
+    },
 }
 
 export default(state = defaultState, action) => {
@@ -40,7 +51,35 @@ export default(state = defaultState, action) => {
             return {...state, isSendingResetEmail: false, resetEmailSent: true}
         case 'PASSWORD_RESET_REJECTED':
             return {...state, isSendingResetEmail: false, resetEmailError: true, resetEmailErrorMessage: action.payload}
-
+        case 'PROGRESS_ACCOUNT_SETUP_STEP':
+            return {...state, accountSetup: {
+                ...state.accountSetup,
+                stepNumber: action.payload.stepIndexNumber,
+                setupStep: action.payload.stepKey,
+            }}
+        case 'GET_ACCOUNT_INFORMATION_PENDING':
+            return {
+                ...state,
+                accountInformation: {
+                    ...state.accountInformation,
+                    loadSucceeded: null,
+                    isLoading: true,
+                }
+            }
+        case 'GET_ACCOUNT_INFORMATION_FULFILLED':
+            return {
+                ...state,
+                accountInformation: {
+                    ...state.accountInformation,
+                    isLoading: false,
+                    loadSucceeded: true,
+                    lastLoaded: Date.now(),
+                    info: {
+                        ...action.payload
+                    }
+                }
+            }
+            
         default: 
             return state
     }

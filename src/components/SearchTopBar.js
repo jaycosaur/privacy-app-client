@@ -1,6 +1,6 @@
 import React from 'react'
 import { Layout, Menu, Breadcrumb, Button, Row, Col, Card, Avatar, Icon, Input, BackTop } from 'antd';
-import ItemList from './../containers/ItemList'
+import ItemList from '../containers/ItemList/index'
 import CardWrapper from './../components/CardWrapper'
 import { themeColors, highlightThemeShades, primaryThemeShades } from './../theme'
 import SearchFilter from './../components/SearchFilter'

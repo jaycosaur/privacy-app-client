@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import SearchView from './views/SearchView'
 import ItemView from './views/ItemView'
-import OnboardingSelectType from './views/OnboardingSelectType'
+import AccountSetup from './views/AccountSetup'
 import ProfileView from './views/ProfileView'
 import Signin from './views/Signin'
 import ResetPassword from './views/ResetPassword'
@@ -31,10 +31,7 @@ const Routes = (props) => {
         <UnauthenticatedRoute exact key="signin" path='/signin' props={{isSignedIn: props.isSignedIn}} component={Signin}/>
         <UnauthenticatedRoute key="signin" path='/signin/resetpassword' props={{isSignedIn: props.isSignedIn}} component={ResetPassword}/>
         <UnauthenticatedRoute key="signin" path='/signin/confirmcode' props={{isSignedIn: props.isSignedIn}} component={ConfirmResetPassword}/>
-        <AuthenticatedRoute key="1" path='/accountsetup/createaccount' props={{isSignedIn: props.isSignedIn}} component={OnboardingSelectType}/>
-        <AuthenticatedRoute key="12" path='/accountsetup/tellusaboutyourself' props={{isSignedIn: props.isSignedIn}} component={OnboardingSelectType}/>
-        <AuthenticatedRoute key="123" path='/accountsetup/selectyourtopics' props={{isSignedIn: props.isSignedIn}} component={OnboardingSelectType}/>
-        <AuthenticatedRoute key="1234" path='/accountsetup/youreallsetup' props={{isSignedIn: props.isSignedIn}} component={OnboardingSelectType}/>
+        <AuthenticatedRoute key="1" path='/account-setup' props={{isSignedIn: props.isSignedIn}} component={AccountSetup}/>
         <AuthenticatedRoute key="12345" path='/home' props={{isSignedIn: props.isSignedIn}} component={AuthHome}/>
         <AuthenticatedRoute key="policy-tracker" exact path='/policy-tracker' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
         <AuthenticatedRoute key="policy-tracker-with-watch" path='/policy-tracker/:watchlistId' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>

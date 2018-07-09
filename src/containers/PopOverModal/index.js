@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import * as actions from './../../store/actions/popoverModalActions'
 import ModalTemplate from './modalTypes/ModalTemplate'
 import OrganisationModal from './modalTypes/OrganisationModal'
+import UserInfoModal from './modalTypes/UserInfoModal'
 import CreateWatchModal from './modalTypes/CreateWatchModal'
 
 
@@ -14,7 +15,7 @@ const PopOverModal = (props) => {
     case "password":
       return <PasswordContents {...props} />
     case "userinfo":
-      return <UserInfoContents {...props} />
+      return <UserInfoModal {...props} />
     case "notification":
       return <PasswordContents {...props} />
     case "organisation":
@@ -98,23 +99,6 @@ const OrganisationContents = (props) =>
       <Input
         placeholder="Organisation website"
         prefix={<Icon type="global" style={{ color: 'rgba(0,0,0,.25)' }} />}
-        size="large"
-        />
-    </ModalTemplate> 
-  )
-
-const UserInfoContents = (props) =>
-  (
-    <ModalTemplate title="Change your information" submitTitle="Update" {...props}>
-      <Input
-        placeholder="Enter your name"
-        prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-        size="large"
-        style={{marginBottom: 16}}
-        />
-      <Input
-        placeholder="Enter your email"
-        prefix={<Icon type="mail" style={{ color: 'rgba(0,0,0,.25)' }} />}
         size="large"
         />
     </ModalTemplate> 

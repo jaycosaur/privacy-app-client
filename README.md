@@ -13,3 +13,13 @@
 
 `npm run deploy` to deploy to firebase hosting
 
+## Notes
+
+In firebase for schema, should have time travel so 'snapshot' each time it updates and save. 
+
+When something updates, update algolia with record updation 'date' only, make an array attribute and put this in. 
+
+Allows searching over date ranges then, as in algolia if you do a range search it will iterate over an array until a record matches.
+
+This will also allow the search page to extract 'updated' results, by just highlighting records that have changed since last login.
+

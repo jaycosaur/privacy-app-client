@@ -29,3 +29,18 @@ export const handleFormFieldChange = ({fieldId, val}) => {
         payload: {key: fieldId, value: val}
     }
 }
+
+export const updateAccountInformation = (input) => {
+    return {
+        type: 'UPDATE_ACCOUNT_INFORMATION',
+        payload: usersRef.doc(auth.currentUser.uid).update({
+            ...input
+        })
+    }
+}
+
+export const getAccountInformation = () => {
+    return {
+        type: 'GET_ACCOUNT_INFORMATION'
+    }
+}

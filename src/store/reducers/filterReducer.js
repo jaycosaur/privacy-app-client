@@ -1,6 +1,8 @@
 const defaultState = {
     filters: [],
-    keywordInput: null
+    keywordInput: null,
+    showFilter: true,
+    selectedView: 'default'
 }
 
 const defaultFilter= {
@@ -68,7 +70,17 @@ export default(state = defaultState, action) => {
                     ...state.filters.slice(action.payload.filterId + 1)
                 ]
             }
-
+        case 'TOGGLE_FILTER_PANEL':
+            return {
+                ...state,
+                showFilter: !state.showFilter
+            }
+        case 'CHANGE_SEARCH_PAGE_VIEW':
+            const newView = state.selectedView!==action.payload?action.payload:'default'
+            return {
+                ...state,
+                selectedView: newView
+            }
         default: 
             return state
     }

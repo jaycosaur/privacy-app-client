@@ -135,3 +135,33 @@ export function fetchLegislationItems() {
         return next(action)
     }
 }
+
+export function getAccountInformation() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type == 'GET_ACCOUNT_INFORMATION') {
+            const state = getState()
+            const accountRef = db.collection("users").doc(state.user.user.uid)
+            dispatch({
+                type: "GET_ACCOUNT_INFORMATION", payload: accountRef.get().then(res => {
+                    return res.data()
+                })
+            })
+        }
+        return next(action)
+    }
+}
+
+export function getAccountInformationAfterUpdate() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type == 'UPDATE_ACCOUNT_INFORMATION_FULFILLED') {
+            const state = getState()
+            const accountRef = db.collection("users").doc(state.user.user.uid)
+            dispatch({
+                type: "GET_ACCOUNT_INFORMATION", payload: accountRef.get().then(res => {
+                    return res.data()
+                })
+            })
+        }
+        return next(action)
+    }
+}

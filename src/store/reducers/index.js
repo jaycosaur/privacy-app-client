@@ -5,6 +5,8 @@ import popover from './popoverModalReducer'
 import filter from './filterReducer'
 import news from './newsReducer'
 import watchlist from './watchlistReducer'
+import { reducer as formReducer } from 'redux-form'
+
 
 const rootReducer = combineReducers({
     user,
@@ -12,7 +14,8 @@ const rootReducer = combineReducers({
     popover,
     filter,
     watchlist,
-    router: routerReducer
+    router: routerReducer,
+    form: formReducer
 })
 
 export default rootReducer

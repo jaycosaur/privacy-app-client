@@ -51,3 +51,16 @@ export const createPolicyWatch = (data) => {
         type: 'CREATE_POLICY_WATCH'
     }
 }
+
+export const toggleFilterPanel = () => {
+    return {
+        type: 'TOGGLE_FILTER_PANEL'
+    }
+}
+
+export const changeSearchPageView = (view) => {
+    return {
+        type: 'CHANGE_SEARCH_PAGE_VIEW',
+        payload: view
+    }
+}

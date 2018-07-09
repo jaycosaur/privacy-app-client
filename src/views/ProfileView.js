@@ -5,48 +5,12 @@ import { connect } from 'react-redux'
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader'
 import Avatar from '@material-ui/core/Avatar';
+import SettingsIcon from '@material-ui/icons/Settings'
+import LinearProgress from '@material-ui/core/LinearProgress';
+import ButtonBase from '@material-ui/core/ButtonBase';
 
-const detailsData = [
-    {
-        title: "Joe Blow",
-        description: "admin@example.com",
-        itemKey: "userinfo",
-        avatar: "profile"
-    },
-    {
-        title: "Notifications",
-        description: "Watchlist alerts and newsletter",
-        itemKey: "notification",
-        avatar: "notification"
-    },
-    {
-        title: "Examine Change Org",
-        description: "Your Organisation Settings",
-        itemKey: "organisation",
-        avatar: "team"
-    },
-    {
-        title: "Password",
-        description: "Change your password",
-        itemKey: "password",
-        avatar: "lock"
-    }
-]
 
-const planData = [
-    {
-        title: "Current Plan",
-        description: "Change your plan",
-        itemKey: "plantype",
-        avatar: "appstore"
-    },
-    {
-        title: "Plan Usage",
-        description: "Plan Limits and Usage",
-        itemKey: "planusage",
-        avatar: "dashboard"
-    }
-]
+
 
 const billingData = [
     {
@@ -67,23 +31,26 @@ const billingData = [
 
 const MenuItem = (props) => {
     return (
-        <Card
-            style={{ width: "40%", margin: 8}}
-            hoverable
-            key={props.itemKey}
-            onClick={e => props.clickHandler(props.itemKey)}
+        <ButtonBase
+        style={{ width: "40%", margin: 8}}
         >
-
-        <CardHeader
-            avatar={
-              <Avatar aria-label="Recipe" >
-                R
-              </Avatar>
-            }
-            title={props.title}
-            subheader={props.description}
-          />
-        </Card>
+            <Card
+                style={{ width: "100%"}}
+                key={props.itemKey}
+                onClick={e => props.clickHandler(props.itemKey)}
+            >
+            {false&&<LinearProgress />}
+            <CardHeader
+                avatar={
+                <Avatar aria-label="Recipe" >
+                    <SettingsIcon />
+                </Avatar>
+                }
+                title={props.title}
+                subheader={props.description}
+            />
+            </Card>
+        </ButtonBase>
     )
 }
 
@@ -94,36 +61,86 @@ const Section = (props) => (
 )
 
 const AccountView = (props) => {
-  return (
-    <div style={{padding: 32}}>
-        <Row gutter={16} style={{width: "100%"}}>
-            <Divider style={{padding: "0 120px"}}><h2>Your Details</h2></Divider>
-            <Section>
-                {detailsData.map(item => <MenuItem clickHandler={props.doSelectItem} {...item}/>)}
-            </Section>
-            <Divider style={{padding: "0 120px"}}><h2>Plan and Usage</h2></Divider>
-            <Section>
-                {planData.map(item => <MenuItem clickHandler={props.doSelectItem} {...item}/>)}
-            </Section>
-            <Divider style={{padding: "0 120px"}}><h2>Billing and Payments</h2></Divider>
-            <Section>
-                {billingData.map(item => <MenuItem clickHandler={props.doSelectItem} {...item}/>)}
-            </Section>    
-        </Row>
-    </div>
+    const { isLoading, lastLoaded, info: {displayName="No Display Name Found", email, organisation="No Organisation Name Found", planType="No Plan Selected"} } = props.accountInformation
+    const detailsData = [
+        {
+            title: displayName,
+            description: email,
+            itemKey: "userinfo",
+            avatar: "profile"
+        },
+        {
+            title: "Notifications",
+            description: "Watchlist alerts and newsletter",
+            itemKey: "notification",
+            avatar: "notification"
+        },
+        {
+            title: organisation,
+            description: "Your Organisation Settings",
+            itemKey: "organisation",
+            avatar: "team"
+        },
+        {
+            title: "Password",
+            description: "Change your password",
+            itemKey: "password",
+            avatar: "lock"
+        }
+    ]
+    const planData = [
+        {
+            title: planType,
+            description: "Change your plan",
+            itemKey: "plantype",
+            avatar: "appstore"
+        },
+        {
+            title: "Plan Usage",
+            description: "Plan Limits and Usage",
+            itemKey: "planusage",
+            avatar: "dashboard"
+        }
+    ]
+    return (
+        [isLoading&&<LinearProgress color="secondary" variant="query" />,
+        <div style={{padding: 32, height: "92vh", overflow: "scroll"}}>
+            {lastLoaded&&<Row gutter={16} style={{width: "100%"}}>
+                <Divider style={{padding: "0 120px"}}><h2>Your Details</h2></Divider>
+                <Section>
+                    {detailsData.map(item => <MenuItem clickHandler={props.doSelectItem} {...item}/>)}
+                </Section>
+                <Divider style={{padding: "0 120px"}}><h2>Plan and Usage</h2></Divider>
+                <Section>
+                    {planData.map(item => <MenuItem clickHandler={props.doSelectItem} {...item}/>)}
+                </Section>
+                <Divider style={{padding: "0 120px"}}><h2>Billing and Payments</h2></Divider>
+                <Section>
+                    {billingData.map(item => <MenuItem clickHandler={props.doSelectItem} {...item}/>)}
+                </Section>    
+            </Row>}
+        </div>]
     
   )
 }
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        prop: state.prop
+        accountInformation: state.user.accountInformation
     }
 }
 
-export default connect(mapStateToProps, actions)(AccountView)
+class ProfileView extends React.Component {
+    componentDidMount(){
+        this.props.getAccountInformation()
+    }
 
+  render() {
+    return (<AccountView {...this.props} />)
+  }
+}
 
+export default connect(mapStateToProps, actions)(ProfileView)
 
 /*
 

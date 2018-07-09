@@ -68,3 +68,9 @@ export const doPasswordUpdate = ({password}) => {
         payload: auth.currentUser.updatePassword(password)
     }
 }
+
+export const fetchUserInformation = () => {
+    return {
+        type: 'FETCH_USER_INFORMATION',
+    }
+}
