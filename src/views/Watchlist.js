@@ -43,7 +43,7 @@ class WatchlistView extends React.Component {
     render() {
         const { classes } = this.props
         return (
-            !this.props.isFetching?<div style={{minHeight: "100vh"}}>
+            !this.props.isFetching?<div>
                 <AppBar position="static" color="secondary">
                     <Toolbar>
                         <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">

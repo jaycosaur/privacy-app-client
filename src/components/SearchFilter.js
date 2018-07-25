@@ -57,7 +57,7 @@ const AddFilterItem = (props) => (
 
 const SearchFilterContainer = ({filterItems, ...props}) => {
   return (
-    <div style={{paddingBottom: "8px"}}>
+    <div>
       {filterItems.map((item, i)=> (
         <FilterItem item={item} itemNumber={i} {...props}/>
       ))}

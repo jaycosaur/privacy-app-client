@@ -1,20 +1,26 @@
-import algoliasearch from 'algoliasearch'
-
-var client = algoliasearch('FEQZM17GZV', '0f26c164ae44f21a6bfffa4941e6ec99')
-
-var legislationIndex = client.initIndex('legislation')
-var newsIndex = client.initIndex('news')
-
 export const submitSearchNews = ({query, filters}) => {
     return {
-        type: 'SEARCH_NEWS',
-        payload: newsIndex.search({query: query})
+        type: 'GET_SEARCH',
+        payload: { 
+            filters: null,
+            key: 'topnav-search', 
+            type: 'MEDIA',
+            query,
+        }
     }
 }
 
-export const globalSearch = (payload) => {
+export const globalSearch = ({query, filters, key}) => {
     return {
-        type: 'SEARCH_GLOBAL',
-        payload: payload
+        type: 'GET_SEARCH',
+        payload: { 
+            filters: null,
+            key: key, 
+            query, 
+            attrs: {
+                hitsPerPage: 20
+            },
+            saveSearch: false
+        }
     }
 }

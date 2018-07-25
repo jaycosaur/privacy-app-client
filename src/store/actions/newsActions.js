@@ -33,9 +33,3 @@ export const fetchNewsViaRSS = () => {
             }
         })}
 }
-
-export const fetchNewsViaAlgolia = () => {
-    return {
-        type: 'FETCH_NEWS_ITEMS',
-        payload: "Trump"
-}}

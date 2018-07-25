@@ -104,7 +104,7 @@ const AccountView = (props) => {
     ]
     return (
         [isLoading&&<LinearProgress color="secondary" variant="query" />,
-        <div style={{padding: 32, height: "92vh", overflow: "scroll"}}>
+        <div style={{padding: 32, height: "100%", overflow: "scroll"}}>
             {lastLoaded&&<Row gutter={16} style={{width: "100%"}}>
                 <Divider style={{padding: "0 120px"}}><h2>Your Details</h2></Divider>
                 <Section>

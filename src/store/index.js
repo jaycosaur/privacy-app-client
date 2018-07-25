@@ -6,24 +6,21 @@ import promise from 'redux-promise-middleware'
 import { composeWithDevTools } from 'redux-devtools-extension'
 import createHistory from 'history/createBrowserHistory'
 import { routerMiddleware } from 'react-router-redux'
-import {getAccountInformationAfterUpdate, getAccountInformation, fetchLegislationItems, fetchNewsItems, getWatchlistItem, policySearchMiddleware, createPolicyWatchMiddleware, getWatchlistItems, saveNewsSettingMiddleware, getNewsSettingItems, deleteWatchlistItem} from './middleware/'
+import * as middlewareIndex from './middleware/'
+
+
+import * as actionManagerMiddleware from './middleware/actionManagerMiddleware'
 
 export const history = createHistory()
+
+const toFn = (mw) => Object.keys(mw).map(i=>mw[i]())
+
 const middleware = applyMiddleware(
     logger, 
     promise(), 
     thunk, 
-    routerMiddleware(history), 
-    policySearchMiddleware(), 
-    createPolicyWatchMiddleware(), 
-    getWatchlistItems(),
-    saveNewsSettingMiddleware(),
-    getNewsSettingItems(),
-    deleteWatchlistItem(),
-    getWatchlistItem(),
-    fetchNewsItems(),
-    fetchLegislationItems(),
-    getAccountInformation(),
-    getAccountInformationAfterUpdate())
+    ...toFn(middlewareIndex),
+    ...toFn(actionManagerMiddleware)
+)
 
 export default createStore(reducer, composeWithDevTools(middleware));

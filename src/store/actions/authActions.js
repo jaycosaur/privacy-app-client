@@ -36,6 +36,12 @@ export const signInWithUserInfo = (info) => {
     }
 }
 
+export const accountSignedIn = () => {
+    return {
+        type: 'USER_HAS_SIGNED_IN'
+    }
+}
+
 export const attemptingSignIn = () => {
     return {
         type: 'SIGNIN_USER_PENDING'

@@ -10,9 +10,12 @@ import ConfirmResetPassword from './views/ConfirmResetPassword'
 import AuthHome from './views/AuthHome'
 import AggregatedNews from './views/AggregatedNews'
 import Watchlist from './views/Watchlist'
+import ActionManager from './views/ActionManager'
+
 import Tasklist from './views/ProjectTaskList'
 import ContactsView from './views/ContactsView'
 import NotFound from './views/NotFound'
+import TeamManagerView from './views/TeamManagerView'
 
 import { connect } from 'react-redux'
 
@@ -23,7 +26,6 @@ import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
 import { ConnectedRouter } from 'react-router-redux'
 import { history } from './store/'
 
-
 const Routes = (props) => {
   return (
     <Switch>
@@ -33,13 +35,20 @@ const Routes = (props) => {
         <UnauthenticatedRoute key="signin" path='/signin/confirmcode' props={{isSignedIn: props.isSignedIn}} component={ConfirmResetPassword}/>
         <AuthenticatedRoute key="1" path='/account-setup' props={{isSignedIn: props.isSignedIn}} component={AccountSetup}/>
         <AuthenticatedRoute key="12345" path='/home' props={{isSignedIn: props.isSignedIn}} component={AuthHome}/>
-        <AuthenticatedRoute key="policy-tracker" exact path='/policy-tracker' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
-        <AuthenticatedRoute key="policy-tracker-with-watch" path='/policy-tracker/:watchlistId' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
+        <AuthenticatedRoute key="master-search" exact path='/search' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
+        <AuthenticatedRoute key="search-page" exact path='/search/:searchCategory' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
+        <AuthenticatedRoute key="search-page-with-watchlist" exact path='/search/:searchCategory/:watchlistId' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
+        <AuthenticatedRoute key="regulation-item-view" path='/regulation/:id' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
+        <AuthenticatedRoute key="media-item-view" path='/media/:id' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
+        <AuthenticatedRoute key="commentary-item-view" path='/commentary/:id' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
+        <AuthenticatedRoute key="research-item-view" path='/research/:id' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
+        <AuthenticatedRoute key="team-manager-view" path='/team' props={{isSignedIn: props.isSignedIn}} component={TeamManagerView}/>
         <AuthenticatedRoute key="news" path='/news' props={{isSignedIn: props.isSignedIn}} component={AggregatedNews}/>
         <AuthenticatedRoute key="watchlist" path='/watchlist' props={{isSignedIn: props.isSignedIn}} component={Watchlist}/>
         <AuthenticatedRoute key="123456" path='/item' props={{isSignedIn: props.isSignedIn}} component={ItemView}/>
         <AuthenticatedRoute key="profile-page" path='/myaccount' props={{isSignedIn: props.isSignedIn}} component={ProfileView}/>
-        <AuthenticatedRoute key="task-list" path='/tasklist' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
+        <AuthenticatedRoute exact key="action-manager" path='/action-manager' props={{isSignedIn: props.isSignedIn}} component={ActionManager}/>
+        <AuthenticatedRoute key="task-list" path='/action-manager/:id' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
         <AuthenticatedRoute key="contacts" path='/contacts' exact props={{isSignedIn: props.isSignedIn}} component={ContactsView}/>
         <AuthenticatedRoute key="contacts-id" path='/contacts/{cid}/' props={{isSignedIn: props.isSignedIn}} component={ContactsView}/>
         <Route key="not-found" component={NotFound}/>

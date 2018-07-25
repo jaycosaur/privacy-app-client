@@ -9,7 +9,6 @@ import MobileStepper from '@material-ui/core/MobileStepper';
 import PropTypes from 'prop-types'
 
 import ForwardIcon from '@material-ui/icons/NavigateNext';
-import { SSL_OP_COOKIE_EXCHANGE } from 'constants';
 
 const styles = theme => ({
     root: {

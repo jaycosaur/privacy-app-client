@@ -10,11 +10,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Field, reduxForm } from 'redux-form'
 
 import TextField from '@material-ui/core/TextField'
-import RadioButton from '@material-ui/core/Radio';
-import RadioButtonGroup from '@material-ui/core/RadioGroup';
-import Checkbox from '@material-ui/core/Checkbox'
-import SelectField from '@material-ui/core/Select'
-import MenuItem from '@material-ui/core/MenuItem'
 
 const validate = values => {
   const errors = {}
@@ -30,7 +25,7 @@ const validate = values => {
   return errors
 }
 
-const renderTextField = ({ input: { value, onChange }, label, meta: { touched, error }, ...custom }) => (
+const renderTextField = ({ input: { value, onChange }, label, meta: { touched, error } }) => (
   <TextField 
     label={label}
     errorText={touched && error}

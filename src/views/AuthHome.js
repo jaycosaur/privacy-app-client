@@ -11,12 +11,14 @@ import LatestBlogPosts from './../containers/AuthHome/LatestBlogPosts';
 
 import MostPopularNews from './../containers/AuthHome/MostPopularNews';
 import HomeShortcuts from './../containers/AuthHome/HomeShortcuts';
+import MainViewTopActionBarContainer from './../containers/MainViewTopActionBarContainer'
 
+import AuthViewRouteContainer from './AuthViewRouteContainer'
 
 const styles = (theme) => ({
     root: {
-        padding: theme.spacing.unit*4,
-        height: "92vh",
+        padding: theme.spacing.unit*2,
+        height: "100%",
         overflow: "scroll"
     },
     coverBig: {
@@ -35,9 +37,12 @@ const styles = (theme) => ({
 
 const HomeView = (props) => {
     const { classes } = props
+    const TopBar = <MainViewTopActionBarContainer>
+        <Typography style={{color: "white", flex: 1}} variant="title">{"Stay on-top of policy and regulatory change."}</Typography>
+    </MainViewTopActionBarContainer>
     return (
-        <div className={classes.root}>
-            <Grid container spacing={24}>
+        <AuthViewRouteContainer topbar={TopBar}>
+            <Grid container spacing={24}  className={classes.root}>
                 <Grid item xs={6}>
                     <LatestNews />
                     <MostPopularNews />
@@ -61,6 +66,6 @@ const HomeView = (props) => {
                     <HomeShortcuts />
                 </Grid>
             </Grid>
-        </div>)}
+        </AuthViewRouteContainer>)}
 
 export default withStyles(styles)(HomeView)

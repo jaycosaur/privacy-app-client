@@ -18,12 +18,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
-
-let counter = 0;
-function createData(name, calories, fat, carbs, protein) {
-  counter += 1;
-  return { id: counter, name, calories, fat, carbs, protein };
-}
+import Chip from '@material-ui/core/Chip';
+import { Link } from 'react-router-dom'
+import { itemData } from '../../sampledata';
 
 function getSorting(order, orderBy) {
   return order === 'desc'
@@ -31,21 +28,13 @@ function getSorting(order, orderBy) {
     : (a, b) => (a[orderBy] < b[orderBy] ? -1 : 1);
 }
 
-const columnData = [
-  { id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)' },
-  { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
-];
-
 class EnhancedTableHead extends React.Component {
   createSortHandler = property => event => {
     this.props.onRequestSort(event, property);
   };
 
   render() {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount } = this.props;
+    const { onSelectAllClick, order, orderBy, numSelected, rowCount, columnData } = this.props;
 
     return (
       <TableHead>
@@ -62,7 +51,7 @@ class EnhancedTableHead extends React.Component {
               <TableCell
                 key={column.id}
                 numeric={column.numeric}
-                padding={column.disablePadding ? 'none' : 'default'}
+                padding={column.padding||'default'}
                 sortDirection={orderBy === column.id ? order : false}
               >
                 <Tooltip
@@ -171,7 +160,6 @@ EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
   },
   table: {
     minWidth: 1020,
@@ -187,27 +175,24 @@ class EnhancedTable extends React.Component {
 
     this.state = {
       order: 'asc',
-      orderBy: 'calories',
+      orderBy: props.columnData[0].id,
       selected: [],
-      data: [
-        createData('Cupcake', 305, 3.7, 67, 4.3),
-        createData('Donut', 452, 25.0, 51, 4.9),
-        createData('Eclair', 262, 16.0, 24, 6.0),
-        createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-        createData('Gingerbread', 356, 16.0, 49, 3.9),
-        createData('Honeycomb', 408, 3.2, 87, 6.5),
-        createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-        createData('Jelly Bean', 375, 0.0, 94, 0.0),
-        createData('KitKat', 518, 26.0, 65, 7.0),
-        createData('Lollipop', 392, 0.2, 98, 0.0),
-        createData('Marshmallow', 318, 0, 81, 2.0),
-        createData('Nougat', 360, 19.0, 9, 37.0),
-        createData('Oreo', 437, 18.0, 63, 4.0),
-      ],
+      data: props.data,
       page: 0,
-      rowsPerPage: 5,
+      rowsPerPage: 10,
     };
   }
+
+  static getDerivedStateFromProps(nextProps, prevState){
+    if (prevState.data !== nextProps.data) {
+      return {
+        data: nextProps.data,
+      };
+    }
+    // Return null to indicate no change to state.
+    return null;
+
+  } 
 
   handleRequestSort = (event, property) => {
     const orderBy = property;
@@ -220,9 +205,16 @@ class EnhancedTable extends React.Component {
     this.setState({ order, orderBy });
   };
 
+  handleEmitSelect = (item, all) => {
+    if (this.props.handleRowSelect){
+      this.props.handleRowSelect(item, all)
+    }
+  }
+
   handleSelectAllClick = (event, checked) => {
     if (checked) {
       this.setState(state => ({ selected: state.data.map(n => n.id) }));
+      this.handleEmitSelect(this.state.data.map(n => n.id), this.handleEmitSelect(this.state.data.map(n => n.id)))
       return;
     }
     this.setState({ selected: [] });
@@ -245,7 +237,7 @@ class EnhancedTable extends React.Component {
         selected.slice(selectedIndex + 1),
       );
     }
-
+    this.handleEmitSelect(id, newSelected)
     this.setState({ selected: newSelected });
   };
 
@@ -260,13 +252,12 @@ class EnhancedTable extends React.Component {
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes } = this.props;
+    const { classes, columnData, showHeader } = this.props;
     const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
-    const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
-
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, this.state.data?this.state.data.length:0 - page * rowsPerPage);
     return (
       <Paper className={classes.root}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        {showHeader&&<EnhancedTableToolbar numSelected={selected.length} />}
         <div className={classes.tableWrapper}>
           <Table className={classes.table} aria-labelledby="tableTitle">
             <EnhancedTableHead
@@ -275,10 +266,11 @@ class EnhancedTable extends React.Component {
               orderBy={orderBy}
               onSelectAllClick={this.handleSelectAllClick}
               onRequestSort={this.handleRequestSort}
-              rowCount={data.length}
+              rowCount={this.state.data?this.state.data.length:0}
+              columnData={columnData}
             />
             <TableBody>
-              {data
+              {this.state.data&&this.state.data
                 .sort(getSorting(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map(n => {
@@ -293,16 +285,21 @@ class EnhancedTable extends React.Component {
                       key={n.id}
                       selected={isSelected}
                     >
-                      <TableCell padding="checkbox">
-                        <Checkbox checked={isSelected} />
-                      </TableCell>
-                      <TableCell component="th" scope="row" padding="none">
-                        {n.name}
-                      </TableCell>
-                      <TableCell numeric>{n.calories}</TableCell>
-                      <TableCell numeric>{n.fat}</TableCell>
-                      <TableCell numeric>{n.carbs}</TableCell>
-                      <TableCell numeric>{n.protein}</TableCell>
+                        <TableCell padding="checkbox">
+                            <Checkbox checked={isSelected} />
+                        </TableCell>
+                        {columnData.map((col)=>(
+                            <TableCell 
+                                numeric={col.numeric}
+                                padding={col.padding||"default"}
+                                >
+                                {col.linkKey?
+                                <Link to={n[col.linkKey]}>{col.isChip?<Chip label={col.shrinkText?<small>{n[col.id]}</small>:n[col.id]}/>:col.shrinkText?<small>{n[col.id]}</small>:n[col.id]}</Link>
+                                :col.isChip?<Chip label={col.shrinkText?<small>{n[col.id]}</small>:n[col.id]}/>:col.shrinkText?<small>{n[col.id]}</small>:n[col.id]
+                                
+                                }
+                            </TableCell>))
+                        }
                     </TableRow>
                   );
                 })}
@@ -316,7 +313,7 @@ class EnhancedTable extends React.Component {
         </div>
         <TablePagination
           component="div"
-          count={data.length}
+          count={this.state.data&&this.state.data.length}
           rowsPerPage={rowsPerPage}
           page={page}
           backIconButtonProps={{
@@ -333,8 +330,13 @@ class EnhancedTable extends React.Component {
   }
 }
 
+// make this much tighter for columnData and data.
+
 EnhancedTable.propTypes = {
   classes: PropTypes.object.isRequired,
+  columnData: PropTypes.array.isRequired,
+  data: PropTypes.array.isRequired,
+  showHeader: PropTypes.bool
 };
 
 export default withStyles(styles)(EnhancedTable);

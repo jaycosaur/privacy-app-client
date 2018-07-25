@@ -1,14 +1,16 @@
 import { db } from './../../config/firebase'
 import algoliasearch from 'algoliasearch'
 
-var client = algoliasearch('FEQZM17GZV', '0f26c164ae44f21a6bfffa4941e6ec99')
+//actions
+import * as teamActions from './../actions/teamActions'
 
+var client = algoliasearch('FEQZM17GZV', '0f26c164ae44f21a6bfffa4941e6ec99')
 var legislationIndex = client.initIndex('news')
 var newsIndex = client.initIndex('news')
 
 export function policySearchMiddleware() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'SUBMIT_POLICY_SEARCH') {
+        if (action.type === 'SUBMIT_POLICY_SEARCH') {
             const state = getState()
             const searchObject = {
                 string: state.filter.keywordInput,
@@ -19,9 +21,18 @@ export function policySearchMiddleware() {
     }
 }
 
+export function onSignIn() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'USER_HAS_SIGNED_IN') {
+            dispatch({ type: "GET_ACCOUNT_INFORMATION" })
+        }
+        return next(action)
+    }
+}
+
 export function createPolicyWatchMiddleware() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'CREATE_POLICY_WATCH') {
+        if (action.type === 'CREATE_POLICY_WATCH') {
             const state = getState()
             const watchObject = {
                 uid: state.user.user.uid,
@@ -40,7 +51,7 @@ export function createPolicyWatchMiddleware() {
 
 export function getWatchlistItems() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'FETCH_WATCHLIST_ITEMS') {
+        if (action.type === 'FETCH_WATCHLIST_ITEMS') {
             const state = getState()
             const watchlistRef = db.collection("watchlists").doc(state.user.user.uid).collection('watchlists')
             const watchlistItemArray = []
@@ -57,7 +68,7 @@ export function getWatchlistItems() {
 
 export function getWatchlistItem() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'FETCH_WATCHLIST_ITEM') {
+        if (action.type === 'FETCH_WATCHLIST_ITEM') {
             const state = getState()
             const watchlistRef = db.collection("watchlists").doc(state.user.user.uid).collection('watchlists').doc(action.meta)
             dispatch({
@@ -72,7 +83,7 @@ export function getWatchlistItem() {
 
 export function deleteWatchlistItem() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'DELETE_WATCHLIST_ITEM') {
+        if (action.type === 'DELETE_WATCHLIST_ITEM') {
             const state = getState()
             const watchlistItemRef = db.collection("watchlists").doc(state.user.user.uid).collection('watchlists').doc(action.meta)
             dispatch({ type: "DELETE_WATCHLIST_ITEM", payload: watchlistItemRef.delete(), meta: action.meta })
@@ -83,7 +94,7 @@ export function deleteWatchlistItem() {
 
 export function saveNewsSettingMiddleware() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'SAVE_NEWS_SETTINGS') {
+        if (action.type === 'SAVE_NEWS_SETTINGS') {
             const state = getState()
             const newsObject = {
                 uid: state.user.user.uid,
@@ -99,7 +110,7 @@ export function saveNewsSettingMiddleware() {
 
 export function getNewsSettingItems() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'FETCH_NEWS_SETTINGS') {
+        if (action.type === 'FETCH_NEWS_SETTINGS') {
             const state = getState()
             const newsSettingsRef = db.collection("newsalerts").doc(state.user.user.uid)
             dispatch({
@@ -114,10 +125,10 @@ export function getNewsSettingItems() {
 
 export function fetchNewsItems() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'FETCH_NEWS_SETTINGS_FULFILLED') {
+        if (action.type === 'FETCH_NEWS_SETTINGS_FULFILLED') {
             dispatch({ type: "FETCH_NEWS_ITEMS", payload: newsIndex.search({ query: action.payload&&action.payload.searchTags&&action.payload.searchTags.join("") }) })
         }
-        if (action.type == 'HANDLE_TAG_CHANGE') {
+        if (action.type === 'HANDLE_TAG_CHANGE') {
             dispatch({ type: "FETCH_NEWS_ITEMS", payload: newsIndex.search({ query: action.payload.join(" ") }) })
         }
         return next(action)
@@ -128,7 +139,7 @@ const genFilterString = () => "(category:Book OR category:Ebook) AND _tags:publi
 
 export function fetchLegislationItems() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'FETCH_LEGISLATION_ITEMS') {
+        if (action.type === 'FETCH_LEGISLATION_ITEMS') {
             const state = getState()
             dispatch({ type: "FETCH_LEGISLATION_ITEMS", payload: legislationIndex.search({ query: action.payload.query, filters: genFilterString(action.payload.filters) }) })
         }
@@ -138,7 +149,7 @@ export function fetchLegislationItems() {
 
 export function getAccountInformation() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'GET_ACCOUNT_INFORMATION') {
+        if (action.type === 'GET_ACCOUNT_INFORMATION') {
             const state = getState()
             const accountRef = db.collection("users").doc(state.user.user.uid)
             dispatch({
@@ -153,7 +164,7 @@ export function getAccountInformation() {
 
 export function getAccountInformationAfterUpdate() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type == 'UPDATE_ACCOUNT_INFORMATION_FULFILLED') {
+        if (action.type === 'UPDATE_ACCOUNT_INFORMATION_FULFILLED') {
             const state = getState()
             const accountRef = db.collection("users").doc(state.user.user.uid)
             dispatch({
@@ -165,3 +176,72 @@ export function getAccountInformationAfterUpdate() {
         return next(action)
     }
 }
+
+export function saveSearchToUser() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'FETCH_ALGOLIA_RESULTS_FULFILLED') {
+            if (action.meta.saveSearch){
+                const state = getState()
+                const { filters, attrs, query, type } = action.meta
+                const userSearchRef = db.collection("users").doc(state.user.user.uid).collection("recentSearches")
+                const searchObject = {
+                    whenSearch: Date.now(),
+                    query: query,
+                    type: type,
+                    filters: filters
+                }
+                dispatch({
+                    type: "SAVE_NEW_SEARCH", payload: userSearchRef.add(searchObject)
+                })
+            }
+        }
+        return next(action)
+    }
+}
+
+export function fetchResultsFromAlgolia() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'GET_SEARCH') {
+            const state = getState()
+            const { type, filters, key, query, attrs } = action.payload
+            let index = null
+            switch(type){
+                case 'REGULATION':
+                    index = newsIndex
+                    break
+                case 'MEDIA':
+                    index = newsIndex
+                    break
+                case 'RESEARCH':
+                    index = newsIndex
+                    break
+                default:
+                    index = newsIndex
+            }
+            const payload = index.search({ query: query, ...attrs })
+
+            dispatch({
+                type: "FETCH_ALGOLIA_RESULTS", 
+                payload: payload ,
+                meta: action.payload
+            })
+           
+        }
+        return next(action)
+    }
+}
+
+export function getOrganisationAfterAccountLoaded() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'GET_ACCOUNT_INFORMATION_FULFILLED') {
+            const state = getState()
+            const organisationId = action.payload.organisationId
+            console.log(organisationId)
+            if (organisationId){
+                dispatch(teamActions.getOrganisationInformation({ organisationId }))
+            }
+        }
+        return next(action)
+    }
+}
+

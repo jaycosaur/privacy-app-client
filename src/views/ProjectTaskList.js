@@ -1,8 +1,17 @@
 import React from 'react'
-import { Card, Avatar, Icon, Button, Input, Divider, List, Progress, DatePicker, Tabs } from 'antd'
+import { Card, Avatar, Icon, Button, Input, List, Progress, DatePicker, Tabs } from 'antd'
 import { themeColors, highlightThemeShades, primaryThemeShades } from './../theme'
 import moment from 'moment';
+import AuthViewRouteContainer from './AuthViewRouteContainer'
+import MainViewTopActionBarContainer from './../containers/MainViewTopActionBarContainer'
+import Typography from '@material-ui/core/Typography';
 
+import ButtonMD from '@material-ui/core/Button';
+import AddIcon from '@material-ui/icons/Add';
+
+
+import { connect } from 'react-redux'
+import * as projectActions from './../store/actions/actionManagerActions'
 
 class HandleHover extends React.Component {
     state = {
@@ -84,7 +93,7 @@ class TaskItem extends React.Component {
                 <HandleHover render={
                     (isHovered) => (
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-                            {this.props.child && <Button type={isHovered && "primary"} shape="circle" icon="ellipsis" style={{ marginRight: 20, marginLeft: 4 }} />}
+                            {this.props.child && <Button type={isHovered?"primary":"default"} shape="circle" icon="ellipsis" style={{ marginRight: 20, marginLeft: 4 }} />}
                             <Card onClick={() => this.props.handleClick(this.props.id)} style={{ flexGrow: 1, borderRadius: 10, background: isHovered && primaryThemeShades[1] }} bodyStyle={{ height: 56, display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", padding: "8px 16px", overflowX: "scroll" }}>
                                 <div onClick={this.toggleChildren} style={{ background: isHovered ? (this.props.children ? highlightThemeShades[1] : "white") : (this.props.children ? themeColors[1] : themeColors[0]), width: 8, height: 40, borderRadius: 4, marginRight: 20 }} />
                                 <div style={{ width: 200 }}><InputItem /></div>
@@ -103,7 +112,7 @@ class TaskItem extends React.Component {
                                 <UserAvatars />
                                 <HandleHover render={
                                     (hovered) => (
-                                        !hovered ? <div style={{ background: isHovered ? "red" : null, width: 8, height: 40, borderRadius: 4, marginRight: -8 }} /> : <Button onClick={() => this.props.handleDelete(this.props.id)} type="danger" size="large" icon="delete" shape="square" />
+                                        !hovered ? <div style={{ background: isHovered ? "red" : null, width: 8, height: 40, borderRadius: 4, marginRight: -8 }} /> : <Button onClick={(e) => {e.preventDefault(); this.props.handleDelete(this.props.id)}} type="danger" size="large" icon="delete" shape="square" />
                                     )
                                 } />
 
@@ -124,158 +133,20 @@ class TaskItem extends React.Component {
     }
 }
 
-const DATA = [
-    {
-        id: 0,
-        parent: null
-    },
-    {
-        id: 1,
-        parent: 0
-    },
-    {
-        id: 2,
-        parent: 0
-    },
-    {
-        id: 3,
-        parent: 0
-    },
-    {
-        id: 4,
-        parent: 3
-    },
-    {
-        id: 5,
-        parent: 3
-    },
-    {
-        id: 6,
-        parent: 3
-    },
-    {
-        id: 7,
-        parent: 6
-    },
-    {
-        id: 8,
-        parent: 6
-    },
-    {
-        id: 9,
-        parent: 0
-    },
-    {
-        id: 10,
-        parent: null
-    },
-    {
-        id: 11,
-        parent: 10
-    },
-    {
-        id: 12,
-        parent: 10
-    },
-]
-
-const findChildren = (id) => DATA.filter(i => i.parent === id)
-
-const getTaskItemChildren = (id, input, handleAdd, handleDelete, handleClick) =>
-    input.filter(i => i.parent === id).length > 0 && input.filter(i => i.parent === id).map(task => (
-        <TaskItem key={task.id} id={task.id} handleAdd={handleAdd} handleDelete={handleDelete} handleClick={handleClick} child>
-            {getTaskItemChildren(task.id, input, handleAdd, handleDelete, handleClick)}
-        </TaskItem>)
-    )
-
-const computeTaskTree = (input, handleAdd, handleDelete, handleClick) => (
-    input.filter(i => i.parent === null).map(task => (
-        <TaskItem key={task.id} id={task.id} handleAdd={handleAdd} handleDelete={handleDelete} handleClick={handleClick}>
-            {getTaskItemChildren(task.id, input, handleAdd, handleDelete, handleClick)}
+const computeProjectActionTree = (input, handleAdd, handleDelete, handleClick) => (
+    input.filter(i => i.parentActionId === null).map(task => (
+        <TaskItem key={task.actionId} id={task.actionId} handleAdd={handleAdd} handleDelete={handleDelete} handleClick={handleClick}>
+            {getProjectActionChildren(task.actionId, input, handleAdd, handleDelete, handleClick)}
         </TaskItem>
     ))
 )
 
-export default class ProjectTaskList extends React.Component {
-    state = {
-        items: DATA,
-        selectedItemId: null
-    }
-
-    handleAdd = (id) => {
-        const val = Math.max(...this.state.items.map(i => i.id)) + 1
-        this.setState((state) => ({
-            items: [...state.items, { id: val, parent: id }]
-        }))
-    }
-
-    handleDelete = (id) => {
-        this.setState((state) => ({
-            items: state.items.filter(i => i.id !== id)
-        }))
-    }
-
-    handleClick = (id) => {
-        this.setState({ selectedItemId: id })
-    }
-
-    deselectItem = () => {
-        this.setState({ selectedItemId: null })
-    }
-
-    render() {
-        return (
-            <div>
-                {this.state.selectedItemId !== null ? <div style={{ position: "absolute", right: 0, height: "92vh", width: "30vw", background: "white", zIndex: 100, opacity: 0.98, boxShadow: "-2px 0 1px -1px #aaa" }}>
-                    <div style={{ zIndex: 100, width: "100%", background: themeColors[0], display: "flex", justifyContent: "space-between", alignItems: "center", padding: 16, position: "absolute", top: 0, left: 0, boxShadow: "0 4px 1px -1px #ddd" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", }}>
-                            <Button onClick={this.deselectItem} icon="cross" shape="circle" />
-                            <h3 style={{ color: "white", fontWeight: 300, margin: 0, marginLeft: 8 }}>Some project item!</h3>
-                        </div>
-                        <div>
-                            <Button shape="circle" ghost icon="setting" />
-                        </div>
-                    </div>
-                    <div style={{ paddingTop: 64, overflow: "scroll", height: "92vh" }}>
-                        <SidePanelView />
-                    </div>
-
-                </div> : null}
-                <div style={{ height: "92vh", background: "white", overflow: "scroll" }}>
-                    <div style={{ padding: "24px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", background: themeColors[0] }}>
-                        <div style={{ flexGrow: 3, display: "flex", justifyContent: "left", alignItems: "center" }}>
-                            <div style={{ marginRight: 32 }}>
-                                <Button shape="circle" size="large" icon="rollback" />
-                            </div>
-                            <div>
-                                <h1 style={{ fontSize: "3em", fontWeight: 300, marginBottom: 8, color: "white" }}>New Policy Proposal Development</h1>
-                                <p style={{ fontSize: "1.2em", color: "white", marginBottom: 0 }}>Some project description goes here.</p>
-                            </div>
-                        </div>
-
-                        <Card style={{ flexGrow: 1, borderRadius: 20, }} bodyStyle={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <h3 style={{ marginRight: 8, marginBottom: 0 }}>VIEW</h3>
-                                <Button.Group>
-                                    <Button size="large" icon="layout" />
-                                    <Button size="large" icon="database" />
-                                    <Button size="large" icon="table" />
-                                    <Button size="large" icon="profile" />
-                                </Button.Group>
-                            </div>
-                            <div style={{ width: 1, height: "50px", background: "#000", opacity: 0.15 }} />
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}><Avatar icon="team" size="large" /> <UserAvatars /></div>
-                        </Card>
-                    </div>
-                    <div style={{ padding: 32, paddingTop: 0 }}>
-                        {computeTaskTree(this.state.items, this.handleAdd, this.handleDelete, this.handleClick)}
-                    </div>
-                </div>
-            </div>
-        )
-    }
-}
-
+const getProjectActionChildren = (id, input, handleAdd, handleDelete, handleClick) =>
+    input.filter(i => i.parentActionId === id).length > 0 && input.filter(i => i.parentActionId === id).map(task => (
+        <TaskItem key={task.actionId} id={task.actionId} handleAdd={handleAdd} handleDelete={handleDelete} handleClick={handleClick} child>
+            {getProjectActionChildren(task.actionId, input, handleAdd, handleDelete, handleClick)}
+        </TaskItem>)
+    )
 
 class SidePanelView extends React.Component {
     state = {
@@ -527,13 +398,15 @@ class TaskInput extends React.Component {
         isFocused: false,
         isSelected: false
     }
-    toggleSelect = () => {
+    toggleSelect = (e) => {
+        e.preventDefault()
         this.setState((state) => ({
             isSelected: !state.isSelected
         }))
     }
 
-    toggleFocus = () => {
+    toggleFocus = (e) => {
+        e.preventDefault()
         this.setState((state) => ({
             isFocused: !state.isFocused
         }))
@@ -551,8 +424,117 @@ class TaskInput extends React.Component {
                 {!this.state.isSelected ? <HandleHover render={(isHovered) => (
                     <p onClick={this.toggleSelect} style={{ margin: 0, padding: "5px 11px", color: isHovered && "#1890ff", textDecoration: this.props.isDone && "line-through" }}>{this.props.value || this.props.placeholder}{isHovered && <Icon style={{ marginLeft: 4 }} type="edit" />}</p>
                 )} />
-                    : <Input autoFocus suffix={<Icon type="edit" />} onKeyPress={this.handleEnter} onFocus={this.toggleFocus} onBlur={this.toggleSelect} placeholder={this.props.placeholder} value={this.props.value} onChange={e => this.props.handleChangeTitle(e, this.props.id)} />}
+                    : <Input 
+                        autoFocus 
+                        suffix={<Icon type="edit" />} 
+                        onKeyPress={this.handleEnter} 
+                        onFocus={this.toggleFocus} 
+                        onBlur={this.toggleSelect} 
+                        placeholder={this.props.placeholder} 
+                        value={this.props.value} 
+                        onChange={e => this.props.handleChangeTitle(e, this.props.id)} />}
             </div>
         )
     }
 }
+
+class ProjectTaskList extends React.Component {
+    state = {
+        selectedItemId: null
+    }
+
+    handleAdd = (id=null) => {
+        this.props.createActionInProject({parentActionId: id, form:{title: null}})
+    }
+
+    handleDelete = (actionId) => {
+        this.props.deleteActionInProject({actionId})
+    }
+
+    handleClick = (id) => {
+        this.setState({ selectedItemId: id })
+    }
+
+    deselectItem = () => {
+        this.setState({ selectedItemId: null })
+    }
+
+    componentDidMount(){
+        const { match: { params }, location: { search }, project } = this.props
+        this.props.getProjectInManager({ projectId: params.id })
+        this.props.selectProjectInManager({ projectId: params.id })
+        if(project){
+            this.props.getActionsInProject()
+        }
+    }
+
+    render() {
+        const actions = [
+            <Button.Group>
+                <Button size="large" icon="layout" />
+                <Button size="large" icon="database" />
+                <Button size="large" icon="table" />
+                <Button size="large" icon="profile" />
+            </Button.Group>,
+            <ButtonMD 
+                variant="fab" 
+                color="secondary" 
+                aria-label="Add" 
+                mini
+                onClick={()=>this.props.createActionInProject({form:{title: "Test!"}})}
+                >
+                <AddIcon />
+            </ButtonMD>
+        ]
+
+        const { projectRefId, project } = this.props
+        const projectActions = project&&project.actions&&Object.keys(project.actions).map(key=>project.actions[key])
+        const hasLoadedActions = project&&project.hasLoadedActions
+        const hasProjectActions = projectActions&&projectActions.length>0
+
+        const TopBar = (attr) => <MainViewTopActionBarContainer color="primary" actions={actions}>
+            <div style={{ marginRight: 32 }}>
+                
+            </div>
+            <Typography style={{color: "white", flex: 1}} variant="title">{project&&project.title}</Typography>
+            </MainViewTopActionBarContainer>
+
+        return (
+            project?<AuthViewRouteContainer topbar={<TopBar attr={project}/>}>
+                <div>
+                    {this.state.selectedItemId !== null ? <div style={{ position: "absolute", right: 0, top: 0, height: "92vh", width: "30vw", background: "white", zIndex: 100, opacity: 0.98, boxShadow: "-2px 0 1px -1px #aaa" }}>
+                        <div style={{ zIndex: 100, width: "100%", background: themeColors[0], display: "flex", justifyContent: "space-between", alignItems: "center", padding: 16, position: "absolute", top: 0, left: 0, boxShadow: "0 4px 1px -1px #ddd" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", }}>
+                                <Button onClick={this.deselectItem} icon="cross" shape="circle" />
+                                <h3 style={{ color: "white", fontWeight: 300, margin: 0, marginLeft: 8 }}>Some project item!</h3>
+                            </div>
+                            <div>
+                                <Button shape="circle" ghost icon="setting" />
+                            </div>
+                        </div>
+                        <div style={{ paddingTop: 64, overflow: "scroll", height: "92vh" }}>
+                            <SidePanelView />
+                        </div>
+
+                    </div> : null}
+                    <div style={{}}>
+                        <div style={{ padding: 32, paddingTop: 0 }}>
+                            {hasProjectActions&&computeProjectActionTree(projectActions, this.handleAdd, this.handleDelete, this.handleClick)}
+
+                            {hasLoadedActions?<Card><Button onClick={()=>this.handleAdd()}>Click here to add {hasProjectActions?"another":"your first"} action!</Button></Card>:"Loading Actions!"}
+                        </div>
+                    </div>
+                </div>
+            </AuthViewRouteContainer>:null
+        )
+    }
+}
+
+const mapStateToProps = (state, ownProps) => {
+    return {
+        projectRefId: state.actionManager.selectedProject.projectId,
+        project: state.actionManager.selectedProject&&state.actionManager.projects[state.actionManager.selectedProject.projectId]
+    }
+}
+
+export default connect(mapStateToProps, projectActions)(ProjectTaskList)

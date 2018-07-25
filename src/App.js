@@ -1,20 +1,16 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Layout, Menu, Breadcrumb, Button, Row, Col, Card, Avatar, Icon, Input, BackTop } from 'antd';
-import { Link } from 'react-router-dom'
+import { Layout } from 'antd';
 import { themeColors } from './theme'
 import Routes from './Routes'
-import ItemList from './containers/ItemList'
-import CardWrapper from './components/CardWrapper'
-import {emojify} from 'react-emojione';
 import { connect } from 'react-redux'
-import TopNavBar from './containers/TopNavBar'
 import { ConnectedRouter } from 'react-router-redux'
 import * as actions from './store/actions/authActions'
 import PopOverModel from './views/PopOverModal'
-import {auth} from './config/firebase'
+import { auth } from './config/firebase'
+import AuthView from './views/AuthView'
 
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 const theme = createMuiTheme({
   palette: {
@@ -33,11 +29,11 @@ const theme = createMuiTheme({
   },
 });
 
-
-const { Header, Content, Footer } = Layout;
-
 class App extends Component {
-    componentWillMount(){
+    state = {
+      isSignedIn: false
+    }
+    componentDidMount(){
       this.props.attemptingSignIn()
       auth.onAuthStateChanged((user) => {
         if (user) {
@@ -47,17 +43,22 @@ class App extends Component {
         }
       })
     }
+    
+    static getDerivedStateFromProps(props, state) {
+      if(props.isSignedIn !== state.isSignedIn){
+        if (props.isSignedIn === true){
+          props.accountSignedIn()
+        }
+        return {isSignedIn: props.isSignedIn}
+      }
+    }
+
     render(){
       return (
         <ConnectedRouter history={this.props.history}>
           <MuiThemeProvider theme={theme}>
-            <Layout className="layout" style={{background: this.props.isSignedIn?null:themeColors[0] }}>
-              <TopNavBar />
-              <Content style={{paddingTop: 64, minHeight: 650}}>
-                <PopOverModel />
-                <Routes isSignedIn={this.props.isSignedIn}/>
-              </Content>
-            </Layout>
+              <PopOverModel />
+              <AuthView isSignedIn={this.props.isSignedIn} loginFlow={this.props.loginFlow}/>
           </MuiThemeProvider>
         </ConnectedRouter>
       );
@@ -68,20 +69,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     isSignedIn: state.user.isSignedIn,
     isSigningIn: state.user.isSigningIn,
+    loginFlow: state.loginFlow
   }
 }
 
 export default connect(mapStateToProps, actions)(App)
-
-
-const FooterComponent = (props) => (
-  <Footer style={{ textAlign: 'center', background: "#fff", color: "#0c0c0c" }}>
-    <div>
-      <p style={{fontWeight: 700, fontSize: "2em", margin: 0, color: "#623aa2"}}>POLITY</p>
-      <p style={{margin: 0}}>Powered by avocados <a href="https://en.wikipedia.org/wiki/Avocado">{emojify(':avocado:',{style: {height: 16}})}</a></p>
-      <p style={{margin: 0}}><small>Copyright © 2018 ExamineChange Pty. Ltd. All rights reserved.</small></p>
-    </div>
-    <div>
-    </div>
-  </Footer>
-)
