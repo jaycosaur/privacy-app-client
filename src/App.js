@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
-import { Layout } from 'antd';
-import { themeColors } from './theme'
-import Routes from './Routes'
+import './App.css'
 import { connect } from 'react-redux'
 import { ConnectedRouter } from 'react-router-redux'
 import * as actions from './store/actions/authActions'

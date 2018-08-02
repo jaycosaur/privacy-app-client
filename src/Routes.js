@@ -1,30 +1,67 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
-import SearchView from './views/SearchView'
-import ItemView from './views/ItemView'
-import AccountSetup from './views/AccountSetup'
-import ProfileView from './views/ProfileView'
-import Signin from './views/Signin'
-import ResetPassword from './views/ResetPassword'
-import ConfirmResetPassword from './views/ConfirmResetPassword'
-import AuthHome from './views/AuthHome'
-import AggregatedNews from './views/AggregatedNews'
-import Watchlist from './views/Watchlist'
-import ActionManager from './views/ActionManager'
-
-import Tasklist from './views/ProjectTaskList'
-import ContactsView from './views/ContactsView'
-import NotFound from './views/NotFound'
-import TeamManagerView from './views/TeamManagerView'
-
-import { connect } from 'react-redux'
-
-import AppliedRoute from "./components/AppliedRoute";
 import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
+import Loadable from 'react-loadable';
+import Signin from './views/Signin'
 
-import { ConnectedRouter } from 'react-router-redux'
-import { history } from './store/'
+import ResetPassword from './views/ResetPassword'
+import ConfirmResetPassword from './views/ConfirmResetPassword'
+import NotFound from './views/NotFound'
+
+const Loading = (props) => {
+  if (props.error){
+    return <div>Error! <button onClick={props.retry}>Retry</button></div>
+  } else if (props.pastDelay) {
+    return <div>Loading...</div>;
+  } else {
+    return null;
+  }}
+
+const SearchView = Loadable({
+  loader: () => import('./views/SearchView'),
+  loading: Loading,
+});
+const ItemView = Loadable({
+  loader: () => import('./views/ItemView'),
+  loading: Loading,
+});
+const AccountSetup = Loadable({
+  loader: () => import('./views/AccountSetup'),
+  loading: Loading,
+});
+const ProfileView = Loadable({
+  loader: () => import('./views/ProfileView'),
+  loading: Loading,
+});
+const AuthHome = Loadable({
+  loader: () => import('./views/AuthHome'),
+  loading: Loading,
+});
+const AggregatedNews = Loadable({
+  loader: () => import('./views/AggregatedNews'),
+  loading: Loading,
+});
+const ActionManager = Loadable({
+  loader: () => import('./views/ActionManager'),
+  loading: Loading,
+});
+const Watchlist = Loadable({
+  loader: () => import('./views/Watchlist'),
+  loading: Loading,
+});
+const Tasklist = Loadable({
+  loader: () => import('./views/ProjectTaskList'),
+  loading: Loading,
+});
+const ContactsView = Loadable({
+  loader: () => import('./views/ContactsView'),
+  loading: Loading,
+});
+const TeamManagerView = Loadable({
+  loader: () => import('./views/TeamManagerView'),
+  loading: Loading,
+});
 
 const Routes = (props) => {
   return (

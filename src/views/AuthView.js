@@ -16,23 +16,19 @@ import HistoryIcon from '@material-ui/icons/History';
 import Icon from '@material-ui/core/Icon';
 import TopNavBar from './../containers/TopNavBar'
 import { connect } from 'react-redux'
-import IconButton from '@material-ui/core/IconButton';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import Routes from './../Routes'
 import { Link } from 'react-router-dom'
-import {emojify} from 'react-emojione';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import * as menuActions from './../store/actions/menuActions'
-import Hidden from '@material-ui/core/Hidden';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const Footer = ({isSideDrawerExpanded}) => (
     <div style={{textAlign: "center", flexGrow: 1, margin: 8}}>
         {isSideDrawerExpanded&&<p style={{fontWeight: 700, fontSize: "1.2em", margin: 0, color: "#623aa2"}}>POLIBASE</p>}
-        {isSideDrawerExpanded&&<p style={{margin: 0}}>Powered by avocados <a href="https://en.wikipedia.org/wiki/Avocado">{emojify(':avocado:',{style: {height: 16}})}</a></p>}
+        {isSideDrawerExpanded&&<p style={{margin: 0}}><a href="https://en.wikipedia.org/wiki/Avocado">Powered by avocados</a></p>}
         {isSideDrawerExpanded&&<p style={{margin: 0}}><small>© 2018 ExamineChange Pty. Ltd. <br/>All rights reserved.</small></p>}
-        {!isSideDrawerExpanded&&<p style={{margin: 0}}><a href="https://en.wikipedia.org/wiki/Avocado">{emojify(':avocado:',{style: {height: 16}})}</a></p>}
+        {!isSideDrawerExpanded&&<p style={{margin: 0}}></p>}
     </div>
 )
 
@@ -140,11 +136,11 @@ const SideDrawerToggleContainer = (props) => {
                             <ListItemIcon>
                                 <ListIcon />
                             </ListItemIcon>
-                            <ListItemText inset primary="Action Manager" />
+                            <ListItemText inset primary="Compliance Workspace" />
                     </ListItem>
                 </Link>
-                <Link to="/contacts">
-                    <ListItem button>
+                <Link to="/contacts" disabled>
+                    <ListItem button disabled>
                             <ListItemIcon>
                                 <Icon className={classes.icon+" "+'fas fa-address-book'} />
                             </ListItemIcon>
@@ -259,7 +255,7 @@ const SideDrawerToggleContainerWithStore = connect(mapStateToProps, menuActions)
 const OverLoginFlowPanel = (props) => {
     const { loginFlow } = props
     return (
-        !loginFlow.isComplete&&<div style={{background: "#623aa3", zIndex: 1000, position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", justifyContent: "center", alignItems: "center", flexDirection:"column"}}>
+        (!loginFlow.isComplete&&!loginFlow.hasFailed)&&<div style={{background: "#623aa3", zIndex: 1000, position: "absolute", top: 0, left: 0, right: 0, bottom: 0, display: "flex", justifyContent: "center", alignItems: "center", flexDirection:"column"}}>
             <CircularProgress
                 className={props.classes.progress}
                 color="secondary"

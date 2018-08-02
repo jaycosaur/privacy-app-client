@@ -3,17 +3,21 @@ const defaultState = {
     numberOfStages: 3,
     message: "",
     isComplete: false,
+    hasFailed: false,
     signedIn: {
         isLoading: false,
-        isSuccess: false
+        isSuccess: false,
+        isFail: false
     },
     accountInformation: {
         isLoading: false,
-        isSuccess: false
+        isSuccess: false,
+        isFail: false
     },
     organisationInformation: {
         isLoading: false,
-        isSuccess: false
+        isSuccess: false,
+        isFail: false
     },
 
 }
@@ -28,6 +32,15 @@ export default(state = defaultState, action) => {
                 signedIn:{
                 ...state.signedIn,
                 isLoading: true
+            }}
+        case 'SIGNIN_USER_REJECTED':
+            return {...state,
+                message: "Failed to Signin User",
+                hasFailed: true,
+                signedIn:{
+                    ...state.signedIn,
+                    isLoading: false,
+                    isFail: true
             }}
         case 'USER_HAS_SIGNED_IN':
             return {...state, stage: 0.5, signedIn:{
@@ -54,6 +67,12 @@ export default(state = defaultState, action) => {
                 isSuccess: false
             }}
         case 'GET_ORGANISATION_FULL_INFO_FULFILLED':
+            return {...state,  isComplete: true, stage: 3, organisationInformation:{
+                ...state.organisationInformation,
+                isLoading: false,
+                isSuccess: true
+            }}
+        case 'USER_HAS_NO_ORGANISATION':
             return {...state,  isComplete: true, stage: 3, organisationInformation:{
                 ...state.organisationInformation,
                 isLoading: false,

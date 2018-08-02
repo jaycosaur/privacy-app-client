@@ -236,10 +236,24 @@ export function getOrganisationAfterAccountLoaded() {
         if (action.type === 'GET_ACCOUNT_INFORMATION_FULFILLED') {
             const state = getState()
             const organisationId = action.payload.organisationId
-            console.log(organisationId)
             if (organisationId){
                 dispatch(teamActions.getOrganisationInformation({ organisationId }))
+            } else {
+                dispatch({
+                    type: "USER_HAS_NO_ORGANISATION"
+                })
             }
+        }
+        return next(action)
+    }
+}
+
+export function flushReduxStoreOnSignout() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'SIGNOUT_USER_FULFILLED') {
+            dispatch({
+                type: "RESET_STATE_TO_DEFAULT"
+            })
         }
         return next(action)
     }

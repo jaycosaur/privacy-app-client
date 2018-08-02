@@ -20,6 +20,8 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import EmailIcon from '@material-ui/icons/Email';
+import TeamIcon from '@material-ui/icons/Group';
+
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import PersonIcon from '@material-ui/icons/PersonOutline';
 import NotificationOnIcon from '@material-ui/icons/NotificationsActive';
@@ -57,6 +59,13 @@ const styles = theme => ({
     },
     root: {
         padding: theme.spacing.unit*4
+    },
+    blankRoot: {
+        height: "80vh",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
     },
     innerCardLeft: {
         flex: 1,
@@ -187,7 +196,7 @@ class AddUserFields extends React.Component {
 class SearchView extends React.Component{
 
     static getDerivedStateFromProps(props) {
-          if (props.isSignedIn === true && props.user.accountInformation.loadSucceeded && !props.organisation.isLoading && !props.organisation.hasFetched){
+          if (props.isSignedIn === true && props.user.accountInformation.loadSucceeded && !props.organisation.isLoading && !props.organisation.hasFetched && props.user.accountInformation.info.organisationId){
             props.getOrganisationInformation({organisationId: props.user.accountInformation.info.organisationId})
           }
       }
@@ -195,51 +204,27 @@ class SearchView extends React.Component{
     render(){
         const { match: { }, classes, organisation } = this.props
         const { isLoading, hasFetched, name, organisationId, users, website } = organisation
-        console.log(users)
-        const userData = [
-            {
-                displayName: "Test User",
-                email: "email@email.com", 
-                created: "Jul 16, 2018",
-                signedUp: false
-            },
-            {
-                displayName: "Test User",
-                email: "email@email.com", 
-                created: "Jul 16, 2018",
-                signedUp: false
-            },
-            {
-                displayName: "Test User",
-                email: "email@email.com", 
-                created: "Jul 16, 2018",
-                signedUp: false
-            },
-            {
-                displayName: "Test User",
-                email: "email@email.com", 
-                created: "Jul 16, 2018",
-                signedUp: false
-            },
-            {
-                displayName: "Test User",
-                email: "email@email.com", 
-                created: "Jul 16, 2018",
-                signedUp: false
-            },
-        ]
 
         return (
             <AuthViewRouteContainer topbar={<TeamManagerTopActionBar/>}>
                 <div className={classes.root}>
-                    <Grid container spacing={24}>
+                    {!organisationId&&(
+                        <div className={classes.blankRoot}>
+                            <div style={{maxWidth: "500px", marginTop: -100, display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
+                                <TeamIcon style={{fontSize: 160, color: "#ddd"}}/>
+                                <Typography variant="display1" gutterBottom  paragraph align="center">Oh no! You haven't been assigned a team!</Typography>
+                                <Typography variant="title" gutterBottom paragraph>We are in the closed BETA at the moment, so you can't create your own team or invite users yourself.</Typography>
+                                <Typography variant="subheading">Please contact team@polibase.com.au to let us know you are having trouble.</Typography>
+                            </div>
+                        </div>
+                    )}
+                    {organisationId&&<Grid container spacing={24}>
                         <Grid item xs={8}>
                             <Card style={{marginBottom: 16}}>
                                 <CardContent>
                                     <h3>Organisation Name: {name}</h3>
                                     <h3>Organisation Id: {organisationId}</h3>
                                     <h3>Organisation Website: {website}</h3>
-                                    <h3>Current Administrators: {users&&users.filter(i=>i.isAdmin).map(i=>i.userId)}</h3>
                                     <h3>Number of Members: {users?users.length:0}</h3>
                                 </CardContent>
                             </Card>
@@ -262,10 +247,10 @@ class SearchView extends React.Component{
                                                 {n.isAdmin&&<AdminIcon />}
                                             </TableCell>
                                             <TableCell component="th" scope="row">
-                                                {n.userId}
+                                                {n.displayName&&n.displayName}
                                             </TableCell>
                                             <TableCell>{n.email}</TableCell>
-                                            <TableCell>{n.hasSignedUp?"User Registered":"Invite Sent"}</TableCell>
+                                            <TableCell>{n.hasSignedUp?"Registered":"Invite Sent"}</TableCell>
                                             <TableCell padding="checkbox" numeric >
                                                 <IconButton className={classes.notificationButton} aria-label="Add an alarm">
                                                     {n.notificationsEnabled?<NotificationOnIcon />:<NotificationOffIcon />}
@@ -300,7 +285,7 @@ class SearchView extends React.Component{
                                 </CardContent>
                             </Card>
                         </Grid>
-                    </Grid>
+                    </Grid>}
                 </div>
             </AuthViewRouteContainer>
           )

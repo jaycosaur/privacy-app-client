@@ -1,5 +1,5 @@
 const defaultState = {
-    isSideDrawerExpanded: true
+    isSideDrawerExpanded: false
 }
 
 export default(state = defaultState, action) => {

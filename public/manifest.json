@@ -1,8 +1,11 @@
 {
- "name": "Polity",
- "short_name": "Polity",
+ "name": "Polibase",
+ "short_name": "Polibase",
  "start_url": "./index.html",
  "display": "standalone",
+ "theme_color": "#f77895",
+ "background_color": "#623aa3",
+ "description": "Your compliance workspace.",
  "icons": [
   {
    "src": "\/android-icon-36x36.png",

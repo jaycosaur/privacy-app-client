@@ -13,7 +13,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 
-import TopNavMasterSearch from './components/TopNavMasterSearch'
 import AlgoliaSearch from './components/AlgoliaSearch'
 import TopBarAvatar from './components/TopBarAvatar'
 
@@ -108,7 +107,7 @@ class NavBar extends React.Component {
                     {isSignedIn&&<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={()=>this.props.toggleAuthViewSideDrawer()}>
                         <MenuIcon />
                     </IconButton>}
-                    <Typography variant="title" color={isSignedIn?"primary":"inherit"} className={classes.flex}>
+                    <Typography variant="title" color={isSignedIn?"primary":"inherit"} className={classes.flex} style={{color: !isSignedIn&&"white"}}>
                         <strong>POLIBASE</strong>
                     </Typography>
                     {!isSignedIn && <span style={{float: 'right', margin: "auto"}}>

@@ -71,7 +71,7 @@ class SearchView extends React.Component{
     }
 
     render(){
-        const { classes, shouldShowFilter, match: { params: { searchCategory, watchlistId } } } = this.props
+        const { classes, shouldShowFilter, match: { params: { searchCategory } } } = this.props
 
         //console.log(searchCategory, watchlistId)
 

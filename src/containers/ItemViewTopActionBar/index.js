@@ -15,8 +15,6 @@ import Button from '@material-ui/core/Button'
 import SettingsIcon from '@material-ui/icons/Settings';
 import BackIcon from '@material-ui/icons/ArrowBack';
 import WatchIcon from '@material-ui/icons/VisibilityOff';
-import { lighten } from '@material-ui/core/styles/colorManipulator';
-
 
 const styles = (theme) => ({
     root: {

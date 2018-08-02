@@ -1,0 +1,221 @@
+
+import React from 'react'
+import { Button, Input, Progress, DatePicker } from 'antd'
+import { themeColors, highlightThemeShades } from './../../../theme'
+import moment from 'moment';
+import HandleHover from './../components/HandleHover'
+
+
+import StarIcon from '@material-ui/icons/Star';
+import HotIcon from '@material-ui/icons/Whatshot';
+import UserIcon from '@material-ui/icons/Person';
+import PeopleIcon from '@material-ui/icons/People';
+import { connect } from 'react-redux'
+
+
+import DeleteIcon from '@material-ui/icons/Delete';
+import Card from '@material-ui/core/Card';
+import AvatarMD from '@material-ui/core/Avatar'
+import IconButton from '@material-ui/core/IconButton';
+import ButtonMD from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+
+import SelectTeamMember from './../components/SelectTeamMember'
+import SelectActionStatus from './../components/SelectActionStatus'
+
+const getInitials = (fullName) => fullName.split(" ").map(n=>n[0]).join("")
+
+const shortenName = (fullName) => fullName.split(" ").map((n,i)=>i===0?`${n[0]}.`:n).join(" ")
+
+
+const RenderUserAvatarAndName = (props) => {
+    return [
+        props.id&&<AvatarMD style={{marginRight: 8, width: 24, height: 24, fontSize: 11, fontWeight: 300, background: "#623aa2"}}>{props.team[props.id].displayName?getInitials(props.team[props.id].displayName):<UserIcon />}</AvatarMD>,
+        props.id?(
+            `${props.team[props.id].displayName
+                ?
+                    shortenName(props.team[props.id].displayName)
+                :
+                    props.team[props.id].email}`)
+                :"Not Assigned" 
+    ]
+}
+
+const mstp = (state, ownProps) => {
+    return {
+        team: state.organisation.users.reduce((a,u)=>({...a, [u.userId]:{...u}}),{})
+    }
+}
+    
+const UserAvatarAndName = connect(mstp)(RenderUserAvatarAndName)
+
+
+const UserAvatars = () => (<div style={{ margin: "0 8px", height: 40, }}>
+    <AvatarMD style={{ marginLeft: -12 }}><PeopleIcon /></AvatarMD>
+</div>)
+
+const InputItem = (props) => (
+    <HandleHover render={
+        (isHovered) => (
+            !isHovered ? <span style={{ fontSize: "1.1em", paddingLeft: 12 }}>{props.text || "Basic usage"}</span> : <Input placeholder="Enter some content here..." size="large" style={{ width: "100%" }} />
+        )
+    } />)
+
+const ButtonItem = (props) => (
+    <Button ghost={props.ghost} style={{ margin: "0 8px", ...props.style }} size="large" type={props.type} shape={props.shape}>
+        {props.children}
+    </Button>
+)
+
+export default class TaskItem extends React.Component {
+    state = {
+        showChildren: true,
+        dummyChild: false,
+        isDeleting: false
+        
+    }
+    toggleChildren = (e) => {
+        e.preventDefault()
+        this.setState((state) => ({ showChildren: !state.showChildren }))
+    }
+
+    handleAdd = (e) => {
+        this.setState((state) => ({ dummyChild: true }))
+        this.props.handleAdd(e)
+    }
+
+    handleDelete = (e) => {
+        this.setState((state) => ({ isDeleting: true }))
+        this.props.handleDelete(this.props.id)
+    }
+
+    
+
+    static getDerivedStateFromProps(props, state){
+        return {numberOfChildren: props.children.length, dummyChild: !state.numberOfChildren===props.children.length}
+    }
+
+
+    render() {
+        const { actionData, id, onUrgentClick, onDueDateChange, isSelected, child } = this.props
+
+        return (
+            <div style={{ marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24 }}>
+                <HandleHover render={
+                    (isHovered) => (
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+                            <Card 
+                                style={{ 
+                                    marginLeft: child&&40,
+                                    flexGrow: 1, 
+                                    borderRadius: 10, 
+                                    background: this.state.isDeleting?"#ddd":(isHovered && "#ffa9c4"), 
+                                    opacity: this.state.isDeleting&&0.6,
+                                    display: "flex", 
+                                    justifyContent: "space-between", 
+                                    alignItems: "center", 
+                                    width: "100%", 
+                                    padding: "4px 16px", 
+                                    overflowX: "scroll"  }} 
+                                elevation={
+                                    child?1:(isSelected?20:2)
+                                }
+                                >
+                                <div onClick={this.toggleChildren} style={{ background: isHovered ? (this.props.children ? highlightThemeShades[1] : "white") : (this.props.children ? themeColors[1] : themeColors[0]), width: 8, height: 40, borderRadius: 4, marginRight: 8 }} />
+                                <IconButton aria-label="Hot" disabled={!actionData.title} color={actionData.isUrgent?"secondary":"default"} onClick={()=>onUrgentClick({actionId: id})}>
+                                    <HotIcon />
+                                </IconButton>
+                                {!actionData.title&&<StarIcon/>}
+                                <div style={{ flexGrow: 1 }} onClick={() => this.props.handleClick(this.props.id)} >
+                                    <Typography variant="subheading" style={{marginBottom: 0}}>{actionData.title||"New action!"}</Typography>
+                                </div>
+                                <div style={{ width: 120, marginRight: 8 }}><Progress strokeWidth={20} percent={actionData.countTasks>0?actionData.countTasksCompleted*100/actionData.countTasks:0} size="small" /></div>
+                                <SelectActionStatus 
+                                    isDue={moment().isAfter(actionData.dueDate)} 
+                                    isUrgent={actionData.isUrgent} 
+                                    isStarted={actionData.isStarted} 
+                                    isDone={actionData.countTasks>0&&actionData.countTasks===actionData.countTasksCompleted}
+                                    handleChange={({status})=>this.props.handleUpdate({status})} 
+                                    value={actionData.status||"TODO"}
+                                    />
+                                <DatePicker 
+                                    style={{ width: 140 }} 
+                                    size="large" 
+                                    defaultValue={actionData.dueDate?moment(actionData.dueDate):null} 
+                                    onChange={(e)=>this.props.handleUpdate({dueDate: e.toISOString()})}/>
+                                <SelectTeamMember 
+                                    handleChange={({userId})=>this.props.handleUpdate({ownerId: userId})} 
+                                    buttonContent={<UserAvatarAndName id={actionData.ownerId}/>||"Not Assigned"} 
+                                    buttonStyle={{background: "white", margin: "0px 8px"}}/>
+                                <UserAvatars />
+                                <HandleHover render={
+                                    (hovered) => (
+                                        !hovered ? 
+                                            <div style={{ background: isHovered ? "red" : null, width: 8, height: 40, borderRadius: 4, marginRight: -8 }} /> : 
+                                            <IconButton aria-label="Delete" disabled={this.props.children.length>0} color="primary" style={{color: !this.props.children.length>0&&"red"}} onClick={(e) => {e.preventDefault(); this.handleDelete(this.props.id)}} >
+                                                <DeleteIcon />
+                                            </IconButton>
+                                    )
+                                } />
+
+                            </Card>
+                        </div>
+                    )
+                } />
+                <div style={{ marginLeft: this.props.child && 60 }}>
+                    <HandleHover render={
+                        (isHovered) => (
+                            <div onClick={() => this.handleAdd(this.props.id)} style={{ minHeight: 8, marginBottom: -8, background: isHovered && themeColors[1], opacity: 0.5, marginLeft: 8, marginRight: 8 }} />
+                        )
+                    } />
+                    {this.state.showChildren && this.props.children}
+                    {this.state.dummyChild&&<ListLoader child/>}
+                </div>
+            </div>
+        )
+    }
+}
+
+export class ListLoader extends React.Component {
+    render() {
+        const { child } = this.props
+        const col = "#ddd"
+        const bg = "#eee"
+        return (
+            <div style={{ marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24, paddingLeft:child&&52 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", opacity: 0.6 }}>
+                    <Card 
+                        style={{ 
+                            flexGrow: 1, 
+                            borderRadius: 10,
+                            display: "flex", 
+                            justifyContent: "space-between", 
+                            alignItems: "center", 
+                            background: bg,
+                            width: "100%", 
+                            padding: "4px 16px", 
+                            height: 56, 
+                            overflowX: "scroll"  
+                        }} 
+                        elevation={0}
+                        >
+                        <div style={{ background: col, width: 8, height: 40, borderRadius: 4, marginRight: 8 }} />
+                        <div style={{height: 40, width: 40, borderRadius: 50, background: col}} />
+                        <div style={{ flexGrow: 1 }}>
+                        </div>
+                        <div style={{height: 40, width: 120, borderRadius: 4, background: col, marginRight: 8}} />
+                        <div style={{height: 40, width: 90, borderRadius: 4, background: col, marginRight: 8}} />
+                        <div style={{height: 40, width: 90, borderRadius: 4, background: col, marginRight: 8}} />
+                        <div style={{height: 40, width: 90, borderRadius: 4, background: col, marginRight: 8}} />
+                        <div style={{height: 40, width: 90, borderRadius: 4, background: col, marginRight: 8}} />
+                        <div style={{height: 40, width: 40, borderRadius: 50, background: col}} />
+                    </Card>
+                </div>
+                <div style={{ marginLeft: this.props.child && 60 }}>
+                    <div style={{ minHeight: 8, marginBottom: -8, opacity: 0.5, marginLeft: 8, marginRight: 8 }} />
+                    {this.props.children}
+                </div>
+            </div>
+        )
+    }
+}

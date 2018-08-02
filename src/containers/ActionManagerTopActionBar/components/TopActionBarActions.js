@@ -17,7 +17,6 @@ import { connect } from 'react-redux'
 import * as reduxActions from '../../../store/actions/actionManagerActions'
 
 import { Field, reduxForm } from 'redux-form';
-import LoadingButton from './../../../components/loading/LoadingButton'
 
 const validate = values => {
     const errors = {}
@@ -47,7 +46,7 @@ const validate = values => {
   )
   
   const MaterialUiForm = props => {
-    const { handleSubmit, pristine, reset, submitting, submitSucceeded } = props
+    const { handleSubmit } = props
     return (
       <form onSubmit={handleSubmit}>
         <DialogTitle id="form-dialog-title">Create New Project</DialogTitle>

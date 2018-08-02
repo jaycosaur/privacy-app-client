@@ -32,7 +32,7 @@ const Index = (props) => {
     const { children, actions, color="secondary", style={}, className } = props
   return (
     <AppBar position="static" color={color} className={className} style={{flexGrow: 1, zIndex: 100, ...style}}>
-        <Toolbar>
+        <Toolbar variant="dense">
             {children}
             {actions}
         </Toolbar>
