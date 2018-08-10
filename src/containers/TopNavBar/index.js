@@ -13,10 +13,19 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 import AlgoliaSearch from './components/AlgoliaSearch'
 import TopBarAvatar from './components/TopBarAvatar'
 
 import { Link } from 'react-router-dom'
+
+import streamers from './../../assets/Streamers.png'
+import Hidden from '@material-ui/core/Hidden';
 
 const drawerWidth = 240;
 
@@ -83,18 +92,26 @@ const styles = theme => ({
 class NavBar extends React.Component {
     state = {
         anchorEl: null,
+        dialogueOpen: false,
+        scroll: 'body',
+
     }
-    handleChange = (checked) => {
-        this.setState({ auth: checked });
-      };
-    
-      handleMenu = event => {
+
+    handleMenu = event => {
         this.setState({ anchorEl: event.currentTarget });
+    };
+
+    handleClose = () => {
+        this.setState({ anchorEl: null });
+    }
+
+    handleDialogueOpen = scroll => () => {
+        this.setState({ dialogueOpen: true});
       };
     
-      handleClose = () => {
-        this.setState({ anchorEl: null });
-      }
+    handleDialogueClose = () => {
+        this.setState({ dialogueOpen: false });
+    };
     
     render(){
         const { classes, isSignedIn } = this.props
@@ -102,46 +119,89 @@ class NavBar extends React.Component {
         const open = Boolean(anchorEl)
 
         return (
-            <AppBar className={classes.appBar} position="fixed" color={isSignedIn?"default":"primary"} elevation={1}>
+            <AppBar className={classes.appBar} position="fixed" color={isSignedIn?"default":"primary"} style={{background: !isSignedIn&&"none"}} elevation={!isSignedIn?0:1}>
                 <Toolbar>
-                    {isSignedIn&&<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={()=>this.props.toggleAuthViewSideDrawer()}>
-                        <MenuIcon />
-                    </IconButton>}
-                    <Typography variant="title" color={isSignedIn?"primary":"inherit"} className={classes.flex} style={{color: !isSignedIn&&"white"}}>
-                        <strong>POLIBASE</strong>
-                    </Typography>
-                    {!isSignedIn && <span style={{float: 'right', margin: "auto"}}>
-                        <Link to="/signin"><Button variant="contained" color="secondary"><strong>SIGN-IN</strong></Button></Link>                        
-                    </span>}
-                    {isSignedIn&&<div style={{flexGrow: 1}}><AlgoliaSearch/></div>}
-                    {isSignedIn && (<div>
-                        <IconButton
-                            aria-owns={open ? 'menu-appbar' : null}
-                            aria-haspopup="true"
-                            onClick={this.handleMenu}
-                            color="inherdit"
-                        >
-                            <TopBarAvatar />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorEl}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            open={open}
-                            onClose={this.handleClose}
-                        >
-                            <Link to="/myaccount"><MenuItem onClick={this.handleClose}>MY ACCOUNT</MenuItem></Link>
-                            <MenuItem onClick={this.props.doSignOut}>LOGOUT</MenuItem>
-                        </Menu>
-                    </div>)}
+                    <div style={{flex: 1, display: "flex", alignItems: "center"}}>
+                        {isSignedIn&&<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={()=>this.props.toggleAuthViewSideDrawer()}>
+                            <MenuIcon />
+                        </IconButton>}
+                        <Hidden xsDown>
+                            <Typography variant="title" color={isSignedIn?"primary":"secondary"} className={classes.flex}>
+                                <strong>POLIBASE</strong>
+                            </Typography>
+                        </Hidden>
+                    </div>
+                    <Hidden smUp>
+                        <div style={{flex: 1, display: "flex", alignItems: "center"}}>
+                            <Typography variant="title" color={isSignedIn?"primary":"secondary"} className={classes.flex}>
+                                <strong>POLIBASE</strong>
+                            </Typography>
+                        </div>
+                    </Hidden>
+                    <Hidden smDown>
+                        <div style={{alignItems: "center", justifyContent: "center"}}>
+                            {isSignedIn&&<div style={{flexGrow: 1}}><AlgoliaSearch/></div>}
+                        </div>
+                    </Hidden>
+                    <div style={{flex: 1, display: "flex", alignItems: "center"}}>
+                        <div style={{flex: 1}} />
+                        <Hidden xsDown>
+                            {isSignedIn&&<Button onClick={this.handleDialogueOpen()} color="secondary" variant="outlined" size="medium" style={{marginRight: 16}}>ABOUT PILOT</Button>}
+                        </Hidden>
+
+                        {isSignedIn && (<div>
+                            <IconButton
+                                aria-owns={open ? 'menu-appbar' : null}
+                                aria-haspopup="true"
+                                onClick={this.handleMenu}
+                                color="inherdit"
+                            >
+                                <TopBarAvatar />
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorEl}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'left',
+                                }}
+                                open={open}
+                                onClose={this.handleClose}
+                            >
+                                <Link to="/myaccount"><MenuItem onClick={this.handleClose}>MY ACCOUNT</MenuItem></Link>
+                                <MenuItem onClick={this.props.doSignOut}>LOGOUT</MenuItem>
+                            </Menu>
+                            </div>)}
+                            {!isSignedIn && (
+                                <span style={{float: 'right', margin: "auto"}}>
+                                    <Link to="/signin"><Button variant="contained" color="secondary"><strong>SIGN-IN</strong></Button></Link>                        
+                                </span>)
+                            }
+                    </div>
                 </Toolbar>
+                <Dialog
+                    open={this.state.dialogueOpen}
+                    onClose={this.handleDialogueClose}
+                    scroll={this.state.scroll}
+                    aria-labelledby="scroll-dialog-title"
+                    >
+                    <img src={streamers} width={"100%"} style={{position: "absolute", top: 0, left: 0, right: 0, zIndex: 0, opacity: 0.2}}/>
+                    <DialogTitle id="scroll-dialog-title" style={{zIndex: 50}}>Welcome to the Polibase Pilot! </DialogTitle>
+                    <DialogContent style={{zIndex: 50}}>
+                        <DialogContentText style={{zIndex: 50, color: "black"}}>
+                            We're hoping to get valuable feedback from our Pilot Partners on what works and what doesn't. We're working on the platform throughout the entire pilot period - so don't be alarmed if a buttons change, pages get added, and new features arrive.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleDialogueClose} color="primary">
+                            Close
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </AppBar>)
     }
 }

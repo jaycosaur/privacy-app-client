@@ -33,7 +33,7 @@ export default(state = defaultState, action) => {
                 [action.meta.key]: {
                     ...state[action.meta.key],
                     isLoading: false,
-                    results: hits,
+                    results: action.meta.append?[...state[action.meta.key].results,...hits]:hits,
                     searchMeta: searchMeta
                 }
             }

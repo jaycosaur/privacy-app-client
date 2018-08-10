@@ -4,7 +4,8 @@ import SearchFilter from './../components/SearchFilter'
 import { getWatchlistItem, clearFilterData } from './../store/actions/watchlistActions'
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles';
-
+import Collapse from '@material-ui/core/Collapse';
+import Paper from '@material-ui/core/Paper';
 import SearchTopActionBar from './../containers/SearchTopActionBar'
 
 import AuthViewRouteContainer from './AuthViewRouteContainer'
@@ -57,11 +58,32 @@ const styles = theme => ({
     drawerBottomNav: {
         width: "100%"
     }
-
-    
-  });
+});
 
 class SearchView extends React.Component{
+    state = {
+        numberOfResults: null,
+        numberOfResultsTotal: null,
+        numberOfNew: null,
+        fetchedIn: null
+    }
+
+    setNumberOfResults = (val) => {
+        this.setState({numberOfResults: val})
+    }
+
+    setNumberOfResultsTotal = (val) => {
+        this.setState({numberOfResultsTotal: val})
+    }
+
+    setNumberOfNew = (val) => {
+        this.setState({numberOfNew: val})
+    }
+
+    setFetchedIn = (val) => {
+        this.setState({fetchedIn: val})
+    }
+
     componentDidMount(){
         if (this.props.match.params.watchlistId){
             this.props.getWatchlistItem(this.props.match.params.watchlistId)
@@ -76,11 +98,13 @@ class SearchView extends React.Component{
         //console.log(searchCategory, watchlistId)
 
         return (
-            <AuthViewRouteContainer topbar={<SearchTopActionBar type={searchCategory}/>}>
-                {shouldShowFilter&&<div className={classes.contentPadded}>
-                    <SearchFilter type={searchCategory}/>
-                </div>}
-                {searchCategory==="media-and-commentary"?<AggregatedNews />:<ItemList />}
+            <AuthViewRouteContainer topbar={<SearchTopActionBar type={searchCategory} numberOfResults={this.state.numberOfResults} numberOfResultsTotal={this.state.numberOfResultsTotal} numberOfNew={this.state.numberOfNew} fetchedIn={this.state.fetchedIn}/>}>
+                <Collapse in={shouldShowFilter}>
+                    <Paper square className={classes.contentPadded}>
+                        <SearchFilter type={searchCategory} />
+                    </Paper>
+                </Collapse>
+                <ItemList key={searchCategory} searchCategory={searchCategory} setNumberOfResults={this.setNumberOfResults} setNumberOfResultsTotal={this.setNumberOfResultsTotal} setFetchedIn={this.setFetchedIn}/>
             </AuthViewRouteContainer>
           )
     }

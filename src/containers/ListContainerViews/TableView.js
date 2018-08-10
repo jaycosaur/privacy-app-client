@@ -20,7 +20,6 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import Chip from '@material-ui/core/Chip';
 import { Link } from 'react-router-dom'
-import { itemData } from '../../sampledata';
 
 function getSorting(order, orderBy) {
   return order === 'desc'
@@ -160,6 +159,7 @@ EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 const styles = theme => ({
   root: {
     width: '100%',
+    borderRadius: 0,
   },
   table: {
     minWidth: 1020,
@@ -273,7 +273,7 @@ class EnhancedTable extends React.Component {
               {this.state.data&&this.state.data
                 .sort(getSorting(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map(n => {
+                .map((n,j) => {
                   const isSelected = this.isSelected(n.id);
                   return (
                     <TableRow
@@ -288,13 +288,17 @@ class EnhancedTable extends React.Component {
                         <TableCell padding="checkbox">
                             <Checkbox checked={isSelected} />
                         </TableCell>
-                        {columnData.map((col)=>(
+                        {columnData.map((col,i)=>(
                             <TableCell 
                                 numeric={col.numeric}
                                 padding={col.padding||"default"}
                                 >
                                 {col.linkKey?
-                                <Link to={n[col.linkKey]}>{col.isChip?<Chip label={col.shrinkText?<small>{n[col.id]}</small>:n[col.id]}/>:col.shrinkText?<small>{n[col.id]}</small>:n[col.id]}</Link>
+                                <Link to={n[col.linkKey]}>
+                                  {col.isChip
+                                  ?<Chip label={col.shrinkText?<small>{n[col.id]}</small>:n[col.id]}/>
+                                  :col.shrinkText?<small>{n[col.id]}</small>:(i===0?`${j+1+page * rowsPerPage} ${n[col.id]}.`:n[col.id])}
+                                </Link>
                                 :col.isChip?<Chip label={col.shrinkText?<small>{n[col.id]}</small>:n[col.id]}/>:col.shrinkText?<small>{n[col.id]}</small>:n[col.id]
                                 
                                 }

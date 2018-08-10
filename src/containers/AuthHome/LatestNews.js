@@ -5,7 +5,10 @@ import CardMedia from '@material-ui/core/CardMedia'
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import LinearProgress from '@material-ui/core/LinearProgress';
-
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 
 import TurnedInIcon from '@material-ui/icons/TurnedIn';
 import Typography from '@material-ui/core/Typography';
@@ -36,8 +39,8 @@ const styles = (theme) => ({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        paddingTop: theme.spacing.unit*2,
-        paddingBottom: theme.spacing.unit*2
+        paddingTop: theme.spacing.unit,
+        paddingBottom: theme.spacing.unit
     },
     fixedSide: {
 
@@ -57,129 +60,59 @@ const styles = (theme) => ({
 
 const HomeView = (props) => {
     const { classes } = props
+    const bg = "#ddd"
+    const LoadingItem = () => (
+        <div className={classes.updateContainer}>
+            <div
+                className={classes.cover}
+                style={{background: bg}}
+            />
+            <div style={{flex: 1, marginLeft: 20}}>
+                <div
+                    style={{background: bg, height: 24, width: 300, borderRadius: 5, marginBottom: 4}}
+                />
+                <div
+                    style={{background: bg, height: 21, width: 160, borderRadius: 5, marginBottom: 4}}
+                />
+                <div
+                    style={{background: bg, height: 32, width: 700, borderRadius: 5}}
+                />
+            </div>
+        </div>
+    )
     return (
-            <Card>
-                <div style={{padding: 8}}>
-                    <Typography variant="subheading" color="default">
-                        <TurnedInIcon /> Latest Updates
-                    </Typography>
-                </div>
-                <Divider />
-                <LinearProgress color="secondary" />
-                <CardContent>
-                    <div className={classes.updateContainer}>
-                        <CardMedia
-                            className={classes.cover}
-                            image="https://placeimg.com/90/90/any"
-                            title="Live from space album cover"
-                        />
-                        <div style={{flex: 1, marginLeft: 20}}>
-                            <Typography variant="title" color="inherit">
-                                Shoe Startups Aren’t Dragging Their Feet
-                            </Typography>
-                            <Typography variant="subtitle" color="inherit">
-                                July 05, 2018
-                            </Typography>
-                            <Typography variant="caption" color="inherit">
-                                Good thing Carrie Bradshaw, the shoe-loving heroine of Sex and the City, wasn’t a footwear venture capitalist. The high-heeled, high-priced, and hard-to-walk-in pairs beloved by the TV icon are pretty much the least fundable concept in the shoe startup space lately.
-                            </Typography>
-                        </div>
-                    </div>
+            <Card style={{height: "82vh", overflow: "scroll"}}>
+                <AppBar position="static" color="default">
+                    <Toolbar variant="dense">
+                        <Typography variant="subheading" color="inherit" style={{flex: 1}}>
+                            Your Latest Updates
+                        </Typography>
+                        <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+                            <TurnedInIcon /> 
+                        </IconButton>
+                    </Toolbar>
+                </AppBar>
+                <CardContent style={{height: "93%", overflow: "scroll"}}>
+                    <LoadingItem/>
                     <Divider />
-                    <div className={classes.updateContainer}>
-                        <CardMedia
-                            className={classes.cover}
-                            image="https://placeimg.com/90/90/any"
-                            title="Live from space album cover"
-                        />
-                        <div style={{flex: 1, marginLeft: 20}}>
-                            <Typography variant="title" color="inherit">
-                                Shoe Startups Aren’t Dragging Their Feet
-                            </Typography>
-                            <Typography variant="subtitle" color="inherit">
-                                July 05, 2018
-                            </Typography>
-                            <Typography variant="caption" color="inherit">
-                                Good thing Carrie Bradshaw, the shoe-loving heroine of Sex and the City, wasn’t a footwear venture capitalist. The high-heeled, high-priced, and hard-to-walk-in pairs beloved by the TV icon are pretty much the least fundable concept in the shoe startup space lately.
-                            </Typography>
-                        </div>
-                    </div>
+                    <LoadingItem/>
                     <Divider />
-                    <div className={classes.updateContainer}>
-                        <CardMedia
-                            className={classes.cover}
-                            image="https://placeimg.com/90/90/any"
-                            title="Live from space album cover"
-                        />
-                        <div style={{flex: 1, marginLeft: 20}}>
-                            <Typography variant="title" color="inherit">
-                                Shoe Startups Aren’t Dragging Their Feet
-                            </Typography>
-                            <Typography variant="subtitle" color="inherit">
-                                July 05, 2018
-                            </Typography>
-                            <Typography variant="caption" color="inherit">
-                                Good thing Carrie Bradshaw, the shoe-loving heroine of Sex and the City, wasn’t a footwear venture capitalist. The high-heeled, high-priced, and hard-to-walk-in pairs beloved by the TV icon are pretty much the least fundable concept in the shoe startup space lately.
-                            </Typography>
-                        </div>
-                    </div>
+                    <LoadingItem/>
                     <Divider />
-                    <div className={classes.updateContainer}>
-                        <CardMedia
-                            className={classes.cover}
-                            image="https://placeimg.com/90/90/any"
-                            title="Live from space album cover"
-                        />
-                        <div style={{flex: 1, marginLeft: 20}}>
-                            <Typography variant="title" color="inherit">
-                                Shoe Startups Aren’t Dragging Their Feet
-                            </Typography>
-                            <Typography variant="subtitle" color="inherit">
-                                July 05, 2018
-                            </Typography>
-                            <Typography variant="caption" color="inherit">
-                                Good thing Carrie Bradshaw, the shoe-loving heroine of Sex and the City, wasn’t a footwear venture capitalist. The high-heeled, high-priced, and hard-to-walk-in pairs beloved by the TV icon are pretty much the least fundable concept in the shoe startup space lately.
-                            </Typography>
-                        </div>
-                    </div>
+                    <LoadingItem/>
                     <Divider />
-                    <div className={classes.updateContainer}>
-                        <CardMedia
-                            className={classes.cover}
-                            image="https://placeimg.com/90/90/any"
-                            title="Live from space album cover"
-                        />
-                        <div style={{flex: 1, marginLeft: 20}}>
-                            <Typography variant="title" color="primary">
-                                Shoe Startups Aren’t Dragging Their Feet
-                            </Typography>
-                            <Typography variant="subtitle" color="inherit">
-                                July 05, 2018
-                            </Typography>
-                            <Typography variant="caption" color="inherit">
-                                Good thing Carrie Bradshaw, the shoe-loving heroine of Sex and the City, wasn’t a footwear venture capitalist. The high-heeled, high-priced, and hard-to-walk-in pairs beloved by the TV icon are pretty much the least fundable concept in the shoe startup space lately.
-                            </Typography>
-                        </div>
-                    </div>
+                    <LoadingItem/>
                     <Divider />
-                    <div className={classes.updateContainer}>
-                        <CardMedia
-                            className={classes.cover}
-                            image="https://placeimg.com/90/90/any"
-                            title="Live from space album cover"
-                        />
-                        <div style={{flex: 1, marginLeft: 20}}>
-                            <Typography variant="title" color="inherit">
-                                Shoe Startups Aren’t Dragging Their Feet
-                            </Typography>
-                            <Typography variant="subtitle" color="inherit">
-                                July 05, 2018
-                            </Typography>
-                            <Typography variant="caption" color="inherit">
-                                Good thing Carrie Bradshaw, the shoe-loving heroine of Sex and the City, wasn’t a footwear venture capitalist. The high-heeled, high-priced, and hard-to-walk-in pairs beloved by the TV icon are pretty much the least fundable concept in the shoe startup space lately.
-                            </Typography>
-                        </div>
-                    </div>
+                    <LoadingItem/>
+                    <Divider />
+                    <LoadingItem/>
+                    <Divider />
+                    <LoadingItem/>
+                    <Divider />
+                    <LoadingItem/>
+                    <Divider />
+                    <LoadingItem/>
+                    <Divider />
                 </CardContent>
             </Card>
                     )}

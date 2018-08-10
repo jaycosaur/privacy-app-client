@@ -30,6 +30,10 @@ import Paper from '@material-ui/core/Paper';
 
 import TaskInput from './../components/TaskInput'
 
+import SelectActionStatus from './../components/SelectActionStatus'
+import Tooltip from '@material-ui/core/Tooltip';
+import moment from 'moment'
+
 class TasksView extends React.Component {
     state = {
         tasks: [],
@@ -135,7 +139,7 @@ class SidePanelView extends React.Component {
     addFile = ({ files }) => this.props.uploadNewFilesToAction({ files })
     updateFile = () => null
     deleteFile =({fileId}) => this.props.deleteFileInAction({fileId})
-
+    onUrgentClick= ({actionId}) => this.props.handleToggleActionUrgency({actionId})
     render() {
         const data = this.props.data
         const { value } = this.state
@@ -147,15 +151,24 @@ class SidePanelView extends React.Component {
                             <ChevronIcon/>
                         </IconButton>
                         <div style={{flexGrow: 1}} />
-                        <IconButton aria-label="Hot">
-                            <HotIcon />
-                        </IconButton>
-                        <Button>
-                            STATUS
-                        </Button>
-                        <IconButton aria-label="Delete">
-                            <DeleteIcon />
-                        </IconButton>
+                        <Tooltip title={data.isUrgent?"Clear urgent":"Mark as urgent"}>
+                            <IconButton aria-label="Hot" disabled={!data.title} color={data.isUrgent?"secondary":"default"} onClick={()=>this.onUrgentClick({actionId: this.props.actionId})}>
+                                <HotIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <SelectActionStatus 
+                            isDue={moment().isAfter(data.dueDate)} 
+                            isUrgent={data.isUrgent} 
+                            isStarted={data.isStarted} 
+                            isDone={data.countTasks>0&&data.countTasks===data.countTasksCompleted}
+                            handleChange={({status})=>this.updateInfo({status})} 
+                            value={data.status||"TODO"}
+                            />
+                        <Tooltip title={"Delete Obligation"}>
+                            <IconButton aria-label="Delete" disabled color="primary" style={{color: false&&"red"}} onClick={(e) => {e.preventDefault(); this.props.handleDelete(this.props.actionId)}} >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Toolbar>
                 </AppBar>
                 {/*<LinearProgress color="primary" variant="query" />*/}

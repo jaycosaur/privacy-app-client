@@ -38,9 +38,8 @@ const Index = (props) => {
     const actions = <topbarActions.TopBarActions />
 
     return (
-        <MainViewTopActionBarContainer color="primary" actions={actions}>
-            <TOCIcon style={{color: "white", marginRight:8}}/> 
-            <Typography className={classes.strongTitle} variant="title">
+        <MainViewTopActionBarContainer color="primary" actions={actions} icon={<TOCIcon style={{color: "white", marginRight:8}}/> }>
+            <Typography noWrap className={classes.strongTitle} variant="title">
                 Your Compliance Workspace
             </Typography>
         </MainViewTopActionBarContainer>

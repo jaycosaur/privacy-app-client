@@ -17,8 +17,28 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import moment from 'moment'
+import SelectTeamMember from './../components/SelectTeamMember'
+import PeopleIcon from '@material-ui/icons/People';
+import { connect } from 'react-redux'
 
 import { Field, reduxForm } from 'redux-form';
+
+const getInitials = (fullName) => fullName.split(" ").map(n=>n[0]).join("")
+
+const shortenName = (fullName) => fullName.split(" ").map((n,i)=>i===0?`${n[0]}.`:n).join(" ")
+
+
+const RenderUserAvatarAndName = (props) => {
+    return <Avatar className={props.className}>{props.id&&props.team[props.id].displayName?getInitials(props.team[props.id].displayName):<PeopleIcon />}</Avatar>
+}
+
+const mstp = (state, ownProps) => {
+    return {
+        team: state.organisation.users.reduce((a,u)=>({...a, [u.userId]:{...u}}),{})
+    }
+}
+    
+const UserAvatarAndName = connect(mstp)(RenderUserAvatarAndName)
 
 const validate = values => {
     const errors = {}
@@ -30,7 +50,7 @@ const validate = values => {
     return errors
   }
   
-const renderTextField = ({ input: { value, onChange }, label,multiline, meta: { touched, error } }) => (
+const renderTextField = ({ input: { value, onChange }, label,multiline, rows, meta: { touched, error } }) => (
     <TextField 
         label={label}
         errorText={touched && error}
@@ -39,6 +59,7 @@ const renderTextField = ({ input: { value, onChange }, label,multiline, meta: { 
         fullWidth
         error={error}
         multiline={multiline}
+        rows={rows}
     />
 )
   
@@ -50,7 +71,10 @@ const MaterialUiForm = props => {
                 <Field name="title" component={renderTextField} label="Title" />
             </DialogContent>
             <DialogContent>
-                <Field name="description" component={renderTextField} label="Description" multiline/>
+                <Field name="description" component={renderTextField} label="Description" multiline rows={4}/>
+            </DialogContent>
+            <DialogContent>
+                <Field name="documentReference" component={renderTextField} label="Linked document reference" multiline rows={4}/>
             </DialogContent>
             <DialogActions>
                 <ButtonMD type="submit" color="primary" disabled={pristine || submitting}>
@@ -72,8 +96,7 @@ const styles = theme => ({
       margin: 4,
     },
     bigAvatar: {
-      width: 80,
-      height: 80,
+      background: "#623aa2"
     },
     containerCardFlex: {
         display: "flex",
@@ -97,7 +120,19 @@ const InfoTabView = (props) => {
         <div className={classes.root}>
             <Card className={classes.containerCard}>
                 <CardContent className={classes.containerCardFlex}>
-                    <Avatar className={classNames(classes.avatar, classes.bigAvatar)}>TM</Avatar>
+                     
+                    <div>
+                        <div className={classes.containerCardFlex}>
+                            <SelectTeamMember
+                                handleChange={({userId})=>this.props.updateInfo({ownerId: userId})} 
+                                buttonContent={<UserAvatarAndName className={classNames(classes.avatar, classes.bigAvatar)} id={data.ownerId} avatar/>} 
+                                buttonStyle={{marginRight: "8px"}}
+                            />
+                        </div>
+                        <Typography variant="caption">
+                            Obligation Owner
+                        </Typography>
+                    </div>
                     <div>
                         <div className={classes.containerCardFlex}>
                             <Avatar className={classes.avatar}>TM</Avatar>
@@ -115,9 +150,9 @@ const InfoTabView = (props) => {
                 </CardContent> 
             </Card>
             <Card className={classes.containerCard}>
-                <WrappedForm onSubmit={props.updateInfo} initialValues={{title: data.title, description: data.description}}/>
+                <WrappedForm onSubmit={props.updateInfo} initialValues={{title: data.title, description: data.description, documentReference: data.documentReference}}/>
             </Card>
-            <Card className={classes.containerCard}>
+            {false&&<Card className={classes.containerCard}>
                 {<List>
                     <ListItem>
                         <ListItemText primary="Number of Tasks" />
@@ -136,7 +171,7 @@ const InfoTabView = (props) => {
                         {data.files?Object.keys(data.files).length:"None"}
                     </ListItem>
                 </List>}
-            </Card>
+            </Card>}
             <div>
                 <Typography variant="caption">
                     Created: {moment(data.created).format("LLLL")}

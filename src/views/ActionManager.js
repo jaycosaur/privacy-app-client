@@ -34,6 +34,14 @@ import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux'
 import * as reduxActions from './../store/actions/actionManagerActions'
 
+import DueTasks from './../containers/AuthHome/DueWeeklyTasks'
+import ProjectOverview from './../containers/AuthHome/ProjectOverview'
+
+import OrganisationSnapshot from './../containers/AuthHome/OrganisationSnapshot'
+import Hidden from '@material-ui/core/Hidden';
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+
+
 const styles = theme => ({
     card: {
         minWidth: 275,
@@ -47,7 +55,10 @@ const styles = theme => ({
         marginBottom: theme.spacing.unit*4,
     },
     root: {
-        padding: theme.spacing.unit*4
+        padding: theme.spacing.unit*4,
+        [theme.breakpoints.down('sm')]: {
+            padding: 0
+        }
     },
     projectCardRoot: {
         display: "flex",
@@ -179,7 +190,7 @@ class ActionManager extends React.Component {
                     <Typography variant="caption">Created: <Moment fromNow>{data.created}</Moment></Typography>
                 </CardContent>
                 <CardActions>
-                    <Link to={`/action-manager/${data.projectId}`} onClick={()=> this.props.selectProjectInManager({projectId: data.projectId})}>
+                    <Link to={`/compliance-workspace/${data.projectId}`} onClick={()=> this.props.selectProjectInManager({projectId: data.projectId})}>
                         <Button size="small" color="primary" disabled={data.isDeleting}>
                             EXPLORE
                         </Button>
@@ -220,23 +231,6 @@ class ActionManager extends React.Component {
         </div>
     </Card>)
 
-    const TaskListContainer = ({ isLoading, assignedTasks, assignedActions }) => {
-        return (
-            <Card style={{ marginTop: 16, height: "40vh", overflow: "scroll", background: isLoading&&"#eee", opacity: isLoading&&0.6 }} elevation={isLoading?0:4}>
-                {!isLoading&&(assignedTasks.length>0||assignedActions.length>0?(
-                    <List>
-                        {assignedActions.map(a=><TaskListItem status={"0"} {...a} link={`action-manager/${a.projectId}/${a.id}`}/>)}
-                        {assignedTasks.map(() => <TaskListItem status={"1"} />)}
-                    </List>
-                ):<div style={{width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-                    <img src="https://cdn.pixabay.com/photo/2017/09/12/21/07/solar-system-2743669_1280.png" width="30%" style={{opacity: 0.7, filter: "grayscale(100%)", marginBottom: 32}}/>
-                    <Typography variant="subtitle">You have no actions or tasks</Typography>
-                </div>)
-            }
-            </Card>
-        )
-    }
-
     const TaskListItem = (attr) => (
         <ListItem button dense>
             <div style={{background: attr.status==="DONE"?green['A100']:attr.status==="1"?amber["A100"]:red["A100"], width: 4, alignSelf: "stretch", borderRadius: 6}}/>
@@ -251,79 +245,31 @@ class ActionManager extends React.Component {
         </ListItem>
     )
 
-    const SummaryCard = (attr) => (
-        <Card style={{ height: "35vh", overflow: "scroll", background: attr.isLoading&&"#eee", opacity: attr.isLoading&&0.6  }} elevation={attr.isLoading?0:4}>
-            {!attr.isLoading&&!attr.projects&&<div style={{width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-                <img src="https://cdn.pixabay.com/photo/2017/09/12/21/07/solar-system-2743669_1280.png" width="30%" style={{opacity: 0.7, filter: "grayscale(100%)", marginBottom: 32}}/>
-                <Typography variant="subtitle">Your have no projects.</Typography>
-            </div>}
-
-            {!attr.isLoading&&attr.projects&&<CardContent>
-                <Typography variant="headline">Team Snapshot</Typography>
-                <List dense>
-                    <ListItem>
-                        <ListItemText primary="Number of Projects"/>
-                        <ListItemSecondaryAction>
-                            <Chip label={attr.projects} />
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Number of Actions"/>
-                        <ListItemSecondaryAction>
-                            <Chip label={attr.actions} />
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Number of Tasks"/>
-                        <ListItemSecondaryAction>
-                            <Chip label={attr.tasks} />
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Number of Done Actions"/>
-                        <ListItemSecondaryAction>
-                            <Chip label={attr.doneActions} />
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Number of Overdue Actions"/>
-                        <ListItemSecondaryAction>
-                            <Chip label={attr.overdueActions} />
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText primary="Number of Alert Actions"/>
-                        <ListItemSecondaryAction>
-                            <Chip label={attr.alertActions} />
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                </List> 
-            </CardContent>}
-        </Card>
-    )
     const hasProjects = projects.length!==0
     const transformO2A = (o) => Object.keys(o).map(k=>o[k])
 
     return (
         <AuthViewRouteContainer topbar={<ActionManagerTopActionBar/>}>
             <div className={classes.root}>
-                <Grid container spacing={24}>
-                    <Grid item xs={8} style={{height: "85vh", overflow: "scroll"}}>
-                        {isLoadingProjects&&!hasProjects&&[<ProjectCardLoader />,
-                        <ProjectCardLoader />,
-                        <ProjectCardLoader />]}
-                        {hasProjects&&projects.sort((a,b)=>moment(a.created).isBefore(b.created)).map(i=><ProjectCard data={i} key={i.projectId}/>)}
-                        {!isLoadingProjects&&!hasProjects&&(
-                            <div style={{height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
-                                <img src="https://www.freeiconspng.com/uploads/rocket-png-26.png" width="260px" style={{filter: "grayscale(100%)"}}/>
-                                <Typography style={{margin: "32px 0 16px"}} variant="headline">Hold up! It looks like you have no projects.</Typography>
-                                <Typography style={{margin: "0px 0 48px", color: "#9e9e9e"}} variant="title"> Click on the + button to get started</Typography>
-                                <Button variant="extendedFab" color="secondary" onClick={()=>this.props.openCreateProjectsInManagerDialogue()}><AddIcon /> Add new project </Button>
-                            </div>
-                        )}
-                    </Grid>
-                    <Grid item xs={4}>
-                        <SummaryCard 
+                <Grid container spacing={isWidthUp('md', this.props.width)?24:0}>
+                    <Hidden smDown>
+                        <Grid item xs={12} md={8} style={{height: "83vh", overflow: "scroll"}}>
+                            {isLoadingProjects&&!hasProjects&&[<ProjectCardLoader />,
+                            <ProjectCardLoader />,
+                            <ProjectCardLoader />]}
+                            {hasProjects&&projects.sort((a,b)=>moment(a.created).isBefore(b.created)).map(i=><ProjectCard data={i} key={i.projectId}/>)}
+                            {!isLoadingProjects&&!hasProjects&&(
+                                <div style={{height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
+                                    <img src="https://www.freeiconspng.com/uploads/rocket-png-26.png" width="260px" style={{filter: "grayscale(100%)"}}/>
+                                    <Typography style={{margin: "32px 0 16px"}} variant="headline">Hold up! It looks like you have no projects.</Typography>
+                                    <Typography style={{margin: "0px 0 48px", color: "#9e9e9e"}} variant="title"> Click on the + button to get started</Typography>
+                                    <Button variant="extendedFab" color="secondary" onClick={()=>this.props.openCreateProjectsInManagerDialogue()}><AddIcon /> Add new project </Button>
+                                </div>
+                            )}
+                        </Grid>
+                    </Hidden>
+                    <Grid item xs={12} md={4}>
+                        {false&&<OrganisationSnapshot
                             isLoading={isFetchingCurrentAssignedTasksAndActions}
                             projects={projects.length} 
                             tasks={projects.map(i=>i.taskCount).filter(i=>i).reduce((t,i)=>t+i,0)} 
@@ -331,12 +277,9 @@ class ActionManager extends React.Component {
                             doneActions={projects.map(i=>i.doneCount).filter(i=>i).reduce((t,i)=>t+i,0)} 
                             overdueActions={projects.map(i=>i.overdueCount).filter(i=>i).reduce((t,i)=>t+i,0)} 
                             alertActions={projects.map(i=>i.alertCount).filter(i=>i).reduce((t,i)=>t+i,0)} 
-                            />
-                        <TaskListContainer 
-                            isLoading={isFetchingCurrentAssignedTasksAndActions} 
-                            assignedTasks={transformO2A(currentAssignedTasks)} 
-                            assignedActions={transformO2A(currentAssignedActions)} 
-                            />
+                        />}
+                        <ProjectOverview hideNavButton/>
+                        <DueTasks marginTop={16} hideNavButton/>
                     </Grid>
                 </Grid>
             </div>
@@ -353,4 +296,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {...reduxActions})(withStyles(styles)(ActionManager))
+export default connect(mapStateToProps, {...reduxActions})(withWidth()(withStyles(styles)(ActionManager)))

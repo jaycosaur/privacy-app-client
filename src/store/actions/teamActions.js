@@ -20,17 +20,38 @@ export const getOrganisationIdddformation = ({ organisationId }) => {
 export const getOrganisationInformation = ({ organisationId }) => {
     return {
         type: 'GET_ORGANISATION_FULL_INFO',
-        payload: Promise.all([organisationRef.doc(organisationId).get().then(res => {
-            return {organisationId:organisationId, ...res.data()}
-        }), organisationRef.doc(organisationId).collection("users").get().then(snapshot => {
-            let userData = []
-            snapshot.forEach((doc) => {
-                userData = [...userData, {userId: doc.id, ...doc.data()}]
-            })
-            return userData
-        })]).then(res => {
-            const arr = res[1].map(u=>usersRef.doc(u.userId).get().then(res=>({userId: res.id, ...res.data(), ...u})))
-            return Promise.all(arr).then(users=>({...res[0], users: users}))
-        })
+        payload: { organisationId }
     }
 }
+
+export const inviteUserToOrganisation = ({ email }) => {
+    return {
+        type: 'INVITE_USER_TO_ORGANISATION',
+        payload: { email }
+    }
+}
+
+export const signUpToOrganisationViaToken = ({ invitetoken }) => {
+    return {
+        type: 'SIGNUP_TO_ORGANISATION_VIA_TOKEN',
+        payload: { invitetoken }
+    }
+}
+
+export const promoteUserToAdmin = ({ uid }) => {
+    return {
+        type: 'PROMOTE_USER_TO_ADMIN',
+        payload: { uid }
+    }
+}
+
+export const removeUserFromOrganisation = ({ uid }) => {
+    return {
+        type: 'REMOVE_USER_FROM_ORGANISATION',
+        payload: { uid }
+    }
+}
+
+
+
+

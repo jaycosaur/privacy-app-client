@@ -97,13 +97,9 @@ const styles = () => ({
 const ActionCreator = (props) => {
     const { classes } = props
     const actionsArray = [
-            <Button variant="extendedFab" color="secondary" aria-label="Add" className={classes.button} onClick={()=>props.openCreateProjectsInManagerDialogue()}>
+            <Button mini variant="fab" color="secondary" aria-label="Add" className={classes.button} onClick={()=>props.openCreateProjectsInManagerDialogue()}>
                 <AddIcon />
-                Add New Project
             </Button>,
-            <IconButton className={classes.button} aria-label="Add to watchlist" onClick={() => console.log("Add persona~!")}>
-                <HelpIcon />
-            </IconButton>,
             <Dialog
                 open={props.createDialogueIsOpen}
                 onClose={()=>props.closeCreateProjectsInManagerDialogue()}

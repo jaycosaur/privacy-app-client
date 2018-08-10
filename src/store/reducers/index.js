@@ -10,9 +10,10 @@ import search from './searchResults'
 import organisation from './organisationReducer'
 import actionManager from './actionManager'
 import loginFlow from './loginFlowReducer'
+import readLater from './readLaterReducer'
+import mailingList from './mailingListReducer'
 
 import { reducer as formReducer } from 'redux-form'
-
 
 const rootReducer = combineReducers({
     user,
@@ -24,6 +25,8 @@ const rootReducer = combineReducers({
     watchlist,
     search,
     organisation,
+    readLater,
+    mailingList,
     router: routerReducer,
     form: formReducer,
     actionManager: actionManager

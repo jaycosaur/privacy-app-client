@@ -62,6 +62,24 @@ const TeamManagerView = Loadable({
   loader: () => import('./views/TeamManagerView'),
   loading: Loading,
 });
+const TeamInviteAccept = Loadable({
+  loader: () => import('./views/TeamInviteAccept'),
+  loading: Loading,
+});
+const TeamInviteSuccess = Loadable({
+  loader: () => import('./views/TeamInviteSuccess'),
+  loading: Loading,
+});
+const ReadingList = Loadable({
+  loader: () => import('./views/ReadingList'),
+  loading: Loading,
+});
+const MailingList = Loadable({
+  loader: () => import('./views/MailingList'),
+  loading: Loading,
+});
+
+
 
 const Routes = (props) => {
   return (
@@ -79,15 +97,20 @@ const Routes = (props) => {
         <AuthenticatedRoute key="media-item-view" path='/media/:id' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
         <AuthenticatedRoute key="commentary-item-view" path='/commentary/:id' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
         <AuthenticatedRoute key="research-item-view" path='/research/:id' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
-        <AuthenticatedRoute key="team-manager-view" path='/team' props={{isSignedIn: props.isSignedIn}} component={TeamManagerView}/>
+        <AuthenticatedRoute key="team-manager-view" exact path='/team' props={{isSignedIn: props.isSignedIn}} component={TeamManagerView}/>
+        <AuthenticatedRoute key="team-accept-invite-to-team" exact path='/team/invite/:invitetoken' props={{isSignedIn: props.isSignedIn}} component={TeamInviteAccept}/>
+        <AuthenticatedRoute key="team-invitation-success" exact path='/team/success' props={{isSignedIn: props.isSignedIn}} component={TeamInviteSuccess}/>
         <AuthenticatedRoute key="news" path='/news' props={{isSignedIn: props.isSignedIn}} component={AggregatedNews}/>
         <AuthenticatedRoute key="watchlist" path='/watchlist' props={{isSignedIn: props.isSignedIn}} component={Watchlist}/>
         <AuthenticatedRoute key="123456" path='/item' props={{isSignedIn: props.isSignedIn}} component={ItemView}/>
         <AuthenticatedRoute key="profile-page" path='/myaccount' props={{isSignedIn: props.isSignedIn}} component={ProfileView}/>
-        <AuthenticatedRoute exact key="action-manager" path='/action-manager' props={{isSignedIn: props.isSignedIn}} component={ActionManager}/>
-        <AuthenticatedRoute key="task-list" path='/action-manager/:id' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
-        <AuthenticatedRoute key="contacts" path='/contacts' exact props={{isSignedIn: props.isSignedIn}} component={ContactsView}/>
-        <AuthenticatedRoute key="contacts-id" path='/contacts/{cid}/' props={{isSignedIn: props.isSignedIn}} component={ContactsView}/>
+        <AuthenticatedRoute exact key="compliance-manager" path='/compliance-workspace' props={{isSignedIn: props.isSignedIn}} component={ActionManager}/>
+        <AuthenticatedRoute key="project-view" path='/compliance-workspace/:id' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
+        <AuthenticatedRoute key="reading-list" path="/reading-list" props={{isSignedIn: props.isSignedIn}} component={ReadingList}/>
+        <AuthenticatedRoute key="mailing-list" path="/mailing-list" props={{isSignedIn: props.isSignedIn}} component={MailingList}/>
+        
+        {/* <AuthenticatedRoute key="contacts" path='/contacts' exact props={{isSignedIn: props.isSignedIn}} component={ContactsView}/>
+        <AuthenticatedRoute key="contacts-id" path='/contacts/{cid}/' props={{isSignedIn: props.isSignedIn}} component={ContactsView}/> */}
         <Route key="not-found" component={NotFound}/>
     </Switch>
   )

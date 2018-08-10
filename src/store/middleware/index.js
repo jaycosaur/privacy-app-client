@@ -7,6 +7,16 @@ import * as teamActions from './../actions/teamActions'
 var client = algoliasearch('FEQZM17GZV', '0f26c164ae44f21a6bfffa4941e6ec99')
 var legislationIndex = client.initIndex('news')
 var newsIndex = client.initIndex('news')
+const mainBaseIndex = client.initIndex('main_base')
+
+export function afterOrganisationalInfoFulfilled(){
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'GET_ORGANISATION_FULL_INFO_FadfULFILLED') {
+        }
+        return next(action)
+    }
+}
+
 
 export function policySearchMiddleware() {
     return ({ dispatch, getState }) => next => action => {
@@ -25,6 +35,7 @@ export function onSignIn() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'USER_HAS_SIGNED_IN') {
             dispatch({ type: "GET_ACCOUNT_INFORMATION" })
+            dispatch({ type: "GET_READ_LATER_LIST" })
         }
         return next(action)
     }
@@ -203,7 +214,7 @@ export function fetchResultsFromAlgolia() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_SEARCH') {
             const state = getState()
-            const { type, filters, key, query, attrs } = action.payload
+            const { type, filters, key, query, attrs, page=0 } = action.payload
             let index = null
             switch(type){
                 case 'REGULATION':
@@ -216,14 +227,14 @@ export function fetchResultsFromAlgolia() {
                     index = newsIndex
                     break
                 default:
-                    index = newsIndex
+                    index = mainBaseIndex
             }
-            const payload = index.search({ query: query, ...attrs })
+            const payload = index.search({ query: query, ...attrs, page })
 
             dispatch({
                 type: "FETCH_ALGOLIA_RESULTS", 
-                payload: payload ,
-                meta: action.payload
+                payload: payload,
+                meta: { ...action.payload, append: page!==0 }
             })
            
         }

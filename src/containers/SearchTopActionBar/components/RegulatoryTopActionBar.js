@@ -68,5 +68,5 @@ const mapStateToProps = (state, ownProps) => {
 
 
 export const TopBarActions = connect(mapStateToProps, {...actions, ...filterActions})(withStyles(styles)(ActionCreator))
-export const topBarTitle = ["Regulatory Developments", <small>(343 results, 15 new)</small>]
+export const topBarTitle = ["Regulatory Developments"]
 

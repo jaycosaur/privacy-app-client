@@ -28,8 +28,8 @@ const styles = () => ({
         marginRight: 20,
     },
     strongTitle: {
-        flex: 1,
-        color: "white"
+        color: "white",
+        marginRight: 16
     },
     buttonSelected: {
         color: "white"
@@ -55,9 +55,14 @@ const Index = (props) => {
     return (
         <MainViewTopActionBarContainer actions={actions[type]}>
             <TimelineIcon style={{color: "white", marginRight:8}}/> 
-            <Typography className={classes.strongTitle} variant="title">
-                {titles[type]}
-            </Typography>
+            <div style={{flex: 1, display: "flex", alignItems: "center"}}>
+                <Typography className={classes.strongTitle} variant="title">
+                    {titles[type]}
+                </Typography>
+                <Typography className={classes.strongTitle} variant="subheading">
+                    1-{props.numberOfResults} of {props.numberOfResultsTotal} results in {props.fetchedIn/1000}s
+                </Typography>
+            </div>
             {false&&<PolicySiderKeywordSearchInput />}
             {false&&<SearchTopBar />}
         </MainViewTopActionBarContainer>

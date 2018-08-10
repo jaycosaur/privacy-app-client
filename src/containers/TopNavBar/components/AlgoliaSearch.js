@@ -153,7 +153,7 @@ class IntegrationAutosuggest extends React.Component {
         renderSuggestion={renderSuggestion}
         inputProps={{
           classes,
-          placeholder: 'Looking for something?',
+          placeholder: 'Search our database for news, regulation or research',
           value: this.state.value,
           onChange: this.handleChange,
         }}

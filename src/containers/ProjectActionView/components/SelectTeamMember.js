@@ -2,7 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import PeopleIcon from '@material-ui/icons/People';
+import Avatar from '@material-ui/core/Avatar'
+import Tooltip from '@material-ui/core/Tooltip'
+
 
 class SelectTeamMember extends React.Component {
     state = {
@@ -30,7 +34,7 @@ class SelectTeamMember extends React.Component {
         const { teamUsers=[], buttonContent="Open Menu", buttonStyle={}} = this.props
 
         return (
-            [<Button
+            [<IconButton
                 variant="outlined" 
                 size="large"
                 aria-owns={anchorEl ? 'simple-menu' : null}
@@ -38,8 +42,10 @@ class SelectTeamMember extends React.Component {
                 onClick={this.handleClick}
                 style={{...buttonStyle}}
             >
-                {buttonContent}
-            </Button>,
+                <Tooltip title="Assign team member">
+                    {buttonContent}
+                </Tooltip>
+            </IconButton>,
             <Menu
                 id="simple-menu"
                 anchorEl={anchorEl}

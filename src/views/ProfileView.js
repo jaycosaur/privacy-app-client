@@ -17,13 +17,15 @@ const billingData = [
         title: "Your Invoices",
         description: "View and download your payment history",
         itemKey: "invoices",
-        avatar: "calendar"
+        avatar: "calendar",
+        disabled: true
     },
     {
         title: "Payment Information",
         description: "Change Payment Method or Information",
         itemKey: "payment",
-        avatar: "credit-card"
+        avatar: "credit-card",
+        disabled: true
     }
 ]
 
@@ -33,9 +35,10 @@ const MenuItem = (props) => {
     return (
         <ButtonBase
         style={{ width: "40%", margin: 8}}
+        disabled={props.disabled}
         >
             <Card
-                style={{ width: "100%"}}
+                style={{ width: "100%", opacity: props.disabled&&0.5}}
                 key={props.itemKey}
                 onClick={e => props.clickHandler(props.itemKey)}
             >
@@ -93,13 +96,15 @@ const AccountView = (props) => {
             title: planType,
             description: "Change your plan",
             itemKey: "plantype",
-            avatar: "appstore"
+            avatar: "appstore",
+            disabled: true
         },
         {
             title: "Plan Usage",
             description: "Plan Limits and Usage",
             itemKey: "planusage",
-            avatar: "dashboard"
+            avatar: "dashboard",
+            disabled: true
         }
     ]
     return (

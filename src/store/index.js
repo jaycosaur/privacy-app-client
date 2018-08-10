@@ -9,6 +9,10 @@ import * as middlewareIndex from './middleware/'
 
 
 import * as actionManagerMiddleware from './middleware/actionManagerMiddleware'
+import * as readLaterMiddleware from './middleware/readLaterMiddleware'
+import * as mailingListMiddleware from './middleware/mailingListMiddleware'
+import * as organisationMiddleware from './middleware/organisationMiddleware'
+
 
 export const history = createHistory()
 
@@ -19,7 +23,10 @@ const middleware = applyMiddleware(
     promise(), 
     thunk, 
     ...toFn(middlewareIndex),
-    ...toFn(actionManagerMiddleware)
+    ...toFn(actionManagerMiddleware),
+    ...toFn(readLaterMiddleware),
+    ...toFn(mailingListMiddleware),
+    ...toFn(organisationMiddleware)
 )
 
 export default createStore(reducer, composeWithDevTools(middleware));

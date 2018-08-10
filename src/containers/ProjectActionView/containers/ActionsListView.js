@@ -14,14 +14,26 @@ import { connect } from 'react-redux'
 
 
 import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/PlaylistAdd';
+import ExpandIcon from '@material-ui/icons/ExpandMore';
+import HideIcon from '@material-ui/icons/ExpandLess';
+
 import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import AvatarMD from '@material-ui/core/Avatar'
 import IconButton from '@material-ui/core/IconButton';
 import ButtonMD from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import SelectTeamMember from './../components/SelectTeamMember'
+import SelectBaseItem from './../components/SelectBaseItem'
 import SelectActionStatus from './../components/SelectActionStatus'
+
+import Tooltip from '@material-ui/core/Tooltip';
+
+import Hidden from '@material-ui/core/Hidden';
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+
 
 const getInitials = (fullName) => fullName.split(" ").map(n=>n[0]).join("")
 
@@ -29,16 +41,7 @@ const shortenName = (fullName) => fullName.split(" ").map((n,i)=>i===0?`${n[0]}.
 
 
 const RenderUserAvatarAndName = (props) => {
-    return [
-        props.id&&<AvatarMD style={{marginRight: 8, width: 24, height: 24, fontSize: 11, fontWeight: 300, background: "#623aa2"}}>{props.team[props.id].displayName?getInitials(props.team[props.id].displayName):<UserIcon />}</AvatarMD>,
-        props.id?(
-            `${props.team[props.id].displayName
-                ?
-                    shortenName(props.team[props.id].displayName)
-                :
-                    props.team[props.id].email}`)
-                :"Not Assigned" 
-    ]
+    return <AvatarMD style={{fontSize: 14, fontWeight: 300, background: props.id&&"#623aa2"}}>{props.id&&props.team[props.id].displayName?getInitials(props.team[props.id].displayName):<PeopleIcon />}</AvatarMD>
 }
 
 const mstp = (state, ownProps) => {
@@ -67,7 +70,7 @@ const ButtonItem = (props) => (
     </Button>
 )
 
-export default class TaskItem extends React.Component {
+class Item extends React.Component {
     state = {
         showChildren: true,
         dummyChild: false,
@@ -95,12 +98,11 @@ export default class TaskItem extends React.Component {
         return {numberOfChildren: props.children.length, dummyChild: !state.numberOfChildren===props.children.length}
     }
 
-
     render() {
         const { actionData, id, onUrgentClick, onDueDateChange, isSelected, child } = this.props
 
-        return (
-            <div style={{ marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24 }}>
+        const LargerView = () => (
+            <div style={{ marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24, transition: "opacity 0.5s"}}>
                 <HandleHover render={
                     (isHovered) => (
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
@@ -114,21 +116,42 @@ export default class TaskItem extends React.Component {
                                     display: "flex", 
                                     justifyContent: "space-between", 
                                     alignItems: "center", 
-                                    width: "100%", 
+                                    width: "100%",
                                     padding: "4px 16px", 
-                                    overflowX: "scroll"  }} 
+                                    overflowX: "hidden"  }} 
                                 elevation={
                                     child?1:(isSelected?20:2)
                                 }
                                 >
-                                <div onClick={this.toggleChildren} style={{ background: isHovered ? (this.props.children ? highlightThemeShades[1] : "white") : (this.props.children ? themeColors[1] : themeColors[0]), width: 8, height: 40, borderRadius: 4, marginRight: 8 }} />
-                                <IconButton aria-label="Hot" disabled={!actionData.title} color={actionData.isUrgent?"secondary":"default"} onClick={()=>onUrgentClick({actionId: id})}>
-                                    <HotIcon />
-                                </IconButton>
+                                <HandleHover render={
+                                    (hovered) => (
+                                        !hovered ? 
+                                        <div onClick={this.toggleChildren} style={{ background: isHovered ? (this.props.children ? "white" : "white") : (this.props.children ? themeColors[1] : themeColors[0]), width: 8, height: 40, borderRadius: 4, marginRight: 8 }} /> : 
+                                            <div>
+                                                <Tooltip title="Add dependant obligation">
+                                                    <IconButton aria-label="add-child" color="primary" onClick={() => this.handleAdd(this.props.id)} >
+                                                        <AddIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title={`${!this.state.showChildren?"Show":"Hide"} dependants`}>
+                                                    <IconButton aria-label="show-toggle" disabled={!this.props.children} color="primary" onClick={this.toggleChildren} >
+                                                        {this.state.showChildren?<HideIcon />:<ExpandIcon/>}
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </div>
+                                    )
+                                } />
+                            
+                                <Tooltip title={actionData.isUrgent?"Clear urgent":"Mark as urgent"}>
+                                    <IconButton aria-label="Hot" disabled={!actionData.title} color={actionData.isUrgent?"secondary":"default"} onClick={()=>onUrgentClick({actionId: id})}>
+                                        <HotIcon />
+                                    </IconButton>
+                                </Tooltip>
                                 {!actionData.title&&<StarIcon/>}
-                                <div style={{ flexGrow: 1 }} onClick={() => this.props.handleClick(this.props.id)} >
+                                <div onClick={() => this.props.handleClick(this.props.id)} >
                                     <Typography variant="subheading" style={{marginBottom: 0}}>{actionData.title||"New action!"}</Typography>
                                 </div>
+                                <div style={{flex: 1}}/>
                                 <div style={{ width: 120, marginRight: 8 }}><Progress strokeWidth={20} percent={actionData.countTasks>0?actionData.countTasksCompleted*100/actionData.countTasks:0} size="small" /></div>
                                 <SelectActionStatus 
                                     isDue={moment().isAfter(actionData.dueDate)} 
@@ -143,20 +166,29 @@ export default class TaskItem extends React.Component {
                                     size="large" 
                                     defaultValue={actionData.dueDate?moment(actionData.dueDate):null} 
                                     onChange={(e)=>this.props.handleUpdate({dueDate: e.toISOString()})}/>
+                                <SelectBaseItem 
+                                    handleChange={({id})=>this.props.handleUpdate({linkedRecord: id})} 
+                                    buttonContent={"Not Assigned"} 
+                                    buttonStyle={{background: "white", margin: "0px 8px"}}
+                                    hasValue={actionData.linkedRecord}
+                                    />
                                 <SelectTeamMember 
                                     handleChange={({userId})=>this.props.handleUpdate({ownerId: userId})} 
-                                    buttonContent={<UserAvatarAndName id={actionData.ownerId}/>||"Not Assigned"} 
-                                    buttonStyle={{background: "white", margin: "0px 8px"}}/>
-                                <UserAvatars />
-                                <HandleHover render={
-                                    (hovered) => (
-                                        !hovered ? 
-                                            <div style={{ background: isHovered ? "red" : null, width: 8, height: 40, borderRadius: 4, marginRight: -8 }} /> : 
-                                            <IconButton aria-label="Delete" disabled={this.props.children.length>0} color="primary" style={{color: !this.props.children.length>0&&"red"}} onClick={(e) => {e.preventDefault(); this.handleDelete(this.props.id)}} >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                    )
-                                } />
+                                    buttonContent={<UserAvatarAndName id={actionData.ownerId} avatar/>} 
+                                    buttonStyle={{marginRight: "8px"}}/>
+                                <Hidden smDown>
+                                    <HandleHover render={
+                                        (hovered) => (
+                                            !hovered ? 
+                                                <div style={{ background: isHovered ? "red" : null, width: 8, height: 40, borderRadius: 4, marginRight: -8 }} /> : 
+                                                <Tooltip title={"Delete Obligation"}>
+                                                    <IconButton aria-label="Delete" disabled={this.props.children.length>0} color="primary" style={{color: !this.props.children.length>0&&"red"}} onClick={(e) => {e.preventDefault(); this.handleDelete(this.props.id)}} >
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Tooltip>
+                                        )
+                                    } />
+                                </Hidden>
 
                             </Card>
                         </div>
@@ -173,8 +205,89 @@ export default class TaskItem extends React.Component {
                 </div>
             </div>
         )
+
+        const SmallView = () => (
+            <div style={{ marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24, transition: "opacity 0.5s"}}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
+                    <Card 
+                        style={{ 
+                            flexGrow: 1, 
+                            borderRadius: 10, 
+                            background: this.state.isDeleting&&"#ddd",
+                            opacity: this.state.isDeleting&&0.6,
+                            display: "flex", 
+                            justifyContent: "space-between", 
+                            alignItems: "center", 
+                            width: "100%", 
+                            overflowX: "hidden",
+                            height: 150  }} 
+                        elevation={
+                            child?1:(isSelected?20:2)
+                        }
+                        >
+                        <div style={{ background: (this.props.children ? themeColors[1] : themeColors[0]), width: 10, height: "100%"}} /> 
+                        <div style={{height: "100%", flex: 1, display: "flex", flexDirection: "column", padding: "8px 16px", justifyContent: "space-between", alignContent: "space-between"}}>
+                            <div style={{flex: 1, display: "flex"}}>
+                                <div style={{flex: 2, display: "flex"}}>
+                                    <div onClick={() => this.props.handleClick(this.props.id)}>
+                                        <Typography variant="subheading">{
+                                            actionData.title&&(actionData.title.length>85?`${[...actionData.title].slice(0,85).join("")}...`:actionData.title)||"New action!"
+                                        }</Typography>
+                                    </div>
+                                </div>
+                                <div style={{display: "flex", flex: 1, alignItems: "center", justifyContent: "center"}}>
+                                    <SelectActionStatus 
+                                        isDue={moment().isAfter(actionData.dueDate)} 
+                                        isUrgent={actionData.isUrgent} 
+                                        isStarted={actionData.isStarted} 
+                                        isDone={actionData.countTasks>0&&actionData.countTasks===actionData.countTasksCompleted}
+                                        handleChange={({status})=>this.props.handleUpdate({status})} 
+                                        value={actionData.status||"TODO"}
+                                    />
+                                </div>
+                            </div>
+                            <div style={{flex: 1, display: "flex", alignItems: "flex-end"}}>
+                                <Tooltip title="Add dependant obligation">
+                                    <IconButton aria-label="add-child" color="primary" onClick={() => this.handleAdd(this.props.id)} >
+                                        <AddIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                <SelectTeamMember 
+                                    handleChange={({userId})=>this.props.handleUpdate({ownerId: userId})} 
+                                    buttonContent={<UserAvatarAndName id={actionData.ownerId} avatar/>}
+                                    />
+
+                                <SelectBaseItem 
+                                    handleChange={({id})=>this.props.handleUpdate({linkedRecord: id})} 
+                                    buttonContent={"Not Assigned"} 
+                                    buttonStyle={{background: "white"}}
+                                    hasValue={actionData.linkedRecord}
+                                    />
+                                <div style={{flex: 1}}/>
+                                <DatePicker 
+                                    style={{ width: 140 }} 
+                                    size="large" 
+                                    defaultValue={actionData.dueDate?moment(actionData.dueDate):null} 
+                                    onChange={(e)=>this.props.handleUpdate({dueDate: e.toISOString()})}
+                                />
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+                <div>
+                    {this.state.showChildren && this.props.children}
+                    {this.state.dummyChild&&<ListLoader child/>}
+                </div>
+            </div>
+        )
+
+        return isWidthUp("sm",this.props.width)?<LargerView />:<SmallView />
     }
 }
+
+const TaskItem = withWidth()(Item)
+
+export default TaskItem 
 
 export class ListLoader extends React.Component {
     render() {
@@ -182,7 +295,7 @@ export class ListLoader extends React.Component {
         const col = "#ddd"
         const bg = "#eee"
         return (
-            <div style={{ marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24, paddingLeft:child&&52 }}>
+            <div style={{marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24, paddingLeft:child&&52 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", opacity: 0.6 }}>
                     <Card 
                         style={{ 
@@ -194,8 +307,7 @@ export class ListLoader extends React.Component {
                             background: bg,
                             width: "100%", 
                             padding: "4px 16px", 
-                            height: 56, 
-                            overflowX: "scroll"  
+                            height: 56,
                         }} 
                         elevation={0}
                         >

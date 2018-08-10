@@ -20,7 +20,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Link } from 'react-router-dom'
 
-import LinearProgress from '@material-ui/core/LinearProgress';
+import Hidden from '@material-ui/core/Hidden';
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 import * as reduxActions from './../../store/actions/actionManagerActions'
 
@@ -197,10 +198,11 @@ class ProjectTaskList extends React.PureComponent {
         const hasLoadedActions = this.props.hasLoadedActions
         const hasProjectActions = projectActions&&projectActions.length>0
 
-        const TopBar = (attr) => <MainViewTopActionBarContainer color="primary" actions={actions}>
-            <DoneAllIcon style={{color: "white", marginRight: 16}}/>
-            <Typography style={{color: "white", fontWeight: 300}} variant="headline">{project&&project.title}</Typography>
-            <Typography style={{color: "white", flex: 1, fontWeight: 300, marginLeft: 32, marginTop: 4}} variant="subheading">{project&&project.description}</Typography>
+        const TopBar = (attr) => <MainViewTopActionBarContainer color="primary" actions={actions} icon={<DoneAllIcon style={{color: "white", marginRight: 16}}/>}>
+            <Typography style={{color: "white", fontWeight: 300}} noWrap variant="headline">{project&&project.title}</Typography>
+            <Hidden smDown>
+                <Typography style={{color: "white", flex: 1, fontWeight: 300, marginLeft: 32, marginTop: 4}} variant="subheading">{project&&project.description}</Typography>
+            </Hidden>
             </MainViewTopActionBarContainer>
 
         const LoadingTopBar = () => <MainViewTopActionBarContainer color="primary" actions={loadingActions}>
@@ -245,15 +247,15 @@ class ProjectTaskList extends React.PureComponent {
                                 right: 0, 
                                 top: 0, 
                                 height: "92vh", 
-                                width: 500, 
+                                width: isWidthUp("sm", this.props.width)?500:this.props.width, 
                                 zIndex: 100,
                                 }}>
-                            <SidePanelView selectedActionId={this.props.actionRefId}/>
+                            <SidePanelView selectedActionId={this.props.actionRefId} handleDelete={this.handleDelete} onUrgentClick={this.props.handleToggleActionUrgency}/>
                         </Paper> 
                         : 
                         null}
                     <div style={{}}>
-                        <div style={{ padding: 32, paddingTop: 0 }}>
+                        <div style={{ padding: isWidthUp("sm", this.props.width)?32:8, paddingTop: 0 }}>
                             {!hasLoadedActions&&!hasProjectActions&&<LoadingDisplay />}
                             {hasProjectActions&&getProjectActionTree(projectActions, this.handleAdd, this.handleDelete, this.handleUpdate, this.handleClick)}
                         </div>
@@ -276,4 +278,4 @@ const mapStateToProps = (state, ownProps) => {
     }
 }
 
-export default connect(mapStateToProps, {...reduxActions})(ProjectTaskList)
+export default connect(mapStateToProps, {...reduxActions})(withWidth()(ProjectTaskList))

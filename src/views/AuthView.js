@@ -11,8 +11,9 @@ import ListIcon from '@material-ui/icons/List'
 import HomeIcon from '@material-ui/icons/Home'
 import GroupIcon from '@material-ui/icons/Group'
 import StarIcon from '@material-ui/icons/Star';
-import FlagIcon from '@material-ui/icons/Flag';
+import BookmarksIcon from '@material-ui/icons/CollectionsBookmark';
 import HistoryIcon from '@material-ui/icons/History';
+import DraftsIcon from '@material-ui/icons/Drafts';
 import Icon from '@material-ui/core/Icon';
 import TopNavBar from './../containers/TopNavBar'
 import { connect } from 'react-redux'
@@ -22,13 +23,14 @@ import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import * as menuActions from './../store/actions/menuActions'
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Hidden from '@material-ui/core/Hidden';
 
 const Footer = ({isSideDrawerExpanded}) => (
     <div style={{textAlign: "center", flexGrow: 1, margin: 8}}>
         {isSideDrawerExpanded&&<p style={{fontWeight: 700, fontSize: "1.2em", margin: 0, color: "#623aa2"}}>POLIBASE</p>}
         {isSideDrawerExpanded&&<p style={{margin: 0}}><a href="https://en.wikipedia.org/wiki/Avocado">Powered by avocados</a></p>}
         {isSideDrawerExpanded&&<p style={{margin: 0}}><small>© 2018 ExamineChange Pty. Ltd. <br/>All rights reserved.</small></p>}
-        {!isSideDrawerExpanded&&<p style={{margin: 0}}></p>}
+        {isSideDrawerExpanded&&<p style={{margin: 0}}><small><a href="https://www.polibase.com.au">Disclosure</a> | <a href="https://www.polibase.com.au">Disclaimer</a></small></p>}
     </div>
 )
 
@@ -86,7 +88,7 @@ const styles = theme => ({
         backgroundColor: theme.palette.background.default,
         minWidth: 0, // So the Typography noWrap works
         height: "100vh",
-        overflow: "scroll"
+        overflow: "hidden"
     },
     drawerPaper: {
         position: 'relative',
@@ -131,20 +133,12 @@ const SideDrawerToggleContainer = (props) => {
                             <ListItemText inset primary="Home" />
                     </ListItem>
                 </Link>
-                <Link to="/action-manager">
+                <Link to="/compliance-workspace">
                     <ListItem button>
                             <ListItemIcon>
                                 <ListIcon />
                             </ListItemIcon>
                             <ListItemText inset primary="Compliance Workspace" />
-                    </ListItem>
-                </Link>
-                <Link to="/contacts" disabled>
-                    <ListItem button disabled>
-                            <ListItemIcon>
-                                <Icon className={classes.icon+" "+'fas fa-address-book'} />
-                            </ListItemIcon>
-                            <ListItemText inset primary="Contacts" />
                     </ListItem>
                 </Link>
                 <Link to="/team">
@@ -187,21 +181,31 @@ const SideDrawerToggleContainer = (props) => {
                         <ListItemText primary="Your Watchlists" />
                     </ListItem>
                 </Link>
-                <ListItem button disabled>
-                    <ListItemIcon><FlagIcon /></ListItemIcon>
-                    <ListItemText primary="Flagged Items" />
-                </ListItem>
+                <Link to="/reading-list">
+                    <ListItem button>
+                        <ListItemIcon><BookmarksIcon /></ListItemIcon>
+                        <ListItemText primary="Reading List" />
+                    </ListItem>
+                </Link>
                 <ListItem button disabled>
                     <ListItemIcon><HistoryIcon /></ListItemIcon>
                     <ListItemText primary="Recent Searches" />
                 </ListItem>
+                <Link to="/mailing-list">
+                    <ListItem button>
+                        <ListItemIcon><DraftsIcon /></ListItemIcon>
+                        <ListItemText primary="Your Mail List" />
+                    </ListItem>
+                </Link>
             </List>
-            <div className={classes.sidebarFooter}>
-                <Divider />
-                <div className={classes.padding}>
-                    <Footer isSideDrawerExpanded={isSideDrawerExpanded}/>
+            <Hidden mdDown>
+                <div className={classes.sidebarFooter}>
+                    <Divider />
+                    <div className={classes.padding}>
+                        <Footer isSideDrawerExpanded={isSideDrawerExpanded}/>
+                    </div>
                 </div>
-            </div>
+            </Hidden>
         </div>
         )
     return (
@@ -226,15 +230,12 @@ const SideDrawerToggleContainer = (props) => {
         </Drawer>
         :<SwipeableDrawer
             classes={{
-                paper: isSideDrawerExpanded?classes.drawerPaper:[classes.drawerPaper,classes.drawerPaperClose].join(" "),
+                paper: classes.drawerPaper,
             }}
             onClose={()=>props.toggleAuthViewSideDrawer()}
             onOpen={()=>props.toggleAuthViewSideDrawer()}
             open={isSideDrawerExpanded}
             >
-            <div className={classes.toolbar}>
-                {width==="lg"?"Lg":"no"}
-            </div>
             <div
                 tabIndex={0}
                 role="button"
