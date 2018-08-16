@@ -4,6 +4,16 @@ import { message } from 'antd'
 const usersRef = db.collection("users")
 
 
+
+export const setNewAccountPassword = ({ newPassword, oldPassword }) => {
+    return {
+        type: 'SET_NEW_ACCOUNT_PASSWORD',
+        payload: auth.signInWithEmailAndPassword(auth.currentUser.email, oldPassword).then(res=>{
+            return auth.currentUser.updatePassword(newPassword)
+        })
+    }
+}
+
 export const doSelectItem = (item) => {
     return {
         type: 'MODAL_SELECT_ITEM',
@@ -29,6 +39,7 @@ export const handleFormFieldChange = ({fieldId, val}) => {
 }
 
 export const updateAccountInformation = (input) => {
+    const { email, displayName } = input
     return {
         type: 'UPDATE_ACCOUNT_INFORMATION',
         payload: usersRef.doc(auth.currentUser.uid).update({

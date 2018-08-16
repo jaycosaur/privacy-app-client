@@ -9,8 +9,6 @@ import Paper from '@material-ui/core/Paper';
 import SearchTopActionBar from './../containers/SearchTopActionBar'
 
 import AuthViewRouteContainer from './AuthViewRouteContainer'
-import AggregatedNews from './AggregatedNews'
-
 
 const styles = theme => ({
     root: {

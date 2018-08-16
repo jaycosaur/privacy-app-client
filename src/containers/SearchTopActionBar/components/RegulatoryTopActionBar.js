@@ -36,7 +36,7 @@ const styles = (theme) => ({
 })
 
 const ActionCreator = (props) => {
-    const { classes, shouldShowFilter, selectedView, type="none" } = props
+    const { classes, shouldShowFilter, selectedView } = props
     const actionsArray = [
             <IconButton className={shouldShowFilter?classes.buttonSelected:classes.button} aria-label="Show filters" onClick={e => props.toggleFilterPanel()}>
                 <FilterIcon/>

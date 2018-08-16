@@ -11,8 +11,6 @@ import CardContent from '@material-ui/core/CardContent';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
-import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -24,9 +22,6 @@ import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form';
 
 const getInitials = (fullName) => fullName.split(" ").map(n=>n[0]).join("")
-
-const shortenName = (fullName) => fullName.split(" ").map((n,i)=>i===0?`${n[0]}.`:n).join(" ")
-
 
 const RenderUserAvatarAndName = (props) => {
     return <Avatar className={props.className}>{props.id&&props.team[props.id].displayName?getInitials(props.team[props.id].displayName):<PeopleIcon />}</Avatar>
@@ -74,7 +69,7 @@ const MaterialUiForm = props => {
                 <Field name="description" component={renderTextField} label="Description" multiline rows={4}/>
             </DialogContent>
             <DialogContent>
-                <Field name="documentReference" component={renderTextField} label="Linked document reference" multiline rows={4}/>
+                <Field name="documentReference" component={renderTextField} label="Relevant Legislation or Regulation" multiline rows={4}/>
             </DialogContent>
             <DialogActions>
                 <ButtonMD type="submit" color="primary" disabled={pristine || submitting}>
@@ -114,8 +109,6 @@ const styles = theme => ({
   
 const InfoTabView = (props) => {
     const { classes, data } = props;
-
-    console.log(data)
     return (
         <div className={classes.root}>
             <Card className={classes.containerCard}>
@@ -136,15 +129,9 @@ const InfoTabView = (props) => {
                     <div>
                         <div className={classes.containerCardFlex}>
                             <Avatar className={classes.avatar}>TM</Avatar>
-                            <Avatar className={classes.avatar}>TM</Avatar>
-                            <Avatar className={classes.avatar}>TM</Avatar>
-                            <Avatar className={classes.avatar}>TM</Avatar>
-                            <IconButton>
-                                <PersonAddIcon />
-                            </IconButton>
                         </div>
                         <Typography variant="caption">
-                            Users Subscribed to Updates
+                            Link to relevant Legislation or Regulation
                         </Typography>
                     </div>
                 </CardContent> 

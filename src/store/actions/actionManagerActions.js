@@ -192,7 +192,7 @@ export const deleteTaskInAction = ({taskId}) => {
 
 export const deleteFileInAction = ({fileId}) => {
     return {
-        type: 'DELETE_FILE_IN_ACTION',
+        type: 'DELETE_FILE_IN_PROJECT',
         meta: {
             fileId
         }
@@ -206,6 +206,13 @@ export const updateNoteInAction = ({noteId, val}) => {
         meta: {
             noteId
         }
+    }
+}
+
+export const uploadNewFilesToProject = ({files}) => {
+    return {
+        type: 'CREATE_FILE_IN_PROJECT',
+        payload: files,
     }
 }
 
@@ -231,6 +238,38 @@ export const getTeamSnapshotStatistics = () => {
 export const getCurrentUserAssignedTasksAndActions = () => {
     return {
         type: 'GET_CURRENT_USER_ASSIGNED_TASKS_AND_ACTIONS',
+    }
+}
+
+export const reportBreachInAction = (payload) => {
+    return {
+        type: 'REPORT_BREACH_IN_ACTION',
+        payload: payload
+    }
+}
+
+export const groupObligationsInProjectView = (key) => {
+    return {
+        type: 'GROUP_OBLIGATIONS_IN_PROJECT_VIEW',
+        payload: key
+    }
+}
+
+export const ungroupObligationsInProjectView = () => {
+    return {
+        type: 'UNGROUP_OBLIGATIONS_IN_PROJECT_VIEW'
+    }
+}
+
+export const openFileExplorerInProjectView = () => {
+    return {
+        type: 'OPEN_FILE_EXPLORER_IN_PROJECT_VIEW'
+    }
+}
+
+export const closeFileExplorerInProjectView = () => {
+    return {
+        type: 'CLOSE_FILE_EXPLORER_IN_PROJECT_VIEW'
     }
 }
 

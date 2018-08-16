@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { Select, Row, List, Avatar, Icon, Tooltip } from 'antd';
-import Chip from '@material-ui/core/Chip';
+import { List, Avatar, Icon, Tooltip } from 'antd';
 import { Link } from 'react-router-dom'
 
 import Card from '@material-ui/core/Card';

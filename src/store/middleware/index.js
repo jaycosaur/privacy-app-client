@@ -17,20 +17,6 @@ export function afterOrganisationalInfoFulfilled(){
     }
 }
 
-
-export function policySearchMiddleware() {
-    return ({ dispatch, getState }) => next => action => {
-        if (action.type === 'SUBMIT_POLICY_SEARCH') {
-            const state = getState()
-            const searchObject = {
-                string: state.filter.keywordInput,
-                filters: state.filter.filters
-            }
-        }
-        return next(action)
-    }
-}
-
 export function onSignIn() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'USER_HAS_SIGNED_IN') {
@@ -151,7 +137,6 @@ const genFilterString = () => "(category:Book OR category:Ebook) AND _tags:publi
 export function fetchLegislationItems() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'FETCH_LEGISLATION_ITEMS') {
-            const state = getState()
             dispatch({ type: "FETCH_LEGISLATION_ITEMS", payload: legislationIndex.search({ query: action.payload.query, filters: genFilterString(action.payload.filters) }) })
         }
         return next(action)
@@ -163,9 +148,9 @@ export function getAccountInformation() {
         if (action.type === 'GET_ACCOUNT_INFORMATION') {
             const state = getState()
             const accountRef = db.collection("users").doc(state.user.user.uid)
-            dispatch({
-                type: "GET_ACCOUNT_INFORMATION", payload: accountRef.get().then(res => {
-                    return res.data()
+            accountRef.onSnapshot(function(doc) {
+                dispatch({
+                    type: "GET_ACCOUNT_INFORMATION_FULFILLED", payload: doc.data()
                 })
             })
         }
@@ -193,7 +178,7 @@ export function saveSearchToUser() {
         if (action.type === 'FETCH_ALGOLIA_RESULTS_FULFILLED') {
             if (action.meta.saveSearch){
                 const state = getState()
-                const { filters, attrs, query, type } = action.meta
+                const { filters, query, type } = action.meta
                 const userSearchRef = db.collection("users").doc(state.user.user.uid).collection("recentSearches")
                 const searchObject = {
                     whenSearch: Date.now(),
@@ -213,8 +198,7 @@ export function saveSearchToUser() {
 export function fetchResultsFromAlgolia() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_SEARCH') {
-            const state = getState()
-            const { type, filters, key, query, attrs, page=0 } = action.payload
+            const { type, query, attrs, page=0 } = action.payload
             let index = null
             switch(type){
                 case 'REGULATION':
@@ -245,11 +229,21 @@ export function fetchResultsFromAlgolia() {
 export function getOrganisationAfterAccountLoaded() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_ACCOUNT_INFORMATION_FULFILLED') {
-            const state = getState()
-            const organisationId = action.payload.organisationId
-            if (organisationId){
-                dispatch(teamActions.getOrganisationInformation({ organisationId }))
-            } else {
+            const hasAccount = action.payload
+            if (hasAccount){
+                const organisationId = action.payload.organisationId
+                if (organisationId){
+                    dispatch(teamActions.getOrganisationInformation({ organisationId }))
+                } else {
+                    dispatch({
+                        type: "USER_HAS_NO_ORGANISATION"
+                    })
+                }
+            }
+            else {
+                dispatch({
+                    type: "USER_HAS_NO_ACCOUNT"
+                })
                 dispatch({
                     type: "USER_HAS_NO_ORGANISATION"
                 })

@@ -88,3 +88,17 @@ export function getOrganisationalInformation() {
         return next(action)
     }
 }
+
+export function createNewTeamAndSetUserAsAdmin() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'CREATE_NEW_TEAM') {
+            const createNewTeamAndSetUserAsAdminCF = functions.httpsCallable('createNewTeamAndSetUserAsAdmin');
+            const { name, website, interestCategories, organisationType } = getState().organisation.newTeamInfo
+            dispatch({
+                type: "CREATE_NEW_TEAM",
+                payload: createNewTeamAndSetUserAsAdminCF({ name, website, interestCategories, organisationType }).then((res) => res.data),
+            })
+        }
+        return next(action)
+    }
+}

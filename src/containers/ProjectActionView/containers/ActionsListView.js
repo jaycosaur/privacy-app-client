@@ -1,14 +1,16 @@
 
 import React from 'react'
-import { Button, Input, Progress, DatePicker } from 'antd'
-import { themeColors, highlightThemeShades } from './../../../theme'
+import { DatePicker } from 'antd'
+import { themeColors, } from './../../../theme'
 import moment from 'moment';
 import HandleHover from './../components/HandleHover'
+import MomentUtils from 'material-ui-pickers/utils/moment-utils';
+import MuiPickersUtilsProvider from 'material-ui-pickers/utils/MuiPickersUtilsProvider';
+import DatePickerMD from 'material-ui-pickers/DatePicker';
 
-
+import EventIcon from '@material-ui/icons/Event';
 import StarIcon from '@material-ui/icons/Star';
 import HotIcon from '@material-ui/icons/Whatshot';
-import UserIcon from '@material-ui/icons/Person';
 import PeopleIcon from '@material-ui/icons/People';
 import { connect } from 'react-redux'
 
@@ -17,9 +19,10 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/PlaylistAdd';
 import ExpandIcon from '@material-ui/icons/ExpandMore';
 import HideIcon from '@material-ui/icons/ExpandLess';
+import LeftIcon from '@material-ui/icons/KeyboardArrowLeft';
+import RightIcon from '@material-ui/icons/KeyboardArrowRight';
 
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import AvatarMD from '@material-ui/core/Avatar'
 import IconButton from '@material-ui/core/IconButton';
 import ButtonMD from '@material-ui/core/Button';
@@ -28,6 +31,8 @@ import Typography from '@material-ui/core/Typography';
 import SelectTeamMember from './../components/SelectTeamMember'
 import SelectBaseItem from './../components/SelectBaseItem'
 import SelectActionStatus from './../components/SelectActionStatus'
+import SelectActionSchedule from './../components/SelectActionSchedule'
+import SelectComplianceType from './../components/SelectComplianceType'
 
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -35,13 +40,11 @@ import Hidden from '@material-ui/core/Hidden';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 
+
 const getInitials = (fullName) => fullName.split(" ").map(n=>n[0]).join("")
 
-const shortenName = (fullName) => fullName.split(" ").map((n,i)=>i===0?`${n[0]}.`:n).join(" ")
-
-
 const RenderUserAvatarAndName = (props) => {
-    return <AvatarMD style={{fontSize: 14, fontWeight: 300, background: props.id&&"#623aa2"}}>{props.id&&props.team[props.id].displayName?getInitials(props.team[props.id].displayName):<PeopleIcon />}</AvatarMD>
+    return <AvatarMD style={{fontSize: 14, fontWeight: 300, background: props.id&&"#623aa2"}}>{props.id&&props.team[props.id]&&props.team[props.id].displayName?getInitials(props.team[props.id].displayName):<PeopleIcon />}</AvatarMD>
 }
 
 const mstp = (state, ownProps) => {
@@ -52,23 +55,36 @@ const mstp = (state, ownProps) => {
     
 const UserAvatarAndName = connect(mstp)(RenderUserAvatarAndName)
 
-
-const UserAvatars = () => (<div style={{ margin: "0 8px", height: 40, }}>
-    <AvatarMD style={{ marginLeft: -12 }}><PeopleIcon /></AvatarMD>
-</div>)
-
-const InputItem = (props) => (
-    <HandleHover render={
-        (isHovered) => (
-            !isHovered ? <span style={{ fontSize: "1.1em", paddingLeft: 12 }}>{props.text || "Basic usage"}</span> : <Input placeholder="Enter some content here..." size="large" style={{ width: "100%" }} />
+class DatePickerButton extends React.Component {
+    openPicker = () => {
+        this.picker.open();
+    }
+    render(){
+        return (
+            <MuiPickersUtilsProvider utils={MomentUtils}>
+                <ButtonMD size="small" onClick={this.openPicker} variant="outlined" style={{background: "white", marginLeft: 8}}>
+                    {this.props.value?moment(this.props.value).format("DD MMM"):<span style={{color: "#bbb"}}>Select</span>} <EventIcon style={{fontSize: 20, marginLeft: 8, color: "#bbb"}} />
+                </ButtonMD>
+                <SelectActionSchedule
+                    handleChange={({schedule})=>this.props.handleChange({schedule})} 
+                    value={this.props.scheduleValue}
+                />
+                <div style={{visibility: "hidden", width: 0, height: 0}}>
+                    <DatePickerMD
+                        value={this.props.value}
+                        onChange={this.props.onChange}
+                        leftArrowIcon={<LeftIcon />}
+                        rightArrowIcon={<RightIcon />}
+                        showTodayButton
+                        clearable
+                        emptyLabel="Select date"
+                        ref={(node) => { this.picker = node; }}
+                    />
+                </div>
+            </MuiPickersUtilsProvider>
         )
-    } />)
-
-const ButtonItem = (props) => (
-    <Button ghost={props.ghost} style={{ margin: "0 8px", ...props.style }} size="large" type={props.type} shape={props.shape}>
-        {props.children}
-    </Button>
-)
+    }
+}
 
 class Item extends React.Component {
     state = {
@@ -99,7 +115,7 @@ class Item extends React.Component {
     }
 
     render() {
-        const { actionData, id, onUrgentClick, onDueDateChange, isSelected, child } = this.props
+        const { actionData, id, onUrgentClick, isSelected, child } = this.props
 
         const LargerView = () => (
             <div style={{ marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24, transition: "opacity 0.5s"}}>
@@ -126,7 +142,7 @@ class Item extends React.Component {
                                 <HandleHover render={
                                     (hovered) => (
                                         !hovered ? 
-                                        <div onClick={this.toggleChildren} style={{ background: isHovered ? (this.props.children ? "white" : "white") : (this.props.children ? themeColors[1] : themeColors[0]), width: 8, height: 40, borderRadius: 4, marginRight: 8 }} /> : 
+                                        <div onClick={this.toggleChildren} style={{ background: isHovered ? (this.props.children ? "white" : "white") : (this.props.children ? themeColors[1] : themeColors[0]), width: 8, height: 40, borderRadius: 4, marginRight: 16 }} /> : 
                                             <div>
                                                 <Tooltip title="Add dependant obligation">
                                                     <IconButton aria-label="add-child" color="primary" onClick={() => this.handleAdd(this.props.id)} >
@@ -141,7 +157,10 @@ class Item extends React.Component {
                                             </div>
                                     )
                                 } />
-                            
+                                <SelectComplianceType
+                                    handleChange={({complianceType})=>this.props.handleUpdate({complianceType})} 
+                                    value={actionData.complianceType}
+                                />
                                 <Tooltip title={actionData.isUrgent?"Clear urgent":"Mark as urgent"}>
                                     <IconButton aria-label="Hot" disabled={!actionData.title} color={actionData.isUrgent?"secondary":"default"} onClick={()=>onUrgentClick({actionId: id})}>
                                         <HotIcon />
@@ -152,7 +171,6 @@ class Item extends React.Component {
                                     <Typography variant="subheading" style={{marginBottom: 0}}>{actionData.title||"New action!"}</Typography>
                                 </div>
                                 <div style={{flex: 1}}/>
-                                <div style={{ width: 120, marginRight: 8 }}><Progress strokeWidth={20} percent={actionData.countTasks>0?actionData.countTasksCompleted*100/actionData.countTasks:0} size="small" /></div>
                                 <SelectActionStatus 
                                     isDue={moment().isAfter(actionData.dueDate)} 
                                     isUrgent={actionData.isUrgent} 
@@ -161,18 +179,21 @@ class Item extends React.Component {
                                     handleChange={({status})=>this.props.handleUpdate({status})} 
                                     value={actionData.status||"TODO"}
                                     />
-                                <DatePicker 
-                                    style={{ width: 140 }} 
-                                    size="large" 
-                                    defaultValue={actionData.dueDate?moment(actionData.dueDate):null} 
-                                    onChange={(e)=>this.props.handleUpdate({dueDate: e.toISOString()})}/>
                                 <SelectBaseItem 
+                                    key="base-item-select"
                                     handleChange={({id})=>this.props.handleUpdate({linkedRecord: id})} 
                                     buttonContent={"Not Assigned"} 
-                                    buttonStyle={{background: "white", margin: "0px 8px"}}
+                                    buttonStyle={{background: "white"}}
                                     hasValue={actionData.linkedRecord}
                                     />
+                                <DatePickerButton
+                                    handleChange={({ schedule })=>this.props.handleUpdate({ schedule })}
+                                    scheduleValue={actionData.schedule}
+                                    value={actionData.dueDate?moment(actionData.dueDate):null}
+                                    onChange={(e)=>this.props.handleUpdate({dueDate: e?e.toISOString():null})}
+                                />
                                 <SelectTeamMember 
+                                    key="team-member-select"
                                     handleChange={({userId})=>this.props.handleUpdate({ownerId: userId})} 
                                     buttonContent={<UserAvatarAndName id={actionData.ownerId} avatar/>} 
                                     buttonStyle={{marginRight: "8px"}}/>
@@ -189,7 +210,6 @@ class Item extends React.Component {
                                         )
                                     } />
                                 </Hidden>
-
                             </Card>
                         </div>
                     )
@@ -231,7 +251,7 @@ class Item extends React.Component {
                                 <div style={{flex: 2, display: "flex"}}>
                                     <div onClick={() => this.props.handleClick(this.props.id)}>
                                         <Typography variant="subheading">{
-                                            actionData.title&&(actionData.title.length>85?`${[...actionData.title].slice(0,85).join("")}...`:actionData.title)||"New action!"
+                                            (actionData.title&&(actionData.title.length>85?`${[...actionData.title].slice(0,85).join("")}...`:actionData.title))||"New action!"
                                         }</Typography>
                                     </div>
                                 </div>
@@ -264,11 +284,9 @@ class Item extends React.Component {
                                     hasValue={actionData.linkedRecord}
                                     />
                                 <div style={{flex: 1}}/>
-                                <DatePicker 
-                                    style={{ width: 140 }} 
-                                    size="large" 
-                                    defaultValue={actionData.dueDate?moment(actionData.dueDate):null} 
-                                    onChange={(e)=>this.props.handleUpdate({dueDate: e.toISOString()})}
+                                <DatePickerButton
+                                    value={actionData.dueDate?moment(actionData.dueDate):null}
+                                    onChange={(e)=>this.props.handleUpdate({dueDate: e?e.toISOString():null})}
                                 />
                             </div>
                         </div>

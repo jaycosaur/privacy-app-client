@@ -253,7 +253,7 @@ class EnhancedTable extends React.Component {
 
   render() {
     const { classes, columnData, showHeader } = this.props;
-    const { data, order, orderBy, selected, rowsPerPage, page } = this.state;
+    const { order, orderBy, selected, rowsPerPage, page } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, this.state.data?this.state.data.length:0 - page * rowsPerPage);
     return (
       <Paper className={classes.root}>

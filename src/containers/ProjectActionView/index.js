@@ -4,12 +4,19 @@ import MainViewTopActionBarContainer from './../MainViewTopActionBarContainer'
 import Typography from '@material-ui/core/Typography';
 
 import ButtonMD from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 
+import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+
+
 import { connect } from 'react-redux'
 import SidePanelView from './containers/SidePanelView'
+import StorageDialogView from './containers/StorageDialogView'
 import TaskItem, { ListLoader } from './containers/ActionsListView'
 
 import TextField from '@material-ui/core/TextField';
@@ -20,8 +27,15 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Link } from 'react-router-dom'
 
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
+
 import Hidden from '@material-ui/core/Hidden';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+
+import GroupIcon from '@material-ui/icons/ViewAgenda'
 
 import * as reduxActions from './../../store/actions/actionManagerActions'
 
@@ -55,7 +69,7 @@ const renderTextField = ({ input: { value, onChange }, label, meta: { touched, e
 )
   
 const MaterialUiForm = props => {
-    const { handleSubmit, pristine, reset, submitting, submitSucceeded } = props
+    const { handleSubmit, pristine, submitting } = props
     return (
         <form onSubmit={handleSubmit}>
         <DialogTitle id="form-dialog-title">Edit Project</DialogTitle>
@@ -84,11 +98,46 @@ const WrappedForm = reduxForm({form: 'updateProjectForm', validate})(MaterialUiF
 
 const EmptyPlaceholder = (props) => (
     <div style={{height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
-        <img src="https://exemetrics.com/img/rocket-inner.png" width="600px" />
+        <img src="https://exemetrics.com/img/rocket-inner.png" alt="" width="600px" />
         <Typography style={{margin: "32px 0 64px", color: "#9e9e9e"}} variant="headline">To get started and add a new action, click on the + button</Typography>
         {props.children}
     </div>
 )
+
+class ComplianceActionsContainer extends React.Component {
+    state = {
+        expanded: true
+    }
+
+    toggleExpanded = () => {
+        this.setState(({expanded})=>({expanded: !expanded}))
+    }
+    render(){
+        return (
+            this.props.children&&<Card style={{marginBottom: 16}}>
+                <AppBar position="static" color="default" elevation={0}>
+                    <Toolbar variant="dense" style={{paddingLeft: 0}}>
+                        <IconButton onClick={this.toggleExpanded}>
+                            {this.state.expanded?<KeyboardArrowDownIcon />:<KeyboardArrowRightIcon />}
+                        </IconButton>
+                        <ButtonMD variant="contained" size="small" style={{marginRight: 8}}>
+                            {this.props.keyText}
+                        </ButtonMD>
+                        <Typography variant="caption" color="inherit" style={{flex: 1}}>
+                            {this.props.groupBy}
+                        </Typography>
+                        <Typography variant="body2" color="inherit">
+                            {this.props.children?this.props.children.length:0}
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+                {this.state.expanded&&<CardContent style={{paddingTop: 0, paddingBottom: 0}}>
+                    {this.props.children}
+                </CardContent>}
+            </Card>
+        )
+    }
+}
 
 class ProjectTaskList extends React.PureComponent {
     handleAdd = (id=null) => {
@@ -119,7 +168,7 @@ class ProjectTaskList extends React.PureComponent {
         }
 
         if(!prevProps.projectRefId&&this.props.projectRefId) {
-            this.props.getProjectInManager({ projectId: params.id })
+            this.props.getProjectsInManager()
         }
 
         if(!prevProps.project&&this.props.project) {
@@ -135,7 +184,6 @@ class ProjectTaskList extends React.PureComponent {
 
     render() {
         const { projectRefId, project, actionRefId } = this.props
-        const showActionInt = false
         const getProjectActionTree = (input, handleAdd, handleDelete, handleUpdate, handleClick, parentId=null, parentRef=null, child=false) => (
             input.filter(i => i.parentActionId === parentId).length > 0 && input.filter(i => i.parentActionId === parentId).map((task,num) => (
                 <TaskItem 
@@ -154,9 +202,20 @@ class ProjectTaskList extends React.PureComponent {
                 </TaskItem>
             ))
         )
-        //{showActionInt&&(parentRef?`${parentRef}.${num+1}`:num+1)}
-        
+
         const actions = [
+            <ButtonMD 
+                onClick={()=>{
+                    this.props.groupObligations
+                    ?this.props.ungroupObligationsInProjectView()
+                    :this.props.groupObligationsInProjectView("complianceType")
+                    
+                }}
+                size="small" 
+                style={{display: "flex", alignItems: "center", color: this.props.groupObligations&&"white"}}>
+                <GroupIcon style={{marginRight: 4, fontSize: 20}}/>Group
+            </ButtonMD>,
+            <StorageDialogView />,
             <ButtonMD 
                 variant="fab" 
                 color="secondary" 
@@ -190,44 +249,45 @@ class ProjectTaskList extends React.PureComponent {
         ]
 
         const loadingActions = [
-            <div style={{height: 40, width: 40, borderRadius: 50, background: "#ddd", marginLeft: 8, opacity: 0.6}} />,
-            <div style={{height: 40, width: 40, borderRadius: 50, background: "#ddd", marginLeft: 8, opacity: 0.6}} />
+            <div key="1" style={{height: 40, width: 40, borderRadius: 50, background: "#ddd", marginLeft: 8, opacity: 0.6}} />,
+            <div key="2" style={{height: 40, width: 40, borderRadius: 50, background: "#ddd", marginLeft: 8, opacity: 0.6}} />
         ]
 
         const projectActions = project&&project.actions&&Object.keys(project.actions).map(key=>project.actions[key])
         const hasLoadedActions = this.props.hasLoadedActions
         const hasProjectActions = projectActions&&projectActions.length>0
 
-        const TopBar = (attr) => <MainViewTopActionBarContainer color="primary" actions={actions} icon={<DoneAllIcon style={{color: "white", marginRight: 16}}/>}>
-            <Typography style={{color: "white", fontWeight: 300}} noWrap variant="headline">{project&&project.title}</Typography>
-            <Hidden smDown>
-                <Typography style={{color: "white", flex: 1, fontWeight: 300, marginLeft: 32, marginTop: 4}} variant="subheading">{project&&project.description}</Typography>
-            </Hidden>
-            </MainViewTopActionBarContainer>
+        const TopBar = (attr) => (
+            <MainViewTopActionBarContainer color="primary" actions={actions} icon={<DoneAllIcon style={{color: "white", marginRight: 16}}/>}>
+                <Typography style={{color: "white", fontWeight: 300}} noWrap variant="subheading">{project&&project.title}</Typography>
+                <Hidden smDown>
+                    <Typography style={{color: "white", flex: 1, fontWeight: 300, marginLeft: 32}} variant="body1">{project&&project.description}</Typography>
+                </Hidden>
+            </MainViewTopActionBarContainer>)
 
         const LoadingTopBar = () => <MainViewTopActionBarContainer color="primary" actions={loadingActions}>
-                <div style={{height: 24, width: 24, borderRadius: 50, background: "#ddd", marginRight: 16, opacity: 0.6}} />
-                <div style={{height: 32, width: 300, borderRadius: 50, background: "#ddd", opacity: 0.6}} />
-                <div style={{height: 24, width: 400, borderRadius: 50, marginLeft: 32, background: "#ddd", opacity: 0.6}} />
-                <div style={{ flex: 1}} />
+                <div key="1" style={{height: 24, width: 24, borderRadius: 50, background: "#ddd", marginRight: 16, opacity: 0.6}} />
+                <div key="2" style={{height: 32, width: 300, borderRadius: 50, background: "#ddd", opacity: 0.6}} />
+                <div key="3" style={{height: 24, width: 400, borderRadius: 50, marginLeft: 32, background: "#ddd", opacity: 0.6}} />
+                <div key="4" style={{ flex: 1}} />
                 </MainViewTopActionBarContainer>
 
         const LoadingDisplay = () => (
             <div>
-                <ListLoader>
-                    <ListLoader child/>
-                    <ListLoader child>
-                        <ListLoader child/>
-                        <ListLoader child/>
+                <ListLoader key="9">
+                    <ListLoader child key="1"/>
+                    <ListLoader child key="2">
+                        <ListLoader child key="2.1"/>
+                        <ListLoader child key="2.2"/>
                     </ListLoader>
-                    <ListLoader child/>
-                    <ListLoader child/>
+                    <ListLoader child key="3"/>
+                    <ListLoader child key="4"/>
                 </ListLoader>
-                <ListLoader>
-                    <ListLoader child/>
-                    <ListLoader child/>
+                <ListLoader key="8">
+                    <ListLoader child key="5"/>
+                    <ListLoader child key="6"/>
                 </ListLoader>
-                <ListLoader />
+                <ListLoader  key="7"/>
             </div>
         )
 
@@ -238,10 +298,11 @@ class ProjectTaskList extends React.PureComponent {
                         <ButtonMD variant="extendedFab" color="secondary" onClick={()=>this.handleAdd()}><AddIcon /> add {hasProjectActions?"another":"your first"} action!</ButtonMD>
                     </EmptyPlaceholder>
                 )}
-                <div>
+                <div key="body">
                     {this.props.actionRefId
                         ? 
                         <Paper 
+                            key="side-panel-view"
                             style={{ 
                                 position: "absolute", 
                                 right: 0, 
@@ -254,11 +315,18 @@ class ProjectTaskList extends React.PureComponent {
                         </Paper> 
                         : 
                         null}
-                    <div style={{}}>
-                        <div style={{ padding: isWidthUp("sm", this.props.width)?32:8, paddingTop: 0 }}>
+                    <div key='actions'>
+                    {!this.props.groupObligations?<div style={{ padding: isWidthUp("sm", this.props.width)?32:8, paddingTop: 0 }}>
                             {!hasLoadedActions&&!hasProjectActions&&<LoadingDisplay />}
                             {hasProjectActions&&getProjectActionTree(projectActions, this.handleAdd, this.handleDelete, this.handleUpdate, this.handleClick)}
                         </div>
+                        :<div style={{ padding: isWidthUp("sm", this.props.width)?32:8, paddingTop: 32 }}>
+                            {["DUTY", "OBLIGATION", "PROCESS"].map(key=>(
+                                <ComplianceActionsContainer groupBy="Compliance Type" keyText={key} key={key}>
+                                    {hasProjectActions&&getProjectActionTree(projectActions.filter(i=>i[this.props.groupObligations]===key), this.handleAdd, this.handleDelete, this.handleUpdate, this.handleClick)}
+                                </ComplianceActionsContainer>
+                            ))}
+                        </div>}
                     </div>
                 </div>
             </AuthViewRouteContainer>
@@ -274,7 +342,8 @@ const mapStateToProps = (state, ownProps) => {
         hasLoadedActions: state.actionManager.selectedProject&&state.actionManager.projects[state.actionManager.selectedProject.projectId]&&state.actionManager.projects[state.actionManager.selectedProject.projectId].hasLoadedActions,
         actionRefId: state.actionManager.selectedProject.actionId,
         project: state.actionManager.selectedProject&&state.actionManager.projects[state.actionManager.selectedProject.projectId],
-        updateProjectIsOpen: state.actionManager.dialogs.updateProject.isOpen
+        updateProjectIsOpen: state.actionManager.dialogs.updateProject.isOpen,
+        groupObligations: state.actionManager.selectedProject.groupObligations
     }
 }
 

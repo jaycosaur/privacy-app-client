@@ -7,7 +7,6 @@ import DraftsIcon from '@material-ui/icons/Drafts';
 import Tooltip from '@material-ui/core/Tooltip';
 
 import { connect } from 'react-redux'
-import * as actions from '../../../store/actions/accountActions'
 import * as mailingListActions from '../../../store/actions/mailingListActions'
 
 const styles = () => ({

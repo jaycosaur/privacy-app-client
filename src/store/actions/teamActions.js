@@ -1,6 +1,5 @@
 import { db } from '../../config/firebase'
 const organisationRef = db.collection("organisations")
-const usersRef = db.collection('users')
 
 export const getOrganisationIdddformation = ({ organisationId }) => {
     return {

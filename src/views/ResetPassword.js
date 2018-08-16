@@ -1,10 +1,8 @@
 import React from 'react'
 import { Col, Row, Card, message } from 'antd'
 import { themeColors, primaryThemeShades, highlightThemeShades } from './../theme'
-import polyglotLogo from './../assets/poliglot-logo.svg'
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button } from 'antd';
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
 import * as authActions from './../store/actions/authActions'
 import { push } from 'react-router-redux'
 

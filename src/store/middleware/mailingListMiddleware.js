@@ -12,13 +12,12 @@ const mailingGroupRef = ({ organisationId, groupId }) => db.collection("organisa
 export function subscribeToOrganisationMailingGroups() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_ORGANISATION_MAILING_GROUPS') {
-            const { organisation: { organisationId }, user: { user: { uid } } } = getState()
+            const { organisation: { organisationId }} = getState()
             const ref = mailingGroupsRef({ organisationId })
             dispatch({
                 type: "SUBSCRIBED_TO_ORGANISATION_MAILING_GROUPS"
             })
             ref.onSnapshot(function(querySnapshot) {
-                const state = getState()
                 querySnapshot.docChanges().forEach((change) => {
                     const payload = {
                         id: change.doc.id, 
@@ -72,7 +71,7 @@ export function createOrganisationMailingGroup() {
 export function deleteOrganisationMailingGroup() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'LOCAL_DELETE_MAILING_GROUP') {
-            const { organisation: { organisationId }, user: { user: { uid } } } = getState()
+            const { organisation: { organisationId }} = getState()
             const ref = mailingGroupRef({ organisationId, groupId: action.meta.id })
             return dispatch({
                 type: "LOCAL_DELETE_MAILING_GROUP",
@@ -88,7 +87,7 @@ export function deleteOrganisationMailingGroup() {
 export function updateOrganisationMailingGroup() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'LOCAL_UPDATE_MAILING_GROUP') {
-            const { organisation: { organisationId }, user: { user: { uid } } } = getState()
+            const { organisation: { organisationId }} = getState()
             const ref = mailingGroupRef({ organisationId, groupId: action.meta.id })
             return dispatch({
                 type: "LOCAL_UPDATE_MAILING_GROUP",
@@ -115,13 +114,12 @@ const digestRef = ({ organisationId, id }) => db.collection("organisations").doc
 export function subscribeToOrganisationDigests() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_ORGANISATION_DIGESTS') {
-            const { organisation: { organisationId }, user: { user: { uid } } } = getState()
+            const { organisation: { organisationId }} = getState()
             const ref = digestsRef({ organisationId })
             dispatch({
                 type: "SUBSCRIBED_TO_ORGANISATION_DIGESTS"
             })
             ref.onSnapshot(function(querySnapshot) {
-                const state = getState()
                 querySnapshot.docChanges().forEach((change) => {
                     const payload = {
                         id: change.doc.id, 
@@ -173,7 +171,7 @@ export function createOrganisationDigest() {
 export function deleteOrganisationDigest() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'LOCAL_DELETE_DIGEST') {
-            const { organisation: { organisationId }, user: { user: { uid } } } = getState()
+            const { organisation: { organisationId }} = getState()
             const ref = digestRef({ organisationId, id: action.meta.id })
             return dispatch({
                 type: "LOCAL_DELETE_DIGEST",
@@ -189,7 +187,7 @@ export function deleteOrganisationDigest() {
 export function updateOrganisationDigest() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'LOCAL_UPDATE_DIGEST') {
-            const { organisation: { organisationId }, user: { user: { uid } } } = getState()
+            const { organisation: { organisationId }} = getState()
             const ref = digestRef({ organisationId, id: action.meta.id })
             return dispatch({
                 type: "LOCAL_UPDATE_DIGEST",

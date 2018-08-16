@@ -34,7 +34,7 @@ const styles = () => ({
 })
 
 const Index = (props) => {
-    const { classes, type="none" } = props
+    const { classes } = props
     const actions = <topbarActions.TopBarActions />
 
     return (

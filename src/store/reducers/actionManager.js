@@ -15,6 +15,9 @@ const defaultState = {
         },
         updateProject: {
             isOpen: false
+        },
+        projectStorage: {
+            isOpen: false
         }
     },
     selectedProject: {
@@ -33,21 +36,60 @@ export default(state = defaultState, action) => {
     switch(action.type) {
         case 'RESET_STATE_TO_DEFAULT':
             return {...defaultState}
-        case "GET_CURRENT_USER_ASSIGNED_TASKS_AND_ACTIONS_PENDING": {
+        case "GROUP_OBLIGATIONS_IN_PROJECT_VIEW":
+            return {
+                ...state,
+                selectedProject: {
+                    ...state.selectedProject,
+                    groupObligations: action.payload
+                }
+            }
+        case "UNGROUP_OBLIGATIONS_IN_PROJECT_VIEW":
+            return {
+                ...state,
+                selectedProject: {
+                    ...state.selectedProject,
+                    groupObligations: null
+                }
+            }
+        case "SUBSCRIBE_CURRENT_USER_ASSIGNED_TASKS_AND_ACTIONS_OPEN": {
             return {...state, 
                 projectsStatus: {
                     ...state.projectsStatus,
-                    isFetchingCurrentAssignedTasksAndActions: true
+                    isSubscribedCurrentAssignedTasksAndActions: true,
+                    isLoadingCurrentAssignedTasksAndActions: true,
                 }
             }
         }
-        case "GET_CURRENT_USER_ASSIGNED_TASKS_AND_ACTIONS_FULFILLED": {
+        case "NO_CURRENT_USER_ASSIGNED_TASKS_AND_ACTIONS": {
             return {...state, 
                 projectsStatus: {
                     ...state.projectsStatus,
-                    currentAssignedActions: action.payload.actions,
-                    currentAssignedTasks: action.payload.tasks,
-                    isFetchingCurrentAssignedTasksAndActions: false
+                    isSubscribedCurrentAssignedTasksAndActions: true,
+                    isLoadingCurrentAssignedTasksAndActions: false,
+                }
+            }
+        }
+        // USER_ASSIGNED_TASKS_AND_ACTIONS
+        case "UPDATE_CURRENT_USER_ASSIGNED_ACTION_IN_STORE": {
+            return {...state,
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    currentAssignedActions: {
+                        ...state.projectsStatus.currentAssignedActions,
+                        ...action.payload
+                    }
+                }
+            }
+        }
+        case "DELETE_CURRENT_USER_ASSIGNED_ACTION_IN_STORE": {
+            const { [action.meta.actionId]: acCon, ...remAction} = state.projects
+            return {...state, 
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    currentAssignedActions: {
+                        ...remAction
+                    }
                 }
             }
         }
@@ -56,11 +98,7 @@ export default(state = defaultState, action) => {
             return {...state, 
                 projects: {
                     ...state.projects,
-                    [action.meta.projectId]: {
-                        ...state.projects[action.meta.projectId],
-                        ...action.payload
-                    }
-
+                    ...action.payload
                 }
             }
         }
@@ -112,6 +150,17 @@ export default(state = defaultState, action) => {
                 projectsStatus: {
                     ...state.projectsStatus,
                     isLoadingProjects: true, 
+                    isSubscribedToProjects: true,
+                    projectsLoadError: false, 
+                    projectsLoadErrorMessage: null
+                }
+            }
+        case "NO_PROJECTS_FOR_ORGANISATION":
+            return {...state, 
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    isLoadingProjects: false, 
+                    isSubscribedToProjects: true,
                     projectsLoadError: false, 
                     projectsLoadErrorMessage: null
                 }
@@ -183,10 +232,7 @@ export default(state = defaultState, action) => {
                         hasLoadedActions: true,
                         actions: {
                             ...state.projects[action.meta.projectId].actions,
-                            [action.payload.actionId]: {
-                                ...state.projects[action.meta.projectId].actions&&state.projects[action.meta.projectId].actions[action.payload.actionId],
-                                ...action.payload
-                            }
+                            ...action.payload
                         }
                     } 
                 }
@@ -468,6 +514,121 @@ export default(state = defaultState, action) => {
                                     ...remfiles
                                 }
                             }
+                        }
+                    } 
+                }
+            }
+        case 'OPEN_FILE_EXPLORER_IN_PROJECT_VIEW':
+            return {...state, 
+                dialogs: {
+                    ...state.dialogs,
+                    projectStorage: {
+                        ...state.dialogs.projectStorage,
+                        isOpen: true
+                    }
+                },
+            } 
+        case 'CLOSE_FILE_EXPLORER_IN_PROJECT_VIEW':
+            return {...state, 
+                dialogs: {
+                    ...state.dialogs,
+                    projectStorage: {
+                        ...state.dialogs.projectStorage,
+                        isOpen: false
+                    }
+                },
+            }
+        case 'SUBSCRIBE_TO_STORAGE_IN_PROJECT_OPEN':
+            return {...state, 
+                projects: {
+                    ...state.projects,
+                    [action.meta.projectId]: {
+                        ...state.projects[action.meta.projectId],
+                        isSyncingStorage: true, 
+                        storageSyncError: false, 
+                        hasSyncedStorage: false,
+                        storageSyncErrorMessage: null,
+                        isSubscribedToStorage: true
+                    } 
+                }
+            }
+        case 'FETCHED_STORAGE_IN_PROJECT_IN_STORE':
+            return {...state, 
+                projects: {
+                    ...state.projects,
+                    [action.meta.projectId]: {
+                        ...state.projects[action.meta.projectId],
+                        hasSyncedStorage: true,
+                    } 
+                }
+            }
+        case 'UPDATE_FILE_IN_PROJECT_IN_STORE': {
+            return {...state, 
+                projects: {
+                    ...state.projects,
+                    [action.meta.projectId]: {
+                        ...state.projects[action.meta.projectId],
+                        isSyncingStorage: false, 
+                        lastStorageSyncTime: Date.now(),
+                        hasSyncedStorage: true,
+                        storage: {
+                            ...state.projects[action.meta.projectId].storage,
+                            ...action.payload
+                        }
+                    } 
+                }
+            }
+        }
+        case 'UPLOAD_FILE_TO_PROJECT_PENDING': {
+            return {...state, 
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    isUploadingToStorage: true
+                } 
+            }
+        }
+        case 'CREATE_FILE_IN_PROJECT_PENDING': {
+            return {...state, 
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    isUploadingToStorage: true
+                } 
+            }
+        }
+        case 'CREATE_FILE_IN_PROJECT_FULFILLED': {
+            return {...state, 
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    isUploadingToStorage: false
+                } 
+            }
+        }
+        
+        case 'DELETE_FILE_IN_PROJECT_PENDING':
+            return {...state, 
+                projects: {
+                    ...state.projects,
+                    [action.meta.projectId]: {
+                        ...state.projects[action.meta.projectId],
+                        storage: {
+                            ...state.projects[action.meta.projectId].storage,
+                            [action.meta.fileId]:{
+                                ...state.projects[action.meta.projectId].storage[action.meta.fileId],
+                                isDeleting: true
+                            }
+                        }
+                    } 
+                }
+            }
+        case 'DELETE_FILE_IN_PROJECT_IN_STORE':
+            const { [action.meta.fileId]: {file2Del}, ...remFiles} = state.projects[action.meta.projectId].storage
+            return {...state, 
+                projects: {
+                    ...state.projects,
+                    [action.meta.projectId]: {
+                        ...state.projects[action.meta.projectId],
+                        storage: {
+                            ...remFiles
                         }
                     } 
                 }

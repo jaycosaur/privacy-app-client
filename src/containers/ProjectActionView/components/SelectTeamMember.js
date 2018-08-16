@@ -3,8 +3,6 @@ import { connect } from 'react-redux'
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import IconButton from '@material-ui/core/IconButton';
-import PeopleIcon from '@material-ui/icons/People';
-import Avatar from '@material-ui/core/Avatar'
 import Tooltip from '@material-ui/core/Tooltip'
 
 
@@ -23,7 +21,6 @@ class SelectTeamMember extends React.Component {
     };
 
     handleSelect = (_, i) => {
-        console.log(this.props.teamUsers[i])
         this.handleClose()
         this.props.handleChange&&this.props.handleChange(this.props.teamUsers[i])
     }
@@ -32,9 +29,9 @@ class SelectTeamMember extends React.Component {
         const { anchorEl } = this.state;
 
         const { teamUsers=[], buttonContent="Open Menu", buttonStyle={}} = this.props
-
         return (
             [<IconButton
+                key="button"
                 variant="outlined" 
                 size="large"
                 aria-owns={anchorEl ? 'simple-menu' : null}
@@ -47,6 +44,7 @@ class SelectTeamMember extends React.Component {
                 </Tooltip>
             </IconButton>,
             <Menu
+                key="menu"
                 id="simple-menu"
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}

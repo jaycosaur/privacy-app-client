@@ -1,11 +1,9 @@
 import React from 'react'
 import {Progress} from 'antd'
-import SidePanelNotesTab from './../components/SidePanelNotesTab'
 import SidePanelInfoTab from './../components/SidePanelInfoTab'
 import * as reduxActions from './../../../store/actions/actionManagerActions'
 import { connect } from 'react-redux'
 import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
 import HotIcon from '@material-ui/icons/Whatshot';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ChevronIcon from '@material-ui/icons/ChevronRight';
@@ -13,15 +11,17 @@ import CheckIcon from '@material-ui/icons/CheckCircle'
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InfoIcon from '@material-ui/icons/Info';
-import NotesIcon from '@material-ui/icons/Note';
 import FolderIcon from '@material-ui/icons/Folder';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
+import ReportIcon from '@material-ui/icons/Report';
+
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Divider from '@material-ui/core/Divider';
 import SidePanelFilesTab from './../components/SidePanelFilesTab'
+import SidePanelReportTab from './../components/SidePanelReportTab'
 
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
@@ -140,8 +140,11 @@ class SidePanelView extends React.Component {
     updateFile = () => null
     deleteFile =({fileId}) => this.props.deleteFileInAction({fileId})
     onUrgentClick= ({actionId}) => this.props.handleToggleActionUrgency({actionId})
+
+    submitBreachReport = ({message}) => this.props.reportBreachInAction({message})
+
     render() {
-        const data = this.props.data
+        const { data, files } = this.props
         const { value } = this.state
         return (
             <React.Fragment>
@@ -187,29 +190,27 @@ class SidePanelView extends React.Component {
                                 addTask={this.addTask}
                                 deleteTask={this.deleteTask}
                             />}
-                    {value === 2 && <SidePanelNotesTab 
-                                key="notes-tab"
-                                data={data}
-                                hasFetched={data.hasFetchedNotes}
-                                updateNote={this.updateNote}
-                                addNote={this.addNote}
-                                deleteNote={this.deleteNote}
-                            />}
                     {value === 3 && <SidePanelFilesTab
                                 key="files-tab"
                                 data={data}
+                                files={files}
                                 hasFetched={data.hasFetchedFiles}
                                 updateFile={this.updateFile}
                                 addFile={this.addFile}
                                 deleteFile={this.deleteFile}
+                            />}
+                    {value === 4 && <SidePanelReportTab
+                                key="report-tab"
+                                data={data}
+                                submitBreachReport={this.submitBreachReport}
                             />}
                 </div>
                 <Paper elevation={10} style={{borderRadius: 0, position: "absolute", bottom: 0, right: 0, width: "100%"}}>
                     <BottomNavigation value={value} onChange={this.handleTabChange} style={{}}>
                         <BottomNavigationAction label="INFO" value={0} icon={<InfoIcon />} />
                         <BottomNavigationAction label="TASKS" value={1} icon={<DoneAllIcon />} />
-                        <BottomNavigationAction label="NOTES" value={2} icon={<NotesIcon />} />
                         <BottomNavigationAction label="FILES" value={3} icon={<FolderIcon />} />
+                        <BottomNavigationAction label="REPORT" value={4} icon={<ReportIcon />} />
                     </BottomNavigation>
                 </Paper>
             </React.Fragment>
@@ -224,7 +225,8 @@ const mapStateToProps = (state) => {
         actionId,
         projectId,
         updateProjectIsOpen: state.actionManager.dialogs.updateProject.isOpen,
-        data: projectId&&actionId&&state.actionManager.projects[projectId].actions[actionId]
+        data: projectId&&actionId&&state.actionManager.projects[projectId].actions[actionId],
+        files: projectId&&actionId&&state.actionManager.projects[projectId].storage&&Object.keys(state.actionManager.projects[projectId].storage).map(k=>({...state.actionManager.projects[projectId].storage[k], fileId: k})).filter(i=>i.actionId===actionId)
     }
 }
 

@@ -12,29 +12,21 @@ import AppBar from '@material-ui/core/AppBar';
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
-import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
-import red from '@material-ui/core/colors/red';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 import EmailIcon from '@material-ui/icons/Email';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import SendIcon from '@material-ui/icons/Send';
-import SaveIcon from '@material-ui/icons/Save';
 import CopyIcon from '@material-ui/icons/ContentCopy';
 import EditIcon from '@material-ui/icons/Edit'
 import GroupIcon from '@material-ui/icons/Group'
@@ -42,40 +34,18 @@ import GroupIcon from '@material-ui/icons/Group'
 
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import TopBar from './../containers/MailingListTopBar'
-import Moment from '../../node_modules/react-moment';
 
 const bg = "#ddd"
 const Mock = (style) => <div style={{background: bg, ...style}}/>
 
-const DigestSkeleton = () => (
-    <Card style={{marginBottom: 16}}>
-        <CardHeader
-            avatar={<Mock width={48} height={48} borderRadius={50}/>}
-            action={<Mock width={24} height={24} margin={12} borderRadius={50}/>}
-            title={<Mock width={400} height={20} marginBottom={4} borderRadius={5}/>}
-            subheader={<Mock width={300} height={20} borderRadius={5}/>}
-        />
-        <CardContent>
-            <Mock width={600} height={40} marginBottom={4} borderRadius={5}/>
-        </CardContent>
-        <CardActions disableActionSpacing>
-            <Mock width={24} height={24} margin={12}  borderRadius={50}/>
-            <Mock width={24} height={24} margin={12}  borderRadius={50}/>
-            <div style={{flex: 1}}/>
-            <Mock width={24} height={24} margin={12}  borderRadius={50}/>
-        </CardActions>
-    </Card>
-)
 
 class Digest extends Component {
     render() {
-        const { isDeleting, data: { isDraft, createdOn, id, createdBy, title } } = this.props
+        const { isDeleting, data: { isDraft, createdOn } } = this.props
         return (
             <Card style={{marginBottom: 16, width: "100%", opacity: isDeleting&&0.6}}>
                 <CardHeader
@@ -123,14 +93,14 @@ class MailingGroup extends Component {
         isTouched: false,
     }
 
-    static getDerivedStateFromProps(props, state){
+    static getDerivedStateFromProps(props){
         return ({
             title: props.data.title,
             emails: props.data.members,
         })
     }
 
-    handleExpandClick = (val) => {
+    handleExpandClick = () => {
         this.setState(state => ({ expanded: !state.expanded }));
     }
 
@@ -199,14 +169,14 @@ class MailingGroup extends Component {
         })
     }
 
-    componentDidUpdate(prevProps, prevState){
+    componentDidUpdate(prevState){
         if (prevState.title!==this.state.title||prevState.emails!==this.state.emails){
             this.isTouched()
         }
     }
 
     render() {
-        const { isDeleting, data: { createdOn, id, createdBy, title, members } } = this.props
+        const { isDeleting, data: { createdOn, title, members } } = this.props
         return (
             <Card style={{marginBottom: 16, flexGrow: 1, opacity: isDeleting&&0.6}}>
                 <CardHeader
@@ -292,7 +262,7 @@ class MailingList extends Component {
         value: 0
     }
 
-    handleChange = (event, value) => {
+    handleChange = (value) => {
         this.setState({ value });
     };
 
@@ -308,7 +278,7 @@ class MailingList extends Component {
         const EmptyScreen = ({text}) => (
             <div style={{width: "100%", height: "60vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <div>
-                    <img src={require("./../assets/RocketWide.png")} width="600px"/>
+                    <img src={require("./../assets/RocketWide.png")} alt="" width="600px"/>
                     <Typography variant="headline" align="center" style={{color: "rgb(158, 158, 158)", marginTop: 32}}>{text}</Typography>
                 </div>
             </div>
@@ -370,7 +340,7 @@ const View = (props) => {
     return props.userHasOrganisation?<MailingList {...props}/>:"No Organisation!"
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
         mailingGroups: state.mailingList.mailingGroups,
         digests: state.mailingList.digests,

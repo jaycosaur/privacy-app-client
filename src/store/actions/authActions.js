@@ -1,5 +1,4 @@
 import { auth } from './../../config/firebase';
-import { push } from 'react-router-redux'
 
 // Sign Up
 export const doCreateUserWithEmailAndPassword = ({email, password}) => {

@@ -24,6 +24,7 @@ import * as menuActions from './../store/actions/menuActions'
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Hidden from '@material-ui/core/Hidden';
+import classnames from 'classnames'
 
 const Footer = ({isSideDrawerExpanded}) => (
     <div style={{textAlign: "center", flexGrow: 1, margin: 8}}>
@@ -88,9 +89,11 @@ const styles = theme => ({
         backgroundColor: theme.palette.background.default,
         minWidth: 0, // So the Typography noWrap works
         height: "100vh",
-        overflow: "hidden"
+        overflow: "hidden",
+        zIndex: 0
     },
     drawerPaper: {
+        zIndex: 10,
         position: 'relative',
         whiteSpace: 'nowrap',
         width: drawerWidth,
@@ -153,25 +156,25 @@ const SideDrawerToggleContainer = (props) => {
                 <Link to="/search/">
                 <ListItem button>
                     <ListItemIcon>
-                        <Icon className={classes.icon+" "+'fas fa-search'} />
+                        <Icon className={classnames(classes.icon,'fas fa-search')} />
                     </ListItemIcon>
                     <ListItemText inset primary="Track and Watch" />
                 </ListItem>
                 </Link>
                 <Link to="/search/regulation">
                     <ListItem button>
-                        <ListItemIcon><Icon className={classes.icon+" "+'fas fa-balance-scale'} /></ListItemIcon>
+                        <ListItemIcon><Icon className={classnames(classes.icon, 'fas fa-balance-scale')} /></ListItemIcon>
                         <ListItemText primary="Regulatory Developments" />
                     </ListItem>
                 </Link>
                 <Link to="/search/media-and-commentary">
                     <ListItem button>
-                        <ListItemIcon><Icon className={classes.icon+" "+'fas fa-newspaper'} /></ListItemIcon>
+                        <ListItemIcon><Icon className={classnames(classes.icon,'fas fa-newspaper')} /></ListItemIcon>
                         <ListItemText primary="Media & Commentary" />
                     </ListItem>
                 </Link>
                 <ListItem button disabled>
-                    <ListItemIcon><Icon className={classes.icon+" "+'fas fa-book'} /></ListItemIcon>
+                    <ListItemIcon><Icon className={classnames(classes.icon,'fas fa-book')} /></ListItemIcon>
                     <ListItemText primary="Research & Reports" />
                 </ListItem>
                 <Divider />
@@ -217,6 +220,7 @@ const SideDrawerToggleContainer = (props) => {
             }}
             variant="permanent"
             open={isSideDrawerExpanded}
+            elevation={20}
             >
             <div className={classes.toolbar}>
                 {width}

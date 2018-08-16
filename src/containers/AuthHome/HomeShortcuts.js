@@ -68,7 +68,6 @@ const styles = (theme) => ({
 
 
 const HomeView = (props) => {
-    const { classes } = props
     return (
             <Card>
                 <div style={{display: "flex", width: "80%", flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 32}}>

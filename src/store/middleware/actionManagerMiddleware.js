@@ -35,52 +35,69 @@ export function updateProjectInManagerMW() {
         if (action.type === 'UPDATE_PROJECT_IN_MANAGER') {
             const state = getState()
             const { organisation: { organisationId }, actionManager: { selectedProject: { projectId } } } = state
-            return dispatch({ 
+            dispatch({ 
                 type: "UPDATE_PROJECT_IN_MANAGER", 
-                payload: projectRef({organisationId, projectId}).update({...action.payload}).then(async ()=>{
-                    await dispatch({type: 'CLOSE_UPDATE_PROJECTS_IN_MANAGER_DIALOGUE'})
-                }) 
+                payload: projectRef({organisationId, projectId}).update({...action.payload}) 
             })
+            return dispatch({type: 'CLOSE_UPDATE_PROJECTS_IN_MANAGER_DIALOGUE'})
         }
         return next(action)
     }
 }
 
-const updateProjectAction = ({ payload, projectId }) => ({type: "UPDATE_PROJECT_IN_STORE", payload, meta: { projectId }})
+//const updateProjectAction = ({ payload, projectId }) => ({type: "UPDATE_PROJECT_IN_STORE", payload, meta: { projectId }})
+const updateProjectAction = ({ payload }) => ({type: "UPDATE_PROJECT_IN_STORE", payload })
 const deleteProjectAction = ({ projectId }) => ({type: "DELETE_PROJECT_IN_STORE", meta: { projectId }})
 
 export function getProjectsInManagerSubscription() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'SUBSCRIBE_TO_PROJECTS_IN_MANAGER') {
-            const state = getState()
+            let state = getState()
             const { organisation: { organisationId }, user: { user: { uid } } } = state
-            dispatch({
-                type: "SUBSCRIBE_TO_PROJECTS_IN_MANAGER_OPEN",
-            })
-            projectsRef({organisationId}).onSnapshot(function(querySnapshot) {
-                querySnapshot.docChanges().forEach((change) => {
-                    const docData = change.doc.data()
-                    const projectId = change.doc.id
-                    const payload = {
-                        projectId, 
-                        ...docData, 
-                        isFavorited: docData.userFavorited&&docData.userFavorited.includes(uid)
-                    }
-                    if (change.type === "removed"){
-                        dispatch(deleteProjectAction({ projectId }))
+            const isSubscribed = state.actionManager.projectsStatus.isSubscribedToProjects
+            if (!isSubscribed&&organisationId){
+                dispatch({
+                    type: "SUBSCRIBE_TO_PROJECTS_IN_MANAGER_OPEN",
+                })
+                projectsRef({organisationId}).onSnapshot(function(querySnapshot) {
+                    state = getState()
+                    let projects = {}
+                    querySnapshot.docChanges().forEach((change) => {
+                        const docData = change.doc.data()
+                        const projectId = change.doc.id
+                        const payload = {
+                            projectId, 
+                            ...docData, 
+                            isFavorited: docData.userFavorited&&docData.userFavorited.includes(uid)
+                        }
+                        if (change.type === "removed"){
+                            dispatch(deleteProjectAction({ projectId }))
+                        } else {
+                            projects = {
+                                ...projects,
+                                [projectId]: {
+                                    ...state.actionManager.projects[projectId],
+                                    ...payload
+                                }
+                            }
+                        }
+                    })
+                    if (Object.keys(projects).length>0){
+                        dispatch(updateProjectAction({ payload: projects }))
                     } else {
-                        dispatch(updateProjectAction({ payload, projectId }))
+                        dispatch({type: "NO_PROJECTS_FOR_ORGANISATION"})
                     }
                 })
-            })
+            }
+            
         }
         return next(action)
     }
 }
 
-export function getProjectInManagerMW() {
+/* export function getProjectInManagerMW() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type === 'GET_PROJECT_IN_MANAGER') {
+        if (action.type === 'GET_PROJEasdfCT_IN_MANAGER') {
             const state = getState()
             const { organisation: { organisationId }, user: { user: { uid } } } = state
             const projectId = action.meta.projectId
@@ -98,7 +115,7 @@ export function getProjectInManagerMW() {
         }
         return next(action)
     }
-}
+} */
 
 export function deleteProjectInManagerMW() {
     return ({ dispatch, getState }) => next => action => {
@@ -123,7 +140,7 @@ export function deleteProjectInManagerMW() {
 // delete
 // update
 
-const updateActionAction = ({ payload, projectId, actionId }) => ({type: "UPDATE_ACTION_IN_PROJECT_IN_STORE", payload, meta: { projectId, actionId }})
+const updateActionAction = ({ payload, projectId }) => ({type: "UPDATE_ACTION_IN_PROJECT_IN_STORE", payload, meta: { projectId }})
 const deleteActionAction = ({ projectId, actionId  }) => ({type: "DELETE_ACTION_IN_PROJECT_IN_STORE", meta: { projectId, actionId }})
 const hasFetchedActions = ({ projectId }) => ({type: "FETCHED_ACTIONS_IN_PROJECT_IN_STORE", meta: { projectId }})
 
@@ -141,7 +158,7 @@ export function getActionsInProjectSubscription() {
                 type: "SUBSCRIBE_TO_ACTIONS_IN_PROJECT_OPEN", meta: { projectId }
             })
             actionsInProjectRef({organisationId, projectId}).onSnapshot(function(querySnapshot) {
-                dispatch(hasFetchedActions({ projectId }))
+                let actions = {}
                 querySnapshot.docChanges().forEach((change) => {
                     const docData = change.doc.data()
                     const actionId = change.doc.id
@@ -153,9 +170,14 @@ export function getActionsInProjectSubscription() {
                     if (change.type === "removed"){
                         dispatch(deleteActionAction({ projectId, actionId }))
                     } else {
-                        dispatch(updateActionAction({ payload, projectId, actionId }))
+                        actions = {
+                            ...actions,
+                            [actionId]: payload
+                        }
                     }
                 })
+                dispatch(updateActionAction({ payload: actions, projectId }))
+                dispatch(hasFetchedActions({ projectId }))
             })
         }
         return next(action)
@@ -210,14 +232,7 @@ export function updateFocusedActionInProjectMW() {
                     projectId,
                     actionId,
                 }
-            }).then(()=>dispatch({
-                type: "GET_ACTION_IN_PROJECT", 
-                meta: {
-                    organisationId,
-                    projectId,
-                    actionId,
-                }
-            }))
+            })
         }
         return next(action)
     }
@@ -268,7 +283,7 @@ export function getActionInProjectMW() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_ACTION_IN_PROJECT') {
             const state = getState()
-            const { organisation: { organisationId }, user: { }, actionManager: { selectedProject: { projectId }}} = state
+            const { organisation: { organisationId }, actionManager: { selectedProject: { projectId }}} = state
             const { actionId } = action.meta
             dispatch({
                 type: "GET_ACTION_IN_PROJECT",
@@ -291,7 +306,7 @@ export function deleteActionInProjectMW() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'DELETE_ACTION_IN_PROJECT') {
             const state = getState()
-            const { organisation: { organisationId }, user: { }, actionManager: { selectedProject: { projectId }}} = state
+            const { organisation: { organisationId }, actionManager: { selectedProject: { projectId }}} = state
             const { actionId } = action.payload
             dispatch({ 
                 type: "DELETE_ACTION_IN_PROJECT", 
@@ -320,6 +335,7 @@ export function deleteActionInProjectMW() {
 //const fileRef = ({ organisationId, projectId, actionId, itemId }) => db.collection("organisations").doc(organisationId).collection('projects').doc(projectId).collection('actions').doc(actionId).collection('files').doc(itemId)
 //const uploadFileToActionRef = ({ organisationId, projectId, actionId }) => storageRef.child('action_manager_storage').child(organisationId).child(projectId).child(actionId)
 const uploadFileToActionRef = ({ organisationId, projectId, actionId }) => storageRef.child('action_manager_storage').child(organisationId).child(projectId).child(actionId)
+const uploadFileToProjectRef = ({ organisationId, projectId }) => storageRef.child('action_manager_storage').child(organisationId).child(projectId)
 
 const tasksRef = ({ organisationId }) => db.collection("organisations").doc(organisationId).collection('tasks')
 const taskRef = ({ organisationId, id }) => tasksRef({organisationId}).doc(id)
@@ -332,8 +348,11 @@ const notesInActionRef = ({ organisationId, actionId }) => notesRef({ organisati
 
 const filesRef = ({ organisationId }) => db.collection("organisations").doc(organisationId).collection('files')
 const fileRef = ({ organisationId, id }) => filesRef({ organisationId }).doc(id)
-const filesInActionRef = ({ organisationId, actionId}) => filesRef({ organisationId }).where("actionId","==",actionId)
+// const filesInActionRef = ({ organisationId, actionId}) => filesRef({ organisationId }).where("actionId","==",actionId)
+const filesInProjectRef = ({ organisationId, projectId}) => filesRef({ organisationId }).where("projectId","==",projectId)
 
+const breachesRef = ({ organisationId }) => db.collection("organisations").doc(organisationId).collection('breaches')
+// const breachRef = ({ organisationId, id }) => breachesRef({ organisationId }).doc(id)
 // actionsOwnedByUserRef
 // tasksUserAssignedRef
 
@@ -352,23 +371,43 @@ const transformResponseToNestedObject = (res) => {
     })
     return items
 }
+
+const updateUserAssignedAction = ({ payload }) => ({type: "UPDATE_CURRENT_USER_ASSIGNED_ACTION_IN_STORE", payload })
+const deleteUserAssignedAction = ({ actionId  }) => ({type: "DELETE_CURRENT_USER_ASSIGNED_ACTION_IN_STORE", meta: { actionId }})
+
 export function getCurrentUserAssignedTasksAndActions() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_CURRENT_USER_ASSIGNED_TASKS_AND_ACTIONS') {
-            const { organisation: { organisationId }, user: { user: { uid } }, actionManager: {}} = getState()
-            dispatch({
-                type: "GET_CURRENT_USER_ASSIGNED_TASKS_AND_ACTIONS", 
-                payload: Promise.all(
-                    [
-                        actionsOwnedByUserRef({organisationId, userId: uid}).get().then(res=>transformResponseToNestedObject(res)),
-                        tasksUserAssignedRef({organisationId, userId: uid}).get().then(res=>transformResponseToNestedObject(res))
-                    ]
-                ).then(res=>({actions: res[0], tasks: res[1]})),
-                meta: {
-                    userId: uid,
-                    organisationId,
-                }
-            })
+            const { organisation: { organisationId }, user: { user: { uid } }} = getState()
+            if(organisationId){
+                dispatch({
+                    type: "SUBSCRIBE_CURRENT_USER_ASSIGNED_TASKS_AND_ACTIONS_OPEN"
+                })
+                actionsOwnedByUserRef({organisationId, userId: uid}).onSnapshot(function(querySnapshot) {
+                    let actions = {}
+                    querySnapshot.docChanges().forEach((change) => {
+                        const docData = change.doc.data()
+                        const actionId = change.doc.id
+                        const payload = {
+                            actionId, 
+                            ...docData, 
+                        }
+                        if (change.type === "removed"){
+                            dispatch(deleteUserAssignedAction({ actionId }))
+                        } else {
+                            actions = {
+                                ...actions,
+                                [actionId]: payload
+                            }
+                        }
+                    })
+                    if (Object.keys(actions).length>0){
+                        dispatch(updateUserAssignedAction({ payload: actions }))
+                    } else {
+                        dispatch({type: "NO_CURRENT_USER_ASSIGNED_TASKS_AND_ACTIONS"})
+                    }
+                })
+            }
         }
         return next(action)
     }
@@ -402,7 +441,7 @@ export function createTaskInActionMW() {
 export function updateTaskInActionMW() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === "UPDATE_TASK_IN_ACTION") {
-            const { organisation: { organisationId }, user: { },  actionManager: { selectedProject: { projectId, actionId }}} = getState()
+            const { organisation: { organisationId }} = getState()
             const { taskId } = action.meta
             return dispatch({ 
                 type: "UPDATE_TASK_IN_ACTION", 
@@ -439,72 +478,10 @@ export function createNoteInActionMW() {
     }
 }
 
-export function createFileInActionMW() {
-    return ({ dispatch, getState }) => next => action => {
-        if (action.type === "CREATE_FILE_IN_ACTION") {
-            const { organisation: { organisationId }, user: { user: { uid } },  actionManager: { selectedProject: { projectId, actionId }}} = getState()
-            const files = action.payload
-            const fileStorageRef = uploadFileToActionRef({ organisationId, projectId, actionId })
-            files.map((file)=>dispatch({
-                type:"UPLOAD_FILE_TO_ACTION",
-                payload: fileStorageRef.child(file.name).put(file).then(async function() {
-                    const url = await fileStorageRef.child(file.name).getDownloadURL()
-                    return dispatch(
-                        {
-                            type: "CREATE_FILE_IN_ACTION",
-                            payload: filesRef({ organisationId }).add({
-                                name: fileStorageRef.child(file.name).name,
-                                path: fileStorageRef.child(file.name).fullPath,
-                                downloadUrl: url,
-                                createdOn: moment().toISOString(),
-                                createdBy: uid,
-                                fileByteSize: file.size,
-                                organisationId,
-                                projectId,
-                                actionId
-                            }).then(res=>{
-                                dispatch({
-                                    type: "GET_FILE_IN_ACTION",
-                                    payload: fileRef({organisationId, id: res.id}).get().then(snap=>{
-                                        return {
-                                            id: snap.id,
-                                            ...snap.data()
-                                        }
-                                    }),
-                                    meta: {
-                                        projectId,
-                                        actionId,
-                                        organisationId,
-                                        fileId: res.id
-                                    }
-                                    })
-                                }),
-                            meta: {
-                                projectId,
-                                actionId,
-                                organisationId,
-                                name: file.name
-                            }
-                        })
-                    }),
-                    meta: {
-                        projectId,
-                        actionId,
-                        organisationId,
-                        name: file.name
-                    }
-                  }))
-        }
-        
-        return next(action)
-    }   
-}
-
-
 export function getTaskInAction() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_TASK_IN_ACTION') {
-            const { organisation: { organisationId }, user: { }, actionManager: { selectedProject: { projectId}}} = getState()
+            const { organisation: { organisationId },actionManager: { selectedProject: { projectId}}} = getState()
             const actionId = action.meta
             const taskId = null
             let items = {}
@@ -608,58 +585,28 @@ export function getNotesInActionSubscription() {
     }
 }
 
-const updatefileAction = ({ payload, projectId, actionId, fileId }) => ({type: "UPDATE_FILE_IN_ACTION_IN_STORE", payload, meta: { projectId, actionId, fileId }})
-const deletefileAction = ({ projectId, actionId, fileId  }) => ({type: "DELETE_FILE_IN_ACTION_IN_STORE", meta: { projectId, actionId, fileId }})
-const hasFetchedFilesAction = ({ projectId, actionId }) => ({type: "FETCHED_FILES_IN_ACTION_IN_STORE", meta: { projectId, actionId }})
-
-export function getfilesInActionSubscription() {
-    return ({ dispatch, getState }) => next => action => {
-        if (action.type === 'SUBSCRIBE_TO_FILES_IN_ACTION') {
-            let state = getState()
-            const { organisation: { organisationId }, actionManager: { selectedProject: { projectId }}} = state
-            const actionId = action.payload.actionId
-            dispatch({
-                type: "SUBSCRIBE_TO_FILES_IN_ACTION_OPEN", meta: { projectId,  }
-            })
-            filesInActionRef({organisationId, actionId}).onSnapshot(function(querySnapshot) {
-                dispatch(hasFetchedFilesAction({ projectId, actionId, }))
-                state = getState()
-                querySnapshot.docChanges().forEach((change) => {
-                    const docData = change.doc.data()
-                    const id = change.doc.id
-                    const projectId = docData.projectId
-                    const payload = {
-                        id, 
-                        ...docData, 
-                    }
-                    if (change.type === "removed"){
-                        state.actionManager.projects[projectId].actions[actionId].files[id]
-                            &&dispatch(deletefileAction({ projectId, actionId, fileId: id}))
-                    } else {
-                        dispatch(updatefileAction({ payload, projectId, actionId, fileId: id}))
-                    }
-                })
-            })
-        }
-        return next(action)
-    }
-}
+// const updatefileAction = ({ payload, projectId, actionId, fileId }) => ({type: "UPDATE_FILE_IN_ACTION_IN_STORE", payload, meta: { projectId, actionId, fileId }})
+const updatefileProject = ({ payload, projectId }) => ({type: "UPDATE_FILE_IN_PROJECT_IN_STORE", payload, meta: { projectId }})
+const deletefileProject = ({ projectId, fileId }) => ({type: "DELETE_FILE_IN_PROJECT_IN_STORE", meta: { projectId, fileId }})
+// const hasFetchedFilesAction = ({ projectId, actionId }) => ({type: "FETCHED_FILES_IN_ACTION_IN_STORE", meta: { projectId, actionId }})
+const hasFetchedFilesProject = ({ projectId }) => ({type: "FETCHED_FILES_IN_PROJECT_IN_STORE", meta: { projectId }})
 
 export function onSelectActionGetChildren() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'SELECT_ACTION_IN_PROJECT') {
             const actionId = action.payload.actionId
+            const projectId = getState().actionManager.selectedProject.projectId
             dispatch({
                 type: "SUBSCRIBE_TO_TASKS_IN_ACTION", 
-                payload: { actionId }
+                payload: { actionId, projectId }
             })
             dispatch({
                 type: "SUBSCRIBE_TO_NOTES_IN_ACTION", 
-                payload: { actionId }
+                payload: { actionId, projectId }
             })
             dispatch({
                 type: "SUBSCRIBE_TO_FILES_IN_ACTION", 
-                payload: { actionId }
+                payload: { actionId, projectId }
             })
         }
         return next(action)
@@ -670,7 +617,7 @@ export function deleteTaskInAction() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'DELETE_TASK_IN_ACTION') {
             const state = getState()
-            const { organisation: { organisationId }, user: { }, actionManager: { selectedProject: { projectId, actionId }}} = state
+            const { organisation: { organisationId }, actionManager: { selectedProject: { projectId, actionId }}} = state
             const { taskId } = action.meta
             dispatch({ 
                 type: "DELETE_TASK_IN_ACTION", 
@@ -689,7 +636,7 @@ export function deleteNoteInAction() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'DELETE_NOTE_IN_ACTION') {
             const state = getState()
-            const { organisation: { organisationId }, user: { }, actionManager: { selectedProject: { projectId, actionId }}} = state
+            const { organisation: { organisationId }, actionManager: { selectedProject: { projectId, actionId }}} = state
             const { noteId } = action.meta
             dispatch({ 
                 type: "DELETE_NOTE_IN_ACTION", 
@@ -706,15 +653,14 @@ export function deleteNoteInAction() {
 
 export function deleteFileInAction() {
     return ({ dispatch, getState }) => next => action => {
-        if (action.type === 'DELETE_FILE_IN_ACTION') {
+        if (action.type === 'DELETE_FILE_IN_PROJECT') {
             const state = getState()
-            const { organisation: { organisationId }, user: { }, actionManager: { selectedProject: { projectId, actionId }}} = state
+            const { organisation: { organisationId }, actionManager: { selectedProject: { projectId }}} = state
             const { fileId } = action.meta
             dispatch({ 
-                type: "DELETE_FILE_IN_ACTION", 
-                payload: fileRef({ organisationId, id:fileId }).delete(), 
+                type: "DELETE_FILE_IN_PROJECT", 
+                payload: fileRef({ organisationId, id: fileId }).delete(), 
                 meta: {
-                    actionId,
                     projectId,
                     fileId
                 }})
@@ -729,7 +675,7 @@ export function getTeamSnapshotStatistics() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_TEAM_SNAPSHOT_STATISTICS') {
             const state = getState()
-            const { organisation: { organisationId }, user: { }, actionManager: {}} = state
+            const { organisation: { organisationId }} = state
             
             const promArr = [
             projectsRef({ organisationId }).get().then(snap => ({ projectsCount: snap.size })),
@@ -742,6 +688,181 @@ export function getTeamSnapshotStatistics() {
                 meta: {
                     organisationId
                 }})
+        }
+        return next(action)
+    }
+}
+
+
+
+export function reportBreachInActionMW() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === "REPORT_BREACH_IN_ACTION") {
+            const {  user: { user: { uid } },organisation: { organisationId },  actionManager: { selectedProject: { projectId, actionId }}} = getState()
+            const dbObject = {
+                organisationId,
+                projectId,
+                actionId,
+                createdOn: moment().toISOString(),
+                createdBy: uid,
+                message: action.payload.message,
+            }
+            return dispatch({ 
+                type: "REPORT_BREACH_IN_ACTION", 
+                payload: breachesRef({ organisationId }).add(dbObject),
+                meta: {
+                    projectId,
+                    actionId
+                }
+            })
+        }
+        return next(action)
+    }
+}
+
+// STORAGE
+
+export function createFileInProjectMW() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === "CREATE_FILE_IN_PROJECT") {
+            const { organisation: { organisationId }, user: { user: { uid } },  actionManager: { selectedProject: { projectId, actionId }}} = getState()
+            const files = action.payload
+            const fileStorageRef = uploadFileToProjectRef({ organisationId, projectId })
+            files.map((file)=>dispatch({
+                type:"UPLOAD_FILE_TO_PROJECT",
+                payload: fileStorageRef.child(file.name).put(file).then(async function() {
+                    const url = await fileStorageRef.child(file.name).getDownloadURL()
+                    return dispatch(
+                        {
+                            type: "CREATE_FILE_IN_PROJECT",
+                            payload: filesRef({ organisationId }).add({
+                                name: fileStorageRef.child(file.name).name,
+                                path: fileStorageRef.child(file.name).fullPath,
+                                downloadUrl: url,
+                                createdOn: moment().toISOString(),
+                                createdBy: uid,
+                                fileByteSize: file.size,
+                                organisationId,
+                                projectId,
+                            }),
+                            meta: {
+                                projectId,
+                                organisationId,
+                                name: file.name
+                            }
+                        })
+                    }),
+                meta: {
+                    projectId,
+                    actionId,
+                    organisationId,
+                    name: file.name
+                }
+            }))
+        }
+        return next(action)
+    }   
+}
+
+export function createFileInActionMW() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === "CREATE_FILE_IN_ACTION") {
+            const { organisation: { organisationId }, user: { user: { uid } },  actionManager: { selectedProject: { projectId, actionId }}} = getState()
+            const files = action.payload
+            const fileStorageRef = uploadFileToActionRef({ organisationId, projectId, actionId })
+            files.map((file)=>dispatch({
+                type:"UPLOAD_FILE_TO_ACTION",
+                payload: fileStorageRef.child(file.name).put(file).then(async function() {
+                    const url = await fileStorageRef.child(file.name).getDownloadURL()
+                    return dispatch(
+                        {
+                            type: "CREATE_FILE_IN_ACTION",
+                            payload: filesRef({ organisationId }).add({
+                                name: fileStorageRef.child(file.name).name,
+                                path: fileStorageRef.child(file.name).fullPath,
+                                downloadUrl: url,
+                                createdOn: moment().toISOString(),
+                                createdBy: uid,
+                                fileByteSize: file.size,
+                                organisationId,
+                                projectId,
+                                actionId
+                            }),
+                            meta: {
+                                projectId,
+                                actionId,
+                                organisationId,
+                                name: file.name
+                            }
+                        })
+                    }),
+                meta: {
+                    projectId,
+                    actionId,
+                    organisationId,
+                    name: file.name
+                }
+            }))
+        }
+        return next(action)
+    }   
+}
+
+export function getfilesInProjectSubscription() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'SUBSCRIBE_TO_STORAGE_IN_PROJECT' || action.type === "SUBSCRIBE_TO_FILES_IN_ACTION") {
+            let state = getState()
+            const { organisation: { organisationId } } = state
+            const projectId = action.payload.projectId
+            const isSubscribed = state.actionManager.projects[projectId].isSubscribedToStorage
+            if (!isSubscribed){
+                dispatch({
+                    type: "SUBSCRIBE_TO_STORAGE_IN_PROJECT_OPEN", meta: { projectId }
+                })
+                filesInProjectRef({organisationId, projectId}).onSnapshot((querySnapshot) => {
+                    dispatch(hasFetchedFilesProject({ projectId }))
+                    state = getState()
+                    let updateItems = {}
+                    querySnapshot.docChanges().forEach((change) => {
+                        const docData = change.doc.data()
+                        const id = change.doc.id
+                        const projectId = docData.projectId
+                        const payload = {
+                            id, 
+                            ...docData, 
+                        }
+                        if (change.type === "removed"){
+                            state.actionManager.projects[projectId].storage&&state.actionManager.projects[projectId].storage[id]
+                                &&dispatch(deletefileProject({ projectId, fileId: id}))
+                        } else {
+                            updateItems = {
+                                ...updateItems,
+                                [id]: payload
+                            }
+                        }
+                    })
+                    if (updateItems){
+                        dispatch(updatefileProject({ payload:updateItems, projectId }))
+                    }
+                })
+            }
+        }
+        return next(action)
+    }
+}
+
+export function onOpenFileExplorerGetFiles() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'OPEN_FILE_EXPLORER_IN_PROJECT_VIEW') {
+            let state = getState()
+            const { actionManager: { selectedProject: { projectId }}} = state
+            const isSubscribed = state.actionManager.projects[projectId].isSubscribedToStorage
+            if(!isSubscribed){
+                dispatch({
+                    type: "SUBSCRIBE_TO_STORAGE_IN_PROJECT", 
+                    payload: { projectId }
+                })
+            }
         }
         return next(action)
     }

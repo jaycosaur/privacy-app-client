@@ -3,8 +3,6 @@ import { message } from 'antd'
 import { connect } from 'react-redux'
 import * as authActions from './../store/actions/authActions'
 import { Link } from 'react-router-dom'
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import backgroundImg from './../assets/unauthbackground.jpg';
@@ -96,21 +94,19 @@ const validate = values => {
 const renderTextField = ({ input: { value, onChange }, label, meta: { touched, error }, ...custom }) => (
     <TextField 
         label={label}
-        errorText={touched && error}
         value={value}
         onChange={onChange}
         fullWidth
-        margin="normal"
         error={touched && error}
         {...custom}
         margin="dense"
-        autocomplete="off"
     />
 )
 
 const InputWrap = (props) => (
     <Button
         variant="contained" 
+        disableFocusRipple
         style={{
             width: "100%",
             background: "white",
@@ -124,14 +120,14 @@ const InputWrap = (props) => (
 )
   
 const MaterialUiForm = props => {
-    const { handleSubmit, pristine, reset, submitting, submitSucceeded } = props
+    const { handleSubmit, submitting} = props
     return (
-        <form onSubmit={handleSubmit} autocomplete="off" onKeyPress={e=>e.key==="Enter"&&handleSubmit}>
+        <form onSubmit={handleSubmit} onKeyPress={e=>e.key==="Enter"&&handleSubmit}>
             <InputWrap>
-                <Field name="email" component={renderTextField} placeholder="Email address"/>
+                <Field name="email" suggested="current-email" component={renderTextField} placeholder="Email address"/>
             </InputWrap>
             <InputWrap>
-                <Field name="password" component={renderTextField} placeholder="Password" type="password"/>
+                <Field suggested="current-password" name="password" component={renderTextField} placeholder="Password" type="password"/>
             </InputWrap>
             <div style={{marginBottom: 24, width: "100%"}}><Link to="/signin/resetpassword" style={{float: "right", color: "white"}}>Forgot password</Link></div>
             <Button 
@@ -149,6 +145,8 @@ const MaterialUiForm = props => {
               >
               <strong>SIGN-IN</strong>{props.isLoading&&"..."}
             </Button>
+            <Typography align="center" variant="subheading" style={{marginTop: 24, width: "100%"}}><Link to="/signin/signup" style={{color: "white", width: "100%", textAlign: "center"}}>Not a member? Signup now.</Link></Typography>
+
         </form>
     )
 }
@@ -184,7 +182,7 @@ const Signin = (props) => {
                 <div className={classes.formCard}>
                     <Typography variant="title" align="left" style={{color: "white"}} gutterBottom>Sign-in</Typography>
                     <Typography variant="subheading" align="left" style={{color: "white", marginBottom: 32}} gutterBottom>
-                        We are currently undergoing closed BETA. If you would like to be part of this BETA please drop us a line <a href="http://polibase.com.au/sign-up-for-the-pilot/" target="_blank">here.</a>
+                        We are currently undergoing closed BETA. If you would like to be part of this BETA please drop us a line <a href="http://polibase.com.au/sign-up-for-the-pilot/" rel="noopener noreferrer" target="_blank">here.</a>
                     </Typography>
                     <WrappedForm isLoading={props.isSigningIn} onSubmit={props.signInWithEmailAndPassword}/>
                 </div>

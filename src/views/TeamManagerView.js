@@ -2,6 +2,7 @@ import React from 'react'
 import { getWatchlistItem, clearFilterData } from '../store/actions/watchlistActions'
 import * as teamActions from '../store/actions/teamActions'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 import { withStyles } from '@material-ui/core/styles';
 
@@ -9,14 +10,11 @@ import TeamManagerTopActionBar from '../containers/TeamManagerTopActionBar'
 
 import AuthViewRouteContainer from './AuthViewRouteContainer'
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
-import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 
 import Input from '@material-ui/core/Input';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -33,13 +31,10 @@ import DoneAllIcon from '@material-ui/icons/DoneAll';
 import DescriptionIcon from '@material-ui/icons/Description';
 
 import StorageIcon from '@material-ui/icons/Storage';
-import PersonIcon from '@material-ui/icons/PersonOutline';
 import NotificationOnIcon from '@material-ui/icons/NotificationsActive';
 import NotificationOffIcon from '@material-ui/icons/NotificationsOff';
 import AdminIcon from '@material-ui/icons/VerifiedUser';
-import SendIcon from '@material-ui/icons/Send';
 import DeleteIcon from '@material-ui/icons/Delete';
-import ExpandIcon from '@material-ui/icons/MoreVert'
 import EditIcon from '@material-ui/icons/Edit'
 import LeaveIcon from '@material-ui/icons/Rowing'
 
@@ -56,13 +51,14 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TableFooter from '@material-ui/core/TableFooter';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+
+import Toolbar from '@material-ui/core/Toolbar';
 
 const styles = theme => ({
     card: {
@@ -97,11 +93,6 @@ const styles = theme => ({
     flex: {
         display: "flex",
         justifyContent: "space-between",
-        alignItems: "center"
-    },
-    flex: {
-        display: "flex",
-        justifyContent: "space-between",
         alignItems: "center",
         flexDirection: "column"
     },
@@ -124,16 +115,21 @@ const styles = theme => ({
     }
   });
 
-class AddUserFields extends React.Component {
+class AddUserDialog extends React.Component {
     state = {
-        users: [],
         formValue: null,
-        showForm: true,
+        open: false,
+
     }
 
-    showForm = () => {
+    handleClickOpen = () => {
         this.setState({
-            showForm: true
+            open: true
+        })
+    }
+    handleClose = () => {
+        this.setState({
+            open: false
         })
     }
 
@@ -141,80 +137,75 @@ class AddUserFields extends React.Component {
         this.setState({ formValue: event.target.value });
     }
 
-    handleBlur = () => {
-
-    }
-
     handleEnter = e => {
         if (e.key === "Enter"){
             this.props.handleAddUser(this.state.formValue)
 
-            this.setState(state=>({
-                users: [...state.users, state.formValue],
+            this.setState(() => ({
                 formValue: "",
-                showForm: false
+                showForm: false,
+                open: false
             }))
         }
     }
 
-    handleDelete = id => {
-        this.setState(state=>({
-            users: [
-                ...state.users.slice(0, id),
-                ...state.users.slice(id + 1)
-            ]
+    handleAccept = () => {
+        this.props.handleAddUser(this.state.formValue)
+        this.setState(() => ({
+            formValue: "",
+            open: false
         }))
     }
 
     render(){
         const { classes } = this.props
-        const hasAddedUsers = this.state.users.length>0
-        const showForm = !hasAddedUsers||this.state.showForm
+        const { onClick, ...otherProps} = this.props
+
         return (
-            <Card elevation={10}>
-                <List subheader={<ListSubheader>Invited Users</ListSubheader>}>
-                {this.state.users.map((email,id) => (
-                    <ListItem key={id} dense button className={classes.listItem}>
-                        <Avatar>
-                            <PersonIcon />
-                        </Avatar>
-                        <ListItemText primary={`${email}`} />
-                        <ListItemSecondaryAction>
-                            <IconButton className={classes.button} aria-label="Delete" onClick={()=>this.handleDelete(id)}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                ))}
-                </List>
-                {showForm&&<FormControl className={classes.formControl} aria-describedby="name-helper-text">
-                    <Input 
-                        id="name-helper" 
-                        type="email"
-                        value={this.state.formValue} 
-                        onKeyPress={this.handleEnter} 
-                        onBlur={this.handleBlur} 
-                        onChange={this.handleChange} 
-                        placeholder="Email"
-                        startAdornment={
-                            <InputAdornment position="start">
-                                <EmailIcon />
-                            </InputAdornment>
-                        }
-                    />
-                    <FormHelperText id="name-helper-text">Enter a users email to send a personal invite</FormHelperText>
-                </FormControl>}
-                <div className={classes.formButtonContainer}>
-                    <Button disabled={showForm} onClick={this.showForm} variant="fab" color="secondary" aria-label="add" className={classes.button}>
-                        <PersonAddIcon />
+            [<IconButton color="secondary" onClick={this.handleClickOpen} {...otherProps}>
+                {this.props.render()}
+            </IconButton>,
+            <Dialog
+                open={this.state.open}
+                onClose={this.handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{this.props.title}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {this.props.text}
+                    </DialogContentText>
+                    <FormControl className={classes.formControl} aria-describedby="name-helper-text">
+                        <Input 
+                            id="name-helper" 
+                            type="email"
+                            value={this.state.formValue} 
+                            onKeyPress={this.handleEnter} 
+                            onBlur={this.handleBlur} 
+                            onChange={this.handleChange} 
+                            placeholder="Email"
+                            startAdornment={
+                                <InputAdornment position="start">
+                                    <EmailIcon />
+                                </InputAdornment>
+                            }
+                        />
+                        <FormHelperText id="name-helper-text">Enter a users email to send a personal invite</FormHelperText>
+                    </FormControl>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.handleClose} color="primary">
+                        Cancel
                     </Button>
-                    <Button disabled={!hasAddedUsers} variant="contained" size="large" color="primary" style={{color: "white", float: "right"}}><SendIcon /> INVITE NOW</Button>
-                </div>
-            </Card>
+                    <Button onClick={this.handleAccept} color="primary" autoFocus>
+                        Add User
+                    </Button>
+                </DialogActions>
+            </Dialog>]
         )
     }
 }
-
 
 class IconButtonWithConfirm extends React.Component {
     state = {
@@ -275,11 +266,9 @@ class SearchView extends React.Component {
     inviteNewUser = (email) => this.props.inviteUserToOrganisation({ email })
 
     render(){
-        const { match: { }, classes, organisation } = this.props
-        const { isLoading, hasFetched, name, organisationId, users, website, isCurrentUserAdmin } = organisation
+        const { classes, organisation } = this.props
+        const { name, organisationId, users, website, isCurrentUserAdmin } = organisation
         const { actionCount, currentData, plan, planLimits, projectCount, taskCount, userCount } = organisation
-        console.log(organisation)
-
         const AccountInfoListItem = (props) => (
             <ListItem dense className={classes.listItem}>
                 <Avatar>
@@ -298,11 +287,11 @@ class SearchView extends React.Component {
                 <div className={classes.root}>
                     {!organisationId&&(
                         <div className={classes.blankRoot}>
-                            <div style={{maxWidth: "500px", marginTop: -100, display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
-                                <TeamIcon style={{fontSize: 160, color: "#ddd"}}/>
-                                <Typography variant="display1" gutterBottom  paragraph align="center">Oh no! You haven't been assigned a team!</Typography>
-                                <Typography variant="title" gutterBottom paragraph>We are in the closed BETA at the moment, so you can't create your own team or invite users yourself.</Typography>
-                                <Typography variant="subheading">Please contact team@polibase.com.au to let us know you are having trouble.</Typography>
+                            <div style={{maxWidth: "800px", marginTop: -100, display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
+                                <Typography variant="display2" gutterBottom  color="secondary" paragraph align="center">Oh no! You don't seem to have a team yet.</Typography>
+                                <Typography variant="title" gutterBottom paragraph>If you would like to create your own team please click the button below. If you are waiting on an invite to join a team it will be sent via email, so sit tight.</Typography>
+                                <Link to="create-new-team"><Button variant="extendedFab" color="secondary" style={{marginTop: 32, marginBottom: 32}}>Create a new team</Button></Link>
+                                <Typography variant="body1">Having trouble or haven't recieved the invite link? Please contact team@polibase.com.au to let us know.</Typography>
                             </div>
                         </div>
                     )}
@@ -330,13 +319,13 @@ class SearchView extends React.Component {
                                 </List>
                                 <div style={{padding: 8}}>
                                     <Card elevation={10}>
-                                        <List>
+                                        <List dense>
                                             <ListItem>
                                                 <Avatar style={{background: "#f97794"}}>
                                                     {<DomainIcon />}
                                                 </Avatar>
                                                 <ListItemText primary={plan} secondary={`Current Plan`} />
-                                                <Button variant="contained" color="primary" style={{color: "white"}}>
+                                                <Button variant="contained" color="primary" style={{color: "white"}} disabled>
                                                     UPGRADE
                                                 </Button>
                                             </ListItem>
@@ -345,34 +334,35 @@ class SearchView extends React.Component {
                                 </div>
                             </Card>
                             <Card>
-                                LEAVE TEAM 
-                                <div style={{flex: 1}}/>
-                                <IconButtonWithConfirm 
-                                        title={`Leave ${name} team?`}
-                                        text={`Are you sure you want to do this? This action cannot be undone and you will need to be reinvited to the team.`}
-                                        onClick={()=>console.log('leaving....')}
-                                        render={()=>(<LeaveIcon />)}
-                                    />
-                            </Card>
-                            <Card className={classes.card} elevation={10} style={{marginBottom: 16}}>
-                                <CardContent className={classes.flexColumn}>
-                                    {!isCurrentUserAdmin&&"Only managers can invite others to join the team."}
-                                    {isCurrentUserAdmin&&[<div className={classes.innerCardLeft}>
-                                        <Typography variant="headline" component="h2" className={classes.pos}>
-                                            Invite members to {name}
-                                        </Typography>
-                                        <Typography variant="subheading" className={classes.pos}>
-                                            Users will be sent an invite link to there email.
-                                        </Typography>
-                                    </div>,
-                                    <div className={classes.innerCardRight}>
-                                        <AddUserFields classes={classes} handleAddUser={(email)=>this.inviteNewUser(email)} invitedUsers={null}/>
-                                    </div>]}
-                                </CardContent>
+                                <List>
+                                    <ListItem>
+                                        <ListItemText primary={"Leave team?"} secondary={`This action can't be undone.`} />
+                                        <IconButtonWithConfirm 
+                                            title={`Leave ${name} team?`}
+                                            text={`Are you sure you want to do this? This action cannot be undone and you will need to be reinvited to the team.`}
+                                            onClick={()=>console.log('leaving....')}
+                                            render={()=>(<LeaveIcon />)}
+                                        />
+                                    </ListItem>
+                                </List>
+                                
                             </Card>
                         </Grid>
                         <Grid item xs={8}>
                             <Card>
+                                <Toolbar>
+                                    <TeamIcon style={{marginRight: 8}}/> 
+                                    <Typography variant="title" id="tableTitle" style={{flex: 1}}>
+                                        Team Members
+                                    </Typography>
+                                    <AddUserDialog
+                                        handleAddUser={this.inviteNewUser}
+                                        classes={classes}
+                                        title={`Add a new member to the team?`}
+                                        text={`Put in the email below and it will send them an invite to the platform with a signup link.`}
+                                        render={()=>(<PersonAddIcon />)}
+                                    />
+                                </Toolbar>
                                 <Table className={classes.table}>
                                     <TableHead>
                                         <TableRow>

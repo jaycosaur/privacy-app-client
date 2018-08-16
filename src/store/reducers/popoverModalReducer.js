@@ -18,6 +18,10 @@ export default(state = defaultState, action) => {
                 ...state.selectedModalFields,
                 [action.payload.key]: action.payload.value
             }}
+        case 'UPDATE_ACCOUNT_INFORMATION_PENDING': 
+            return {...state, isLoading: true}
+        case 'UPDATE_ACCOUNT_INFORMATION_FULFILLED': 
+            return {...state, isLoading: false, isShowing: false}
         case 'UPDATE_ORGANISATION_INFO_PENDING': 
             return {...state, isLoading: true}
         case 'UPDATE_ORGANISATION_INFO_FULFILLED': 

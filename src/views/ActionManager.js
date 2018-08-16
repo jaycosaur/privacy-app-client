@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import yellow from '@material-ui/core/colors/yellow';
 import green from '@material-ui/core/colors/green';
 import red from '@material-ui/core/colors/red';
-import amber from '@material-ui/core/colors/amber';
 import Moment from 'react-moment'
 import moment from 'moment'
 import { withStyles } from '@material-ui/core/styles';
@@ -19,15 +18,6 @@ import Grid from '@material-ui/core/Grid';
 import CardActions from '@material-ui/core/CardActions';
 import Badge from '@material-ui/core/Badge'
 import Chip from '@material-ui/core/Chip';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ButtonBase from '@material-ui/core/ButtonBase'
-import StarIcon from '@material-ui/icons/Star'
-import StarBorderIcon from '@material-ui/icons/StarBorder'
-import LaunchIcon from '@material-ui/icons/Launch'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 
@@ -36,8 +26,6 @@ import * as reduxActions from './../store/actions/actionManagerActions'
 
 import DueTasks from './../containers/AuthHome/DueWeeklyTasks'
 import ProjectOverview from './../containers/AuthHome/ProjectOverview'
-
-import OrganisationSnapshot from './../containers/AuthHome/OrganisationSnapshot'
 import Hidden from '@material-ui/core/Hidden';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
@@ -89,47 +77,32 @@ const styles = theme => ({
     },
     buttonRed: {
         background: red[500]
-    }
+    },
+    blankRoot: {
+        height: "80vh",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    },
   });
 
-
-class ToggleState extends React.Component {
-    state = {
-        isToggled: this.props.initialState || false
-    }
-    handleToggle = () => {
-        this.setState(state=>({isToggled: !state.isToggled}))
-    }
-    render() {
-        return (
-            <ButtonBase style={{borderRadius: 100}} onClick={this.handleToggle}>
-                {this.props.render(this.state.isToggled,this.handleToggle)}
-            </ButtonBase >
-        )
-    }
-}
-
 class ActionManager extends React.Component {
-
-
     componentDidUpdate(){
-        if (this.props.organisation.hasFetched&&!this.props.projectsStatus.lastLoadTime&&!this.props.projectsStatus.isLoadingProjects){
-            this.props.getProjectsInManager()
-            this.props.getTeamSnapshotStatistics()
-            this.props.getCurrentUserAssignedTasksAndActions()
+        if (this.props.organisation.hasFetched){
+            !this.props.isSubscribed&&this.props.getProjectsInManager()
         }
     }
 
     componentDidMount(){
         if (this.props.organisation.hasFetched){
-            this.props.getProjectsInManager()
-            this.props.getTeamSnapshotStatistics()
-            this.props.getCurrentUserAssignedTasksAndActions()
+            !this.props.isSubscribed&&this.props.getProjectsInManager()
         }
     }
 
   render() {
-    const { classes, projects, projectsStatus: { isLoadingProjects, isFetchingCurrentAssignedTasksAndActions, currentAssignedActions, currentAssignedTasks } } = this.props
+    const { classes, organisation, projects, projectsStatus: { isLoadingProjects, isFetchingCurrentAssignedTasksAndActions, isSubscribedToProjects } } = this.props
+    const { organisationId } = organisation
 
     const Dummy = (props) => <div {...props} style={{...props.style, background: props.alt?"#eee":"#ddd"}} />
 
@@ -167,7 +140,7 @@ class ActionManager extends React.Component {
             </div>
         </Card>)
     
-    const ProjectCard = ({data}) => (<Card style={{ marginBottom: 16, opacity: data.isDeleting&&0.6, position: 'relative', }} key={data.projectId}>
+    const ProjectCard = ({data, number}) => (<Card style={{ marginBottom: 16, opacity: data.isDeleting&&0.6, position: 'relative', }} key={data.projectId}>
         {data.isDeleting&&<CircularProgress style={{
                 color: red[500],
                 position: 'absolute',
@@ -178,7 +151,8 @@ class ActionManager extends React.Component {
         <div className={classes.projectCardRoot}>
             <Card className={classes.projectCardColor} elevation={4}>
                 <div style={{ display: "flex", justifyContent: "center", marginTop: 8, color: "white", borderRadius: 100 }}>
-                    <ToggleState initialState={data.isFavorited} render={(is) => is ? <StarIcon /> : <StarBorderIcon />} />
+                    {/* <ToggleState initialState={data.isFavorited} render={(is) => is ? <StarIcon /> : <StarBorderIcon />} /> */}
+                    {number}
                 </div>
             </Card>
             <div className={classes.projectCardMainPanel}>
@@ -231,36 +205,31 @@ class ActionManager extends React.Component {
         </div>
     </Card>)
 
-    const TaskListItem = (attr) => (
-        <ListItem button dense>
-            <div style={{background: attr.status==="DONE"?green['A100']:attr.status==="1"?amber["A100"]:red["A100"], width: 4, alignSelf: "stretch", borderRadius: 6}}/>
-            <ListItemText primary={attr.title||"New Action!"} secondary={`Has ${attr.taskCount||"no"} tasks - `}/>
-            <ListItemSecondaryAction>
-                <Link to={attr.link}>
-                    <IconButton aria-label="Comments">
-                        <LaunchIcon />
-                    </IconButton>
-                </Link>
-            </ListItemSecondaryAction>
-        </ListItem>
-    )
-
     const hasProjects = projects.length!==0
-    const transformO2A = (o) => Object.keys(o).map(k=>o[k])
 
     return (
         <AuthViewRouteContainer topbar={<ActionManagerTopActionBar/>}>
             <div className={classes.root}>
-                <Grid container spacing={isWidthUp('md', this.props.width)?24:0}>
+                {!organisationId&&(
+                    <div className={classes.blankRoot}>
+                        <div style={{maxWidth: "800px", marginTop: -100, display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
+                            <Typography variant="display2" gutterBottom  color="secondary" paragraph align="center">Oh no! You don't seem to have a team yet.</Typography>
+                            <Typography variant="title" gutterBottom paragraph>If you would like to create your own team please click the button below. If you are waiting on an invite to join a team it will be sent via email, so sit tight.</Typography>
+                            <Link to="create-new-team"><Button variant="extendedFab" color="secondary" style={{marginTop: 32, marginBottom: 32}}>Create a new team</Button></Link>
+                            <Typography variant="body1">Having trouble or haven't recieved the invite link? Please contact team@polibase.com.au to let us know.</Typography>
+                        </div>
+                    </div>
+                )}
+                {organisationId&&<Grid container spacing={isWidthUp('md', this.props.width)?24:0}>
                     <Hidden smDown>
                         <Grid item xs={12} md={8} style={{height: "83vh", overflow: "scroll"}}>
                             {isLoadingProjects&&!hasProjects&&[<ProjectCardLoader />,
                             <ProjectCardLoader />,
                             <ProjectCardLoader />]}
-                            {hasProjects&&projects.sort((a,b)=>moment(a.created).isBefore(b.created)).map(i=><ProjectCard data={i} key={i.projectId}/>)}
+                            {hasProjects&&projects.sort((a,b)=>moment(a.created).isBefore(b.created)).map((i,j)=><ProjectCard data={i} key={i.projectId} number={j+1}/>)}
                             {!isLoadingProjects&&!hasProjects&&(
                                 <div style={{height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
-                                    <img src="https://www.freeiconspng.com/uploads/rocket-png-26.png" width="260px" style={{filter: "grayscale(100%)"}}/>
+                                    <img src="https://www.freeiconspng.com/uploads/rocket-png-26.png" alt="" width="260px" style={{filter: "grayscale(100%)"}}/>
                                     <Typography style={{margin: "32px 0 16px"}} variant="headline">Hold up! It looks like you have no projects.</Typography>
                                     <Typography style={{margin: "0px 0 48px", color: "#9e9e9e"}} variant="title"> Click on the + button to get started</Typography>
                                     <Button variant="extendedFab" color="secondary" onClick={()=>this.props.openCreateProjectsInManagerDialogue()}><AddIcon /> Add new project </Button>
@@ -269,19 +238,10 @@ class ActionManager extends React.Component {
                         </Grid>
                     </Hidden>
                     <Grid item xs={12} md={4}>
-                        {false&&<OrganisationSnapshot
-                            isLoading={isFetchingCurrentAssignedTasksAndActions}
-                            projects={projects.length} 
-                            tasks={projects.map(i=>i.taskCount).filter(i=>i).reduce((t,i)=>t+i,0)} 
-                            actions={projects.map(i=>i.actionCount).filter(i=>i).reduce((t,i)=>t+i,0)} 
-                            doneActions={projects.map(i=>i.doneCount).filter(i=>i).reduce((t,i)=>t+i,0)} 
-                            overdueActions={projects.map(i=>i.overdueCount).filter(i=>i).reduce((t,i)=>t+i,0)} 
-                            alertActions={projects.map(i=>i.alertCount).filter(i=>i).reduce((t,i)=>t+i,0)} 
-                        />}
                         <ProjectOverview hideNavButton/>
                         <DueTasks marginTop={16} hideNavButton/>
                     </Grid>
-                </Grid>
+                </Grid>}
             </div>
         </AuthViewRouteContainer>
     )
@@ -292,7 +252,8 @@ const mapStateToProps = (state) => {
     return {
         projects: Object.keys(state.actionManager.projects).map(key=>state.actionManager.projects[key]).sort((a,b)=>b.created-a.created),
         projectsStatus: state.actionManager.projectsStatus,
-        organisation: state.organisation
+        organisation: state.organisation,
+        isSubscribed: state.actionManager.projectsStatus.isSubscribedToProjects
     }
 }
 

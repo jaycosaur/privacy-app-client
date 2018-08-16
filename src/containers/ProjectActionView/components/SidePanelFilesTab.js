@@ -111,10 +111,10 @@ class Basic extends React.Component {
     }
 
 export default (props) => {
-    const { files } = props.data
+    const { files } = props
     return (
         <div>
-            <Basic addFile={props.addFile} deleteFile={props.deleteFile} files={files&&Object.keys(files).map(k=>({...files[k], fileId: k}))}/>
+            <Basic addFile={props.addFile} deleteFile={props.deleteFile} files={files}/>
         </div>
     )
 }

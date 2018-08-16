@@ -4,6 +4,8 @@ import AuthenticatedRoute from "./components/AuthenticatedRoute";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
 import Loadable from 'react-loadable';
 import Signin from './views/Signin'
+import Signup from './views/Signup'
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 import ResetPassword from './views/ResetPassword'
 import ConfirmResetPassword from './views/ConfirmResetPassword'
@@ -13,7 +15,7 @@ const Loading = (props) => {
   if (props.error){
     return <div>Error! <button onClick={props.retry}>Retry</button></div>
   } else if (props.pastDelay) {
-    return <div>Loading...</div>;
+    return <LinearProgress />;
   } else {
     return null;
   }}
@@ -87,8 +89,9 @@ const Routes = (props) => {
         <UnauthenticatedRoute exact key="unauthlanding" path='/' props={{isSignedIn: props.isSignedIn}} component={Signin}/>
         <UnauthenticatedRoute exact key="signin" path='/signin' props={{isSignedIn: props.isSignedIn}} component={Signin}/>
         <UnauthenticatedRoute key="signin" path='/signin/resetpassword' props={{isSignedIn: props.isSignedIn}} component={ResetPassword}/>
+        <UnauthenticatedRoute exact key="signup" path='/signin/signup' props={{isSignedIn: props.isSignedIn}} component={Signup}/>
         <UnauthenticatedRoute key="signin" path='/signin/confirmcode' props={{isSignedIn: props.isSignedIn}} component={ConfirmResetPassword}/>
-        <AuthenticatedRoute key="1" path='/account-setup' props={{isSignedIn: props.isSignedIn}} component={AccountSetup}/>
+        <AuthenticatedRoute key="1" path='/create-new-team' props={{isSignedIn: props.isSignedIn}} component={AccountSetup}/>
         <AuthenticatedRoute key="12345" path='/home' props={{isSignedIn: props.isSignedIn}} component={AuthHome}/>
         <AuthenticatedRoute key="master-search" exact path='/search' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>
         <AuthenticatedRoute key="search-page" exact path='/search/:searchCategory' props={{isSignedIn: props.isSignedIn}} component={SearchView}/>

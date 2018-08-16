@@ -10,8 +10,6 @@ import BookmarksIcon from '@material-ui/icons/CollectionsBookmark';
 
 import MainViewTopActionBarContainer from '../MainViewTopActionBarContainer'
 
-import * as topbarActions from './components/TopActionBarActions'
-
 const styles = () => ({
     root: {
         flexGrow: 1,
@@ -34,8 +32,7 @@ const styles = () => ({
 })
 
 const Index = (props) => {
-    const { classes, type="none" } = props
-    const actions = <topbarActions.TopBarActions />
+    const { classes } = props
 
     return (
         <MainViewTopActionBarContainer color="secondary">

@@ -8,16 +8,13 @@ import * as watchlistActions from './../store/actions/watchlistActions'
 
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 
-import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import red from '@material-ui/core/colors/red';
-import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 
@@ -99,7 +96,7 @@ class ReadingList extends Component {
         const EmptyScreen = () => (
             <div style={{width: "100%", height: "80vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <div>
-                    <img src={require("./../assets/RocketWide.png")} width="600px"/>
+                    <img src={require("./../assets/RocketWide.png")} alt="" width="600px"/>
                     <Typography variant="headline" align="center" style={{color: "rgb(158, 158, 158)", marginTop: 32}}>You have no saved items in your reading list.</Typography>
                 </div>
             </div>

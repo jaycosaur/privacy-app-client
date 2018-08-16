@@ -1,5 +1,6 @@
 import React from 'react'
 import { Modal, Button } from 'antd'
+
 const ModalTemplate = (props) => (
     <Modal
       title={props.title}

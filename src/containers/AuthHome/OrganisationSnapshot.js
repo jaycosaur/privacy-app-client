@@ -78,7 +78,7 @@ const HomeView = (props) => {
             </AppBar>
             <div className={classes.expand}>
                 {!props.isLoading&&!props.projects&&<div style={{width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-                    <img src="https://cdn.pixabay.com/photo/2017/09/12/21/07/solar-system-2743669_1280.png" width="30%" style={{opacity: 0.7, filter: "grayscale(100%)", marginBottom: 32}}/>
+                    <img src="https://cdn.pixabay.com/photo/2017/09/12/21/07/solar-system-2743669_1280.png" alt="" width="30%" style={{opacity: 0.7, filter: "grayscale(100%)", marginBottom: 32}}/>
                     <Typography variant="subtitle">Your have no projects.</Typography>
                 </div>}
                 {!props.isLoading&&props.projects&&

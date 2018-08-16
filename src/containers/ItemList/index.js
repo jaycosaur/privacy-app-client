@@ -1,6 +1,5 @@
 import React from 'react'
-import { Row, Icon } from 'antd'
-import { Link } from 'react-router-dom'
+import { Icon } from 'antd'
 
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
@@ -77,27 +76,6 @@ const styles = theme => ({
     },
   });
 
-const RowWrap = props => (
-    <div style={{ padding: "8px 0px" }}>
-        {props.children}
-    </div>
-)
-
-class ToggleState extends React.Component {
-    state = {
-        on: false
-    }
-
-    toggle = (e,id) => {
-        this.setState(state=>({on: !state.on}))
-        e.preventDefault()
-        console.log(id)
-    }
-    render(){
-        return this.props.render(this.state.on, this.toggle)
-    }
-}
-
 class ListItem extends React.Component {
     state = {
         isExpanded: false
@@ -169,7 +147,6 @@ class ListItem extends React.Component {
 
 class ListItemLoader extends React.Component {
     render() {   
-        const col = "#ddd"
         const bg = "#eee"     
         return (
             <ExpansionPanel>
@@ -220,7 +197,6 @@ class SearchView extends React.Component {
         const searchResults = this.props.search && this.props.search.results
         const searchMeta = this.props.search && this.props.search.searchMeta
         const isLoading = this.props.search && this.props.search.isLoading
-        const searchCategory = this.props.searchCategory
         const Loader = () => [...Array(7)].map(i=><ListItemLoader key={i}/>)
 
 

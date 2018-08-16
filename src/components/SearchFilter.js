@@ -1,5 +1,5 @@
 import React from 'react'
-import { Input, Select, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import { connect } from 'react-redux'
 import * as actions from './../store/actions/filterActions'
 import Button from '@material-ui/core/Button'
@@ -73,7 +73,7 @@ class ListMenu extends React.Component {
           PaperProps={{
             style: {
               maxHeight: 48 * 4.5,
-              width: this.props.style&&this.props.style.width||200,
+              width: (this.props.style&&this.props.style.width)||200,
             },
           }}
         >

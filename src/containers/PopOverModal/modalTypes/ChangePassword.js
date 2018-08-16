@@ -14,23 +14,25 @@ import LoadingButton from './../../../components/loading/LoadingButton'
 
 const validate = values => {
     const errors = {}
-    const requiredFields = [ 'displayName', 'email' ]
+    const requiredFields = [ 'oldPassword', 'newPassword', 'repeatPassword' ]
     requiredFields.forEach(field => {
       if (!values[ field ]) {
         errors[ field ] = 'Required'
       }
     })
-    if (values.email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-      errors.email = 'Invalid email address'
+    if (values.password !== values.repeatPassword) {
+      errors.repeatPassword = 'Passwords must match.'
     }
     return errors
   }
   
-  const renderTextField = ({ input: { value, onChange }, label, meta: { touched, error }, ...custom }) => (
+  const renderTextField = ({ input: { value, onChange }, label, meta: { touched, error }, type, ...custom }) => (
     <TextField 
-      label={label}
-      errorText={touched && error}
+      label={(touched&&error)||label}
+      error={touched&&error}
+      placeholder={label}
       value={value}
+      type={type}
       fullWidth
       onChange={onChange}
     />
@@ -40,7 +42,7 @@ const validate = values => {
     const { handleSubmit, pristine, isLoading } = props
     return (
       <DialogContainer 
-          title="Change your information" 
+          title="Change your password" 
           submitTitle="Update" 
           {...props}
           buttonType="submit"
@@ -48,21 +50,28 @@ const validate = values => {
           handleOk={handleSubmit}
           handleClose={props.closeModal}
           >
-        <form onSubmit={handleSubmit} style={{width: "100%"}}>
-              <Field name="displayName" component={renderTextField} label="Your display name"/>
-              <Field name="email" type="email" component={renderTextField} label="Email"/>
+        <form onSubmit={handleSubmit}>
+            <div>
+              <Field name="oldPassword" type="password" component={renderTextField} label="Current Password"/>
+            </div>
+            <div>
+              <Field name="newPassword" type="password" component={renderTextField} label="New Password"/>
+            </div>
+            <div>
+              <Field name="repeatPassword" type="password" component={renderTextField} label="Repeat Password"/>
+            </div>
         </form>
        </DialogContainer>
 
     )
   }
 
-const WrappedForm = reduxForm({form: 'AccountUserInfoForm',validate})(MaterialUiForm)
+const WrappedForm = reduxForm({form: 'AccountChangePasswordForm', validate})(MaterialUiForm)
 
 
 const UserInfoContents = (props) => <WrappedForm 
                                       {...props} 
-                                      onSubmit={(e)=>props.updateAccountInformation(e)} 
+                                      onSubmit={(e)=>props.setNewAccountPassword(e)} 
                                       closeModal={()=>props.doCloseModal()}
                                       />
 

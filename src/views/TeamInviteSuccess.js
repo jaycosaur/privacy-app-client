@@ -24,7 +24,7 @@ class TeamInviteSuccess extends Component {
         return (
             <div style={{width: "100%", height: "100vh", display: "flex", justifyContent: "center", alignItems: "center", background: "#f97794"}}>
                 <div style={{maxWidth: 500, display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", paddingBottom: 100}}>
-                    <img src={partyemoji} width="160px" style={{marginBottom: 32}}/>
+                    <img src={partyemoji} width="160px" style={{marginBottom: 32}} alt=""/>
                     <Typography variant="display3" align="center" gutterBottom style={{color: "white"}}>Congratulations!</Typography>
                     <Typography variant="headline" align="center" gutterBottom style={{color: "white"}}>You are now part of the {this.props.organisation.name} team.</Typography>
                     <Link to="/compliance-workspace"><Button variant="extendedFab" color="primary" style={{color: "white", marginTop: 32}}>Check out {this.props.organisation.name}'s compliance workspace</Button></Link>

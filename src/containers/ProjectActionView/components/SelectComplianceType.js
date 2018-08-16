@@ -1,11 +1,14 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import MenuList from '@material-ui/core/MenuList';
 import Menu from '@material-ui/core/Menu';
 import Button from '@material-ui/core/Button';
+
+import DutyIcon from '@material-ui/icons/VerifiedUser';
+import ObligationIcon from '@material-ui/icons/Beenhere';
+import ProcessIcon from '@material-ui/icons/Update';
+
+
 
 
 class SelectTeamMember extends React.Component {
@@ -24,7 +27,7 @@ class SelectTeamMember extends React.Component {
 
     handleSelect = (e, v) => {
         this.handleClose()
-        this.props.handleChange&&this.props.handleChange({status: v})
+        this.props.handleChange&&this.props.handleChange({complianceType: v})
     }
 
     render() {
@@ -32,34 +35,36 @@ class SelectTeamMember extends React.Component {
 
         const statusItems = [
             {
-                value: "TODO",
-                text: "TO-DO"
+                value: "DUTY",
+                text: "DUTY",
+                icon: <DutyIcon fontSize="inherit" style={{marginRight: 4}}/>
             },
             {
-                value: "INPROGRESS",
-                text: "IN PROGRESS"
+                value: "OBLIGATION",
+                text: "OBLIGATION",
+                icon:<ObligationIcon fontSize="inherit" style={{marginRight: 4}} />
             },
             {
-                value: "DONE",
-                text: "DONE"
+                value: "PROCESS",
+                text: "PROCESS",
+                icon: <ProcessIcon fontSize="inherit" style={{marginRight: 4}} />
             },
         ]
 
         const getStateFromValue = (v) => statusItems.map(i=>i.value).indexOf(v)>-1?statusItems[statusItems.map(i=>i.value).indexOf(v)]:null
 
-        const { isUrgent, isDue, value } = this.props
+        const { value } = this.props
         return (
             [<Button
-                variant={value!=="DONE"&&isUrgent?"contained":"outlined"}
-                size="medium" 
+                variant={"contained"}
+                size="small" 
                 aria-owns={anchorEl ? 'simple-menu' : null}
-                style={{opacity: 0.9, marginRight: 8}}
+                style={{opacity: 0.9 }}
                 aria-haspopup="true"
                 onClick={this.handleClick}
-                color={isUrgent?"secondary":value==="TODO"?"primary":(value==="INPROGRESS"?"secondary":"default")}
-                style={{color: value==="DONE"?"green":(isDue&&!isUrgent)?"red":null,opacity: 0.9, marginRight: 8 }}
+                color={"default"}
             >
-                {value!=="DONE"?(isUrgent?"URGENT":isDue?"OVERDUE":getStateFromValue(value).text):getStateFromValue(value).text}
+                {value?[getStateFromValue(value).text]:"NOT SET"}
             </Button>,
             <Menu
                 id="simple-menu"

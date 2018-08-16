@@ -154,7 +154,7 @@ class NavBar extends React.Component {
                                 aria-owns={open ? 'menu-appbar' : null}
                                 aria-haspopup="true"
                                 onClick={this.handleMenu}
-                                color="inherdit"
+                                color="inherit"
                             >
                                 <TopBarAvatar />
                             </IconButton>
@@ -189,7 +189,7 @@ class NavBar extends React.Component {
                     scroll={this.state.scroll}
                     aria-labelledby="scroll-dialog-title"
                     >
-                    <img src={streamers} width={"100%"} style={{position: "absolute", top: 0, left: 0, right: 0, zIndex: 0, opacity: 0.2}}/>
+                    <img src={streamers} width={"100%"} alt="" style={{position: "absolute", top: 0, left: 0, right: 0, zIndex: 0, opacity: 0.2}}/>
                     <DialogTitle id="scroll-dialog-title" style={{zIndex: 50}}>Welcome to the Polibase Pilot! </DialogTitle>
                     <DialogContent style={{zIndex: 50}}>
                         <DialogContentText style={{zIndex: 50, color: "black"}}>

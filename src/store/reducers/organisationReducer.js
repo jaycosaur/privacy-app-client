@@ -8,6 +8,54 @@ export default(state = defaultState, action) => {
     switch(action.type) {
         case 'RESET_STATE_TO_DEFAULT':
             return {...defaultState}
+        case 'SUBMIT_TEAM_INFORMATION':{
+            return {
+                ...state,
+                newTeamInfo: {
+                    ...state.newTeamInfo,
+                    ...action.payload
+                }
+            }
+        }
+        case 'SUBMIT_TEAM_ORGANISATION_TYPE':{
+            return {
+                ...state,
+                newTeamInfo: {
+                    ...state.newTeamInfo,
+                    ...action.payload
+                }
+            }
+        }
+        case 'SUBMIT_TEAM_INTEREST_CATEGORIES':{
+            return {
+                ...state,
+                newTeamInfo: {
+                    ...state.newTeamInfo,
+                    ...action.payload
+                }
+            }
+        }
+        case 'CREATE_NEW_TEAM_PENDING':{
+            return {
+                ...state,
+                creatingNewOrganisation: true,
+            }
+        }
+        case 'CREATE_NEW_TEAM_FULFILLED':{
+            return {
+                ...state,
+                creatingNewOrganisation: false,
+                createNewOrganisationSuccess: true,
+                newOrganisationId: action.payload.organisationId
+            }
+        }
+        case 'CREATE_NEW_TEAM_REJECTED':{
+            return {
+                ...state,
+                creatingNewOrganisation: false,
+                createNewOrganisationError: action.payload
+            }
+        }
         case 'GET_ORGANISATION_FULL_INFO_PENDING':
             return {...state, isLoading: true}
         case 'GET_ORGANISATION_FULL_INFO_FULFILLED':

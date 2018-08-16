@@ -1,8 +1,6 @@
 import React from 'react'
-import { Layout, Button, Row, Col, Card, Avatar, Icon, Divider, Tag } from 'antd';
-import CardWrapper from './../components/CardWrapper'
+import { Row, Col, Card, Avatar, Icon, Divider, Tag } from 'antd';
 import { primaryThemeShades } from './../theme'
-import { Link } from 'react-router-dom'
 import { ResponsiveWaffle } from '@nivo/waffle'
 import { ResponsivePie } from '@nivo/pie'
 import Grid from '@material-ui/core/Grid';
@@ -529,44 +527,3 @@ class ItemView extends React.Component {
 }
 
 export default ItemView
-
-const Message = () => (
-    <CardWrapper hoverable style={{borderRadius: 0}}>
-        <Card.Meta
-            title={<small>Second reading transcript has been uploaded.</small>}
-            description={<div><small>12:34:12 13 March 2018 | <a>VIEW</a></small></div>}
-        />
-    </CardWrapper>)
-
-/*<Layout.Sider
-                            trigger={null}
-                            collapsible
-                            collapsed={this.state.collapsed}
-                            collapsedWidth={0}
-                            width={300}
-                            style={{background: primaryThemeShades[3], boxShadow: "5px 0 5px -5px #333"}}
-                            >
-                            <div style={{height: "100vh", padding: 16, paddingTop: 4}}>
-                                <Divider><h5 style={{color: "white"}}>Change Log</h5></Divider>
-                                <div style={{height: "90vh", overflow: "scroll"}}>
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                    <Message />
-                                </div>
-                            </div>
-                        </Layout.Sider> */

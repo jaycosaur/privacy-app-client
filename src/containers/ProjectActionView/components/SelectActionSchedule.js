@@ -1,11 +1,16 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import MenuList from '@material-ui/core/MenuList';
 import Menu from '@material-ui/core/Menu';
+import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+
+import DutyIcon from '@material-ui/icons/VerifiedUser';
+import ObligationIcon from '@material-ui/icons/Beenhere';
+import ProcessIcon from '@material-ui/icons/Update';
+import ScheduleIcon from '@material-ui/icons/Schedule';
+
+
 
 
 class SelectTeamMember extends React.Component {
@@ -24,7 +29,7 @@ class SelectTeamMember extends React.Component {
 
     handleSelect = (e, v) => {
         this.handleClose()
-        this.props.handleChange&&this.props.handleChange({status: v})
+        this.props.handleChange&&this.props.handleChange({schedule: v})
     }
 
     render() {
@@ -32,34 +37,37 @@ class SelectTeamMember extends React.Component {
 
         const statusItems = [
             {
-                value: "TODO",
-                text: "TO-DO"
+                value: "d",
+                text: "Every Day",
             },
             {
-                value: "INPROGRESS",
-                text: "IN PROGRESS"
+                value: "w",
+                text: "Every Week",
             },
             {
-                value: "DONE",
-                text: "DONE"
+                value: "M",
+                text: "Every Month",
+            },
+            {
+                value: "Q",
+                text: "Every Quarter",
+            },{
+                value: "Y",
+                text: "Every Year",
             },
         ]
 
-        const getStateFromValue = (v) => statusItems.map(i=>i.value).indexOf(v)>-1?statusItems[statusItems.map(i=>i.value).indexOf(v)]:null
-
-        const { isUrgent, isDue, value } = this.props
+        const { value } = this.props
         return (
-            [<Button
-                variant={value!=="DONE"&&isUrgent?"contained":"outlined"}
-                size="medium" 
-                aria-owns={anchorEl ? 'simple-menu' : null}
-                style={{opacity: 0.9, marginRight: 8}}
-                aria-haspopup="true"
+            [<Button 
                 onClick={this.handleClick}
-                color={isUrgent?"secondary":value==="TODO"?"primary":(value==="INPROGRESS"?"secondary":"default")}
-                style={{color: value==="DONE"?"green":(isDue&&!isUrgent)?"red":null,opacity: 0.9, marginRight: 8 }}
-            >
-                {value!=="DONE"?(isUrgent?"URGENT":isDue?"OVERDUE":getStateFromValue(value).text):getStateFromValue(value).text}
+                style={{opacity: 0.9 }}
+                aria-haspopup="true"
+                aria-owns={anchorEl ? 'simple-menu' : null}
+                color={value&&"secondary"}
+                style={{color: !value&&"#ccc"}}
+                >
+                <ScheduleIcon />
             </Button>,
             <Menu
                 id="simple-menu"
@@ -67,6 +75,14 @@ class SelectTeamMember extends React.Component {
                 open={Boolean(anchorEl)}
                 onClose={this.handleClose}
             >
+                <MenuItem
+                    key={'clear'}
+                    value={null}
+                    selected={this.props.value=== null}
+                    onClick={(event) => this.handleSelect(event, null)}
+                    >
+                    Clear
+                </MenuItem>
                 {statusItems.map((status,index) => (
                     <MenuItem
                         key={status.value}
@@ -82,7 +98,7 @@ class SelectTeamMember extends React.Component {
 }
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
         teamUsers: state.organisation.users
     }

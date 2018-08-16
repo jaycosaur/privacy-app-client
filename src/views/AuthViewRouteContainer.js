@@ -1,9 +1,7 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles';
-import { Hidden } from '../../node_modules/@material-ui/core';
 
 const styles = (theme) => {
-    console.log(theme)
     return ({
         root: {
             flexGrow: 1,
