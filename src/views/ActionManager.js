@@ -173,33 +173,25 @@ class ActionManager extends React.Component {
                         SHARE
                     </Button>
                     <div style={{ flexGrow: 1, justifyContent: "flex-end", display: "flex" }}>
-                        <Chip label={`${data.actionCount || 0} ACTIONS`} style={{marginRight: 8}}/><Chip label={`${data.taskCount || 0} TASKS`} />
+                        
                     </div>
                 </CardActions>
             </div>
             <Card className={classes.projectCardInfoPanel} elevation={4}>
                 <CardContent style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <Link to={`/action-manager/${data.projectId}?status=done&sort=none`} onClick={()=> this.props.selectProjectInManager({projectId: data.projectId})}>
-                        <Badge color="secondary" badgeContent={data.doneCount || 0} className={classes.margin}>
-                            <Button size="small" variant="contained" style={{ flexGrow: 1 }}>
-                                DONE
-                            </Button>
-                        </Badge>
-                    </Link>
                     <Link to={`/action-manager/${data.projectId}?status=overdue&sort=none`}>
                         <Badge color="secondary" badgeContent={data.overdueCount || 0} className={classes.margin} onClick={()=> this.props.selectProjectInManager({projectId: data.projectId})}>
-                            <Button size="small" variant="contained" style={{ flexGrow: 1 }}>
+                            <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50 }}>
                                 OVERDUE
                             </Button>
                         </Badge>
                     </Link>
-                    <Link to={`/action-manager/${data.projectId}?status=alert&sort=none`}>
-                        <Badge color="secondary" badgeContent={data.alertCount || 0} className={classes.margin} onClick={()=> this.props.selectProjectInManager({projectId: data.projectId})}>
-                            <Button size="small" variant="contained" style={{ flexGrow: 1 }}>
-                                ALERTS
-                            </Button>
-                        </Badge>
-                    </Link>
+                    <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50, marginBottom: 8 }}>
+                        {`${data.actionCount || 0} ACTIONS`}
+                    </Button>
+                    <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50 }}>
+                        {`${data.taskCount || 0} TASKS`}
+                    </Button>
                 </CardContent>
             </Card>
         </div>

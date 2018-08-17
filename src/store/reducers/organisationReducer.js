@@ -125,6 +125,63 @@ export default(state = defaultState, action) => {
                 },
                 ...state.users.slice(state.users.map(i=>i.userId).indexOf(action.meta.uid)+1),
             ]}
+        // listeners for organisation document changes 
+        case "SUBSCRIBE_ORGANISATION_INFORMATION_OPEN": {
+            return {...state, 
+                isSubscribedOrganisationInformation: true,
+                isLoadingOrganisationInformation: true,
+            }
+        }
+        case "NO_ORGANISATION_INFORMATION": {
+            return {...state, 
+                isLoadingOrganisationInformation: false,
+                isLoading: false, hasFetched: true
+            }
+        }
+        case "UPDATE_ORGANISATION_INFORMATION_IN_STORE": {
+            return {...state, 
+                isLoading: false, hasFetched: true,
+                ...action.payload}
+        }
+        // listeners for organisation user changes
+        case "SUBSCRIBE_ORGANISATION_USERS_OPEN": {
+            return {...state, 
+                isSubscribedOrganisationUsers: true,
+                isLoadingOrganisationUsers: true,
+            }
+        }
+        case "NO_ORGANISATION_USERS": {
+            return {...state, 
+                isLoadingOrganisationUsers: false,
+            }
+        }
+        case "UPDATE_ORGANISATION_USERS_IN_STORE": {
+            return {
+                ...state,
+                isLoadingOrganisationUsers: false,
+                users: [...action.payload.users],
+                isCurrentUserAdmin: action.payload.isCurrentUserAdmin
+            }
+        }
+        // listeners for organisation pending-user changes
+        case "SUBSCRIBE_ORGANISATION_PENDING_USERS_OPEN": {
+            return {...state, 
+                isSubscribedOrganisationPendingUsers: true,
+                isLoadingOrganisationPendingUsers: true,
+            }
+        }
+        case "NO_ORGANISATION_PENDING_USERS": {
+            return {...state, 
+                isLoadingOrganisationPendingUsers: false,
+            }
+        }
+        case "UPDATE_ORGANISATION_PENDING_USERS_IN_STORE": {
+            return {
+                ...state,
+                isLoadingOrganisationPendingUsers: false,
+                pendingUsers: [...action.payload]
+            }
+        }
         default: 
             return state
     }

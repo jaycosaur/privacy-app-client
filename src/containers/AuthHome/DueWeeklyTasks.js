@@ -117,14 +117,16 @@ class HomeView extends React.Component {
                     message = [<TimerIcon />, "TODO"]
             }
             return (
-                <ListItem button>
-                    <div style={{height: 40, width: 4, borderRadius: 4, opacity: 0.7, background: highlightColor}}/>
-                    <ListItemText primary={attrs.title} secondary={`${attrs.dueDate?`Due ${moment(attrs.dueDate).fromNow()}`:"No due date"} - ${attrs.taskCount||"No"} tasks.`}/>
-                    <Chip
-                        style={{color: highlightColor}}
-                        avatar={<Avatar style={{color: highlightColor}}>{message[0]}</Avatar>}
-                        label={message[1]} />
-                </ListItem>
+                <Link to={`/compliance-workspace/${attrs.projectId}/${attrs.actionId}/`}>
+                    <ListItem button>
+                        <div style={{height: 40, width: 4, borderRadius: 4, opacity: 0.7, background: highlightColor}}/>
+                        <ListItemText primary={attrs.title} secondary={`${attrs.dueDate?`Due ${moment(attrs.dueDate).fromNow()}`:"No due date"} - ${attrs.taskCount||"No"} tasks.`}/>
+                        <Chip
+                            style={{color: highlightColor}}
+                            avatar={<Avatar style={{color: highlightColor}}>{message[0]}</Avatar>}
+                            label={message[1]} />
+                    </ListItem>
+                </Link>
             )
         }
 
@@ -139,7 +141,7 @@ class HomeView extends React.Component {
             <Chip avatar={<Avatar style={{ background: "#eee" }} />} label={<div style={{ width: 40, height: 20 }} />} />
         </ListItem>)
 
-        const tasksArray = projectsStatus&&O2A(projectsStatus.currentAssignedActions).sort((a,b)=>moment(b.dueDate).isBefore(a.dueDate))
+        const tasksArray = projectsStatus&&projectsStatus.currentAssignedActions&&O2A(projectsStatus.currentAssignedActions).sort((a,b)=>moment(b.dueDate).isBefore(a.dueDate))
 
         return (
             <Card className={classes.bottomMargin} style={{height: "40vh", marginTop: this.props.marginTop}}>
@@ -158,10 +160,10 @@ class HomeView extends React.Component {
                     </Toolbar>
                 </AppBar>
                 <div style={{height: "85%", overflow: "scroll", display: "flex", justifyContent: "center", alignItems: "center"}}>
-                    {!isFetching&&tasksArray.length===0&&<Typography variant="caption">Savour this moment. You have no assigned obligations.</Typography>}
+                    {!isFetching&&tasksArray&&tasksArray.length===0&&<Typography variant="caption">Savour this moment. You have no assigned obligations.</Typography>}
                     <List component="nav" dense>
                         {(isFetching)&&[...Array(6)].map((k)=><ListItemLoader key={k}/>)}
-                        {(tasksArray.length>0&&!isFetching)&&tasksArray.map(i=><ObligationItem key={i.id} {...i}/>)}
+                        {(tasksArray&&tasksArray.length>0&&!isFetching)&&tasksArray.map(i=><ObligationItem key={i.actionId} {...i}/>)}
                     </List>
                 </div>
             </Card>

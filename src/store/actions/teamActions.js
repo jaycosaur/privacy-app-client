@@ -51,6 +51,13 @@ export const removeUserFromOrganisation = ({ uid }) => {
     }
 }
 
+export const updateOrganisationInformation = ({name, website}) => {
+    return {
+        type: 'UPDATE_TEAM_INFORMATION',
+        payload: { name, website }
+    }
+}
+
 
 
 

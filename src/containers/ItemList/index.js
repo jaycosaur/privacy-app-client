@@ -198,15 +198,27 @@ class SearchView extends React.Component {
         const searchMeta = this.props.search && this.props.search.searchMeta
         const isLoading = this.props.search && this.props.search.isLoading
         const Loader = () => [...Array(7)].map(i=><ListItemLoader key={i}/>)
-
+        const { searchCategory } = this.props
 
         const view = () => {
             switch(this.props.selectedView){
                 case "date":
-                    return <ListTimelineView 
-                        grouping={(searchResults.map(i=>moment(i.createdOn).format("LL")))} 
-                        itemRender={(searchResults.map((item) => <ListItem item={item} {...this.props}/>))} 
-                    />
+                    return <div style={{height: "100%", overflow: "auto"}}>
+                        <InfiniteScroll
+                                pageStart={1}
+                                loadMore={this.loadItems}
+                                hasMore={!isLoading&&searchMeta.page<=searchMeta.nbPages}
+                                initialLoad={false}
+                                loader={<Loader/>}
+                                useWindow={false}
+                            >
+                        
+                            <ListTimelineView 
+                                grouping={(searchResults.sort((a,b)=>moment(searchCategory!=="media-and-commentary"?a.createdOn:a.isoDate).isBefore(searchCategory!=="media-and-commentary"?b.createdOn:b.isoDate)).map(i=>moment(searchCategory!=="media-and-commentary"?i.createdOn:i.isoDate).format("LL")))} 
+                                itemRender={(searchResults.sort((a,b)=>moment(searchCategory!=="media-and-commentary"?a.createdOn:a.isoDate).isBefore(searchCategory!=="media-and-commentary"?b.createdOn:b.isoDate)).map((item) => <ListItem item={item} {...this.props}/>))} 
+                            />
+                        </InfiniteScroll>
+                    </div>
                 case "table":
                     return <ListTableView showHeader={false} columnData={columnData} data={searchResults.map((i)=>({...i,link: "/item"}))} />
                 default:

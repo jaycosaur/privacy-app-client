@@ -20,6 +20,12 @@ import ReceiptIcon from '@material-ui/icons/Receipt'
 
 import CreditCardIcon from '@material-ui/icons/CreditCard'
 
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+
 const billingData = [
     {
         title: "Your Invoices",
@@ -117,6 +123,17 @@ const AccountView = (props) => {
     ]
     return (
         [isLoading&&<LinearProgress color="secondary" variant="query" />,
+        <AppBar position="static">
+            <Toolbar variant="dense">
+            <IconButton color="inherit" aria-label="Menu">
+                <MenuIcon />
+            </IconButton>
+            <Typography variant="subheading"
+                color="inherit">
+                You Have Not Verified Your Email Address
+            </Typography>
+            </Toolbar>
+        </AppBar>,
         <div style={{padding: 32, height: "100%", overflow: "scroll", background: "#ffa9c4"}}>
             {lastLoaded&&<Row gutter={16} style={{width: "100%"}}>
                 <Divider style={{padding: "0 120px"}}><h2>Your Details</h2></Divider>

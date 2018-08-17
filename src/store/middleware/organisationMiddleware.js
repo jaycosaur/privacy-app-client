@@ -62,6 +62,10 @@ export function promoteUserInOrganisationToAdmin() {
     }
 }
 
+const organisationInformationRef = ({organisationId}) => db.collection('organisations').doc(organisationId)
+const organisationUsersRef = ({organisationId}) => db.collection('organisations').doc(organisationId).collection('users')
+const organisationPendingUsersRef = ({organisationId}) => db.collection('organisations').doc(organisationId).collection('pending-users')
+
 export function getOrganisationalInformation() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_ORGANISATION_FULL_INFO') {
@@ -69,19 +73,97 @@ export function getOrganisationalInformation() {
             const usersRef = db.collection('users')
             const { organisationId } = action.payload
             const { uid } = getState().user.user
+            const { isSubscribedOrganisationInformation, isSubscribedOrganisationUsers, isSubscribedOrganisationPendingUsers } = getState().organisation
+            if(!isSubscribedOrganisationInformation){
+                dispatch({
+                    type: "SUBSCRIBE_ORGANISATION_INFORMATION_OPEN"
+                })
+                organisationInformationRef({organisationId}).onSnapshot((doc)=>{
+                    if(doc.exists){
+                        dispatch({type: "NO_ORGANISATION_PENDING_USERS"})
+                        dispatch({
+                            type: "UPDATE_ORGANISATION_INFORMATION_IN_STORE",
+                            payload:{ organisationId:organisationId, ...doc.data() }
+                        })
+                    } else {
+                        dispatch({type: "NO_ORGANISATION_INFORMATION"})
+                    }
+                })
+            }
+            
+            if(!isSubscribedOrganisationUsers){
+                dispatch({
+                    type: "SUBSCRIBE_ORGANISATION_USERS_OPEN"
+                })
+                organisationUsersRef({organisationId}).onSnapshot(async (querySnapshot)=>{
+                    const state = getState()
+                    let users = state.organisation.users?[...state.organisation.users]:[]
+                    let promiseArray = []
+                    querySnapshot.docChanges().forEach((change)=>{
+                        if (change.type === "removed"){
+                            users = users.filter(i=>i.userId!==change.doc.id)
+                        } else {
+                            promiseArray.push(usersRef.doc(change.doc.id).get().then(res=>({userId: res.id, ...res.data()})))
+                            users = [...users.filter(i=>i.userId!==change.doc.id), {userId: change.doc.id, ...change.doc.data()}]
+                        }
+                    })
+                    if (users.length>0&&promiseArray.length>0){
+                        const detailedUsers = await Promise.all(promiseArray).then(res=>res.forEach(dU=>{
+                            const indexOf = users.map(i=>i.userId).indexOf(dU.userId)
+                            users[indexOf]={...users[indexOf], ...dU}
+                        }))
+                    }
+                    
+                    if (users.length>0){
+                        dispatch({
+                            type: "UPDATE_ORGANISATION_USERS_IN_STORE",
+                            payload: {users: users, isCurrentUserAdmin: users[users.map(i=>i.userId).indexOf(uid)].isAdmin}
+                        })
+                    } else {
+                        dispatch({type: "NO_ORGANISATION_USERS"})
+                    }
+                })
+            }
+            
+            if(!isSubscribedOrganisationPendingUsers){
+                dispatch({
+                    type: "SUBSCRIBE_ORGANISATION_PENDING_USERS_OPEN"
+                })
+                organisationPendingUsersRef({organisationId}).onSnapshot((querySnapshot)=>{
+                    const state = getState()
+                    let pendingUsers = state.organisation.pendingUsers?[...state.organisation.pendingUsers]:[]
+                    querySnapshot.docChanges().forEach((change)=>{
+                        if (change.type === "removed"){
+                            pendingUsers = pendingUsers.filter(i=>i.id!==change.doc.id)
+                        } else {
+                            pendingUsers = [...pendingUsers.filter(i=>i.id!==change.doc.id), {id: change.doc.id, ...change.doc.data()}]
+                        }
+                    })
+                    if (pendingUsers.length>0){
+                        dispatch({
+                            type: "UPDATE_ORGANISATION_PENDING_USERS_IN_STORE",
+                            payload: pendingUsers
+                        })
+                    } else {
+                        dispatch({type: "NO_ORGANISATION_PENDING_USERS"})
+                    }
+                })
+            }
+
             dispatch({
                 type: "GET_ORGANISATION_FULL_INFO",
-                payload: Promise.all([organisationRef.doc(organisationId).get().then(res => {
-                    return {organisationId:organisationId, ...res.data()}
-                }), organisationRef.doc(organisationId).collection("users").get().then(snapshot => {
-                    let userData = []
-                    snapshot.forEach((doc) => {
-                        userData = [...userData, {userId: doc.id, ...doc.data()}]
-                    })
-                    return userData
-                })]).then(res => {
-                    const arr = res[1].map(u=>usersRef.doc(u.userId).get().then(res=>({userId: res.id, ...res.data(), ...u})))
-                    return Promise.all(arr).then(users=>({...res[0], users: users, isCurrentUserAdmin: res[1][res[1].map(i=>i.userId).indexOf(uid)].isAdmin}))
+                payload: Promise.all(
+                    [
+                        organisationRef.doc(organisationId).collection("users").get().then(snapshot => {
+                            let userData = []
+                            snapshot.forEach((doc) => {
+                                userData = [...userData, {userId: doc.id, ...doc.data()}]
+                            })
+                            return userData
+                        })
+                    ]).then(res => {
+                        const arr = res[0].map(u=>usersRef.doc(u.userId).get().then(res=>({userId: res.id, ...res.data(), ...u})))
+                        return Promise.all(arr).then(users=>(null))
                 })
             })
         }
@@ -97,6 +179,19 @@ export function createNewTeamAndSetUserAsAdmin() {
             dispatch({
                 type: "CREATE_NEW_TEAM",
                 payload: createNewTeamAndSetUserAsAdminCF({ name, website, interestCategories, organisationType }).then((res) => res.data),
+            })
+        }
+        return next(action)
+    }
+}
+
+export function updateOrganisationInfoAsAdmin() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'UPDATE_TEAM_INFORMATION') {
+            const { organisationId, isCurrentUserAdmin } = getState().organisation
+            return isCurrentUserAdmin&&dispatch({
+                type: "UPDATE_TEAM_INFORMATION",
+                payload: organisationInformationRef({organisationId}).update(action.payload),
             })
         }
         return next(action)

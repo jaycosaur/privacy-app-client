@@ -108,7 +108,8 @@ const Routes = (props) => {
         <AuthenticatedRoute key="123456" path='/item' props={{isSignedIn: props.isSignedIn}} component={ItemView}/>
         <AuthenticatedRoute key="profile-page" path='/myaccount' props={{isSignedIn: props.isSignedIn}} component={ProfileView}/>
         <AuthenticatedRoute exact key="compliance-manager" path='/compliance-workspace' props={{isSignedIn: props.isSignedIn}} component={ActionManager}/>
-        <AuthenticatedRoute key="project-view" path='/compliance-workspace/:id' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
+        <AuthenticatedRoute key="project-view" exact path='/compliance-workspace/:projectId' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
+        <AuthenticatedRoute key="project-view" path='/compliance-workspace/:projectId/:actionId' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
         <AuthenticatedRoute key="reading-list" path="/reading-list" props={{isSignedIn: props.isSignedIn}} component={ReadingList}/>
         <AuthenticatedRoute key="mailing-list" path="/mailing-list" props={{isSignedIn: props.isSignedIn}} component={MailingList}/>
         

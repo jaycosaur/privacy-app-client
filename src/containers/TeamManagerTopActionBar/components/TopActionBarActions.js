@@ -33,11 +33,7 @@ const styles = () => ({
 
 const ActionCreator = (props) => {
     const { classes } = props
-    const actionsArray = [
-            <IconButton disabled className={classes.button} aria-label="Add to watchlist" onClick={() => console.log("Add persona~!")}>
-                <PersonAddIcon />
-            </IconButton>
-        ]
+    const actionsArray = null
 
     return (<span>{actionsArray}</span>)
 }

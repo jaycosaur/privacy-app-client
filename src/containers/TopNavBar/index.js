@@ -94,15 +94,15 @@ class NavBar extends React.Component {
         anchorEl: null,
         dialogueOpen: false,
         scroll: 'body',
-
+        menuOpen: false
     }
 
     handleMenu = event => {
-        this.setState({ anchorEl: event.currentTarget });
+        this.setState({ anchorEl: event.currentTarget, menuOpen: true });
     };
 
     handleClose = () => {
-        this.setState({ anchorEl: null });
+        this.setState({ anchorEl: null, menuOpen: false });
     }
 
     handleDialogueOpen = scroll => () => {
@@ -161,15 +161,7 @@ class NavBar extends React.Component {
                             <Menu
                                 id="menu-appbar"
                                 anchorEl={anchorEl}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                }}
-                                open={open}
+                                open={open&&this.state.menuOpen}
                                 onClose={this.handleClose}
                             >
                                 <Link to="/myaccount"><MenuItem onClick={this.handleClose}>MY ACCOUNT</MenuItem></Link>

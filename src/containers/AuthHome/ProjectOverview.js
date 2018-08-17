@@ -93,7 +93,7 @@ class HomeView extends React.Component {
         const { classes, actionManager: { projects }, hideNavButton,  isLoadingProjects } = this.props
 
 
-        const hasProjects = projects.length>0
+        
 
         const ProjectItem = (attrs) => {
             const highlightColor = attrs.isOverdue?red[500]:attrs.isDone?green[500]:"#ddd"
@@ -109,7 +109,8 @@ class HomeView extends React.Component {
             )
         }
 
-        const projectsArray = projects&&O2A(projects)
+        const projectsArray = projects?O2A(projects):[]
+        const hasProjects = projectsArray.length>0
 
         return (
             <Card className={classes.bottomMargin}>
@@ -133,7 +134,7 @@ class HomeView extends React.Component {
                         <div style={{flex: 1}}/>
                     </div>}
                     {!isLoadingProjects&&!hasProjects&&<Typography variant="caption">No Projects Yet.</Typography>}
-                    {!isLoadingProjects&&!hasProjects&&<List component="nav" dense>
+                    {!isLoadingProjects&&hasProjects&&<List component="nav" dense>
                         {projectsArray.map(i=><ProjectItem key={i.projectId} {...i}/>)}
                     </List>}
                 </div>

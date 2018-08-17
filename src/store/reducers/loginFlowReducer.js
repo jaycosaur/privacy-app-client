@@ -26,12 +26,19 @@ export default(state = defaultState, action) => {
     switch(action.type) {
         case 'RESET_STATE_TO_DEFAULT':
             return {...defaultState}
-        case 'SIGNIN_USER_PENDING':
-            return {...state,
+        case 'SIGNIN_USER':
+            return {...defaultState,
                 message: "Signing you in",
                 signedIn:{
-                ...state.signedIn,
-                isLoading: true
+                    ...defaultState.signedIn,
+                    isLoading: true,
+            }}
+        case 'SIGNIN_USER_PENDING':
+            return {...defaultState,
+                message: "Signing you in",
+                signedIn:{
+                ...defaultState.signedIn,
+                isLoading: true,
             }}
         case 'SIGNIN_USER_REJECTED':
             return {...state,

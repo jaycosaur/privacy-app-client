@@ -1,5 +1,4 @@
 import React from 'react'
-import { getWatchlistItem, clearFilterData } from '../store/actions/watchlistActions'
 import * as teamActions from '../store/actions/teamActions'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
@@ -58,6 +57,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+import { Field, reduxForm } from 'redux-form';
+import TextField from '@material-ui/core/TextField'
+
 import Toolbar from '@material-ui/core/Toolbar';
 
 const styles = theme => ({
@@ -113,13 +115,101 @@ const styles = theme => ({
     listItem: {
         transition: theme.transitions.create('opacity'),
     }
-  });
+  })
+
+const validate = values => {
+    const errors = {}
+    const requiredFields = [ 'name' ]
+    requiredFields.forEach(field => {
+      if (!values[ field ]) {
+        errors[ field ] = 'Required'
+      }
+    })
+    return errors
+  }
+  
+  const renderTextField = ({ input: { value, onChange }, label, meta: { touched, error }, ...custom }) => (
+    <TextField 
+      label={error||label}
+      error={touched && error}
+      value={value}
+      fullWidth
+      onChange={onChange}
+    />
+  )
+
+  const InformationDialogForm = (props) => {
+    const { handleSubmit, pristine, isLoading } = props
+    return (
+        <Dialog
+            open={props.open}
+            onClose={props.onClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle id="alert-dialog-title">Update Team Information</DialogTitle>
+            <DialogContent>
+                <form onSubmit={handleSubmit} style={{width: "100%"}}>
+                    <Field name="name" component={renderTextField} label="Your team name"/>
+                    <Field name="website" component={renderTextField} label="Your team website"/>
+                </form>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={props.onClose} color="primary">
+                    Cancel
+                </Button>
+                <Button onClick={handleSubmit} disabled={pristine||isLoading} color="primary" autoFocus>
+                    Update
+                </Button>
+            </DialogActions>
+        </Dialog>
+    ) 
+}
+
+
+const InformationDialogFormWrapped = reduxForm({form: 'UpdateOrganisationInformation',validate})(InformationDialogForm)
+
+class ChangeTeamInformationDialog extends React.Component {
+    state = {
+        open: false,
+    }
+
+    handleClickOpen = () => {
+        this.setState({
+            open: true
+        })
+    }
+    handleClose = () => {
+        this.setState({
+            open: false
+        })
+    }
+
+    handleSubmit = (values) => {
+        this.props.handleSubmit(values)
+        this.handleClose()
+    }
+
+    render(){
+        const { state, ...otherProps } = this.props
+        return (
+            [<IconButton key="button" onClick={this.handleClickOpen} {...otherProps}>
+                {this.props.render()}
+            </IconButton>,
+            <InformationDialogFormWrapped key="dialog" 
+                initialValues={state}
+                onSubmit={(e)=>this.handleSubmit(e)} 
+                onClose={()=>this.handleClose()}
+                open={this.state.open}
+            />]
+        )
+    }
+}
 
 class AddUserDialog extends React.Component {
     state = {
         formValue: null,
         open: false,
-
     }
 
     handleClickOpen = () => {
@@ -158,14 +248,14 @@ class AddUserDialog extends React.Component {
     }
 
     render(){
-        const { classes } = this.props
         const { onClick, ...otherProps} = this.props
 
         return (
-            [<IconButton color="secondary" onClick={this.handleClickOpen} {...otherProps}>
+            [<IconButton key="button" color="secondary" onClick={this.handleClickOpen} {...otherProps}>
                 {this.props.render()}
             </IconButton>,
             <Dialog
+                key="dialog"
                 open={this.state.open}
                 onClose={this.handleClose}
                 aria-labelledby="alert-dialog-title"
@@ -176,10 +266,11 @@ class AddUserDialog extends React.Component {
                     <DialogContentText id="alert-dialog-description">
                         {this.props.text}
                     </DialogContentText>
-                    <FormControl className={classes.formControl} aria-describedby="name-helper-text">
+                    <FormControl aria-describedby="name-helper-text" style={{width: "100%"}}>
                         <Input 
                             id="name-helper" 
                             type="email"
+                            fullWidth
                             value={this.state.formValue} 
                             onKeyPress={this.handleEnter} 
                             onBlur={this.handleBlur} 
@@ -228,10 +319,11 @@ class IconButtonWithConfirm extends React.Component {
     render() {
         const {onClick, ...otherProps} = this.props
         return (
-            [<IconButton onClick={this.handleClickOpen} {...otherProps}>
+            [<IconButton key="button" onClick={this.handleClickOpen} {...otherProps}>
                 {this.props.render()}
             </IconButton>,
             <Dialog
+                key= "dialog"
                 open={this.state.open}
                 onClose={this.handleClose}
                 aria-labelledby="alert-dialog-title"
@@ -256,18 +348,22 @@ class IconButtonWithConfirm extends React.Component {
     }
 }
 
-class SearchView extends React.Component {
+class TeamManagerView extends React.Component {
+    state = {
+
+    }
     static getDerivedStateFromProps(props) {
         if (props.isSignedIn === true && props.user.accountInformation.loadSucceeded && !props.organisation.isLoading && !props.organisation.hasFetched && props.user.accountInformation.info.organisationId){
-        props.getOrganisationInformation({organisationId: props.user.accountInformation.info.organisationId})
+            props.getOrganisationInformation({organisationId: props.user.accountInformation.info.organisationId})
         }
+        return null
     }
 
     inviteNewUser = (email) => this.props.inviteUserToOrganisation({ email })
 
     render(){
         const { classes, organisation } = this.props
-        const { name, organisationId, users, website, isCurrentUserAdmin } = organisation
+        const { name, organisationId, users, website, isCurrentUserAdmin, pendingUsers } = organisation
         const { actionCount, currentData, plan, planLimits, projectCount, taskCount, userCount } = organisation
         const AccountInfoListItem = (props) => (
             <ListItem dense className={classes.listItem}>
@@ -300,9 +396,15 @@ class SearchView extends React.Component {
                             <Card style={{marginBottom: 16}}>
                                 <CardHeader
                                     action={
-                                        <IconButton disabled={!isCurrentUserAdmin}>
-                                            <EditIcon />
-                                        </IconButton>
+                                        <ChangeTeamInformationDialog
+                                            handleSubmit={({name, website})=>this.props.updateOrganisationInformation({name, website})}
+                                            render={()=>(<EditIcon />)}
+                                            disabled={!isCurrentUserAdmin}
+                                            state={{
+                                                name: organisation.name,
+                                                website: organisation.website
+                                            }}
+                                        />
                                     }
                                     title={`Team ${name}`}
                                     subheader={<span>Website: <a href={website} target="_blank">{website}</a></span>}
@@ -357,10 +459,10 @@ class SearchView extends React.Component {
                                     </Typography>
                                     <AddUserDialog
                                         handleAddUser={this.inviteNewUser}
-                                        classes={classes}
                                         title={`Add a new member to the team?`}
                                         text={`Put in the email below and it will send them an invite to the platform with a signup link.`}
-                                        render={()=>(<PersonAddIcon />)}
+                                        render={()=><PersonAddIcon />}
+                                        disabled={!isCurrentUserAdmin}
                                     />
                                 </Toolbar>
                                 <Table className={classes.table}>
@@ -407,6 +509,32 @@ class SearchView extends React.Component {
                                         </TableRow>
                                         );
                                     })}
+                                    { pendingUsers&&pendingUsers.map(n => {
+                                        return (
+                                        <TableRow key={n.id} hover  style={{opacity: 0.7}}>
+                                            <TableCell padding="checkbox" numeric >
+                                            </TableCell>
+                                            <TableCell component="th" scope="row">
+                                                {n.displayName&&n.displayName}
+                                            </TableCell>
+                                            <TableCell>{n.email}</TableCell>
+                                            <TableCell>{n.isDeleting?"Deleting User...":(n.hasSignedUp?"Registered":<span style={{color: "#f97794"}}>Invite Sent</span>)}</TableCell>
+                                            <TableCell padding="checkbox" numeric >
+                                                <IconButton className={classes.notificationButton} aria-label="Add an alarm" disabled>
+                                                    {n.notificationsEnabled?<NotificationOnIcon />:<NotificationOffIcon />}
+                                                </IconButton>
+                                                <IconButtonWithConfirm 
+                                                    title={`Cancel invite for ${n.email}?`}
+                                                    text={`Are you sure you want to do this?`}
+                                                    disabled={!isCurrentUserAdmin || n.isAdmin || n.isDeleting } 
+                                                    aria-label="Delete User" 
+                                                    onClick={()=>console.log({uid: n.userId})}
+                                                    render={()=>(<DeleteIcon />)}
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                        );
+                                    })}
                                     </TableBody>
                                 </Table>
                             </Card>
@@ -429,6 +557,6 @@ const mapStateToProps = (state) => {
     }
 }
 
-const SearchViewWithStyles = withStyles(styles)(SearchView)
+const TeamManagerViewWithStyles = withStyles(styles)(TeamManagerView)
 
-export default connect(mapStateToProps, {getWatchlistItem, clearFilterData, ...teamActions})(SearchViewWithStyles)
+export default connect(mapStateToProps, {...teamActions})(TeamManagerViewWithStyles)

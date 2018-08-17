@@ -65,7 +65,6 @@ export default(state = defaultState, action) => {
             return {...state, 
                 projectsStatus: {
                     ...state.projectsStatus,
-                    isSubscribedCurrentAssignedTasksAndActions: true,
                     isLoadingCurrentAssignedTasksAndActions: false,
                 }
             }
@@ -75,6 +74,7 @@ export default(state = defaultState, action) => {
             return {...state,
                 projectsStatus: {
                     ...state.projectsStatus,
+                    isLoadingCurrentAssignedTasksAndActions: false,
                     currentAssignedActions: {
                         ...state.projectsStatus.currentAssignedActions,
                         ...action.payload
@@ -96,6 +96,10 @@ export default(state = defaultState, action) => {
         // PROJECT SPECIFIC REDUCERS
         case "UPDATE_PROJECT_IN_STORE": {
             return {...state, 
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    isLoadingProjects: false,
+                },
                 projects: {
                     ...state.projects,
                     ...action.payload
@@ -123,7 +127,6 @@ export default(state = defaultState, action) => {
                 }
             }
         }
-
         case 'SELECT_PROJECT_IN_MANAGER':
             return {...state, 
                 selectedProject: {

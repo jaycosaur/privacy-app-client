@@ -161,10 +161,10 @@ class ProjectTaskList extends React.PureComponent {
     }
 
     componentDidUpdate(prevProps){
-        const { match: { params } } = this.props
+        const { selectedProject, match: { params } } = this.props
 
         if(!prevProps.isLoggedIn&&this.props.isLoggedIn) {
-            this.props.selectProjectInManager({ projectId: params.id })
+            this.props.selectProjectInManager({ projectId: params.projectId })
         }
 
         if(!prevProps.projectRefId&&this.props.projectRefId) {
@@ -174,11 +174,18 @@ class ProjectTaskList extends React.PureComponent {
         if(!prevProps.project&&this.props.project) {
             this.props.getActionsInProject()
         }
+
+        if(prevProps.projectRefId&&prevProps.projectRefId!==this.props.projectRefId) {
+            this.props.getActionsInProject()
+        }
     }
 
     componentWillMount(){
-        if(this.props.project) {
+        if(this.props.isLoggedIn&&this.props.selectedProject===this.props.match.params.projectId&&this.props.project) {
             this.props.getActionsInProject()
+        }
+        if(this.props.isLoggedIn&&this.props.selectedProject!==this.props.match.params.projectId) {
+            this.props.selectProjectInManager({ projectId: this.props.match.params.projectId })
         }
     }
 
@@ -341,6 +348,7 @@ const mapStateToProps = (state, ownProps) => {
         hasProjects: Object.keys(state.actionManager.projects).length>0,
         hasLoadedActions: state.actionManager.selectedProject&&state.actionManager.projects[state.actionManager.selectedProject.projectId]&&state.actionManager.projects[state.actionManager.selectedProject.projectId].hasLoadedActions,
         actionRefId: state.actionManager.selectedProject.actionId,
+        selectedProject: state.actionManager.selectedProject&&state.actionManager.selectedProject.projectId,
         project: state.actionManager.selectedProject&&state.actionManager.projects[state.actionManager.selectedProject.projectId],
         updateProjectIsOpen: state.actionManager.dialogs.updateProject.isOpen,
         groupObligations: state.actionManager.selectedProject.groupObligations
