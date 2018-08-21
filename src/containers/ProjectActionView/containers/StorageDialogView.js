@@ -37,11 +37,21 @@ class DialogContents extends React.Component {
       };
     
       handleClose = () => {
-          this.props.closeFileExplorerInProjectView()
+          if(this.props.dialogOnly){
+            this.props.onClose()
+          }else{
+            this.props.closeFileExplorerInProjectView()
+          }
       };
     
       onDrop = (files) => {
         this.props.uploadNewFilesToProject({ files })
+      }
+
+      componentDidMount(){
+          if(this.props.dialogOnly){
+              this.props.onStorageGetFiles()
+          }
       }
     
       render() {
@@ -66,7 +76,7 @@ class DialogContents extends React.Component {
                 </AppBar>,
                 files&&files.length>0?<List>
                     {files.sort((a,b)=>moment(a.createdOn).isBefore(b.createdOn)).map((f)=>(
-                        <ListItem key={f.id} style={{background: f.isDeleting&&"#eee", opacity: f.isDeleting&&0.6}}>
+                        <ListItem key={f.id} style={{background: f.isDeleting&&"#eee", opacity: f.isDeleting&&0.6}} button={this.props.dialogOnly} onClick={()=>{this.props.dialogOnly?this.props.onSelect(f.id):null}}>
                                 <ListItemAvatar>
                                     <Avatar>
                                         <FolderIcon />
@@ -122,30 +132,35 @@ function Transition(props) {
 
 class FullScreenDialog extends React.Component {
   handleClose = () => {
-      this.props.closeFileExplorerInProjectView()
+      if(this.props.dialogOnly){
+        this.props.onClose()
+      } else {
+        this.props.closeFileExplorerInProjectView()
+      }
   }
 
   shouldComponentUpdate(nextProps, nextState){
-      return this.props.dialog.isOpen !== nextProps.dialog.isOpen
+      return this.props.dialog.isOpen !== nextProps.dialog.isOpen || this.props.isOpen !== nextProps.isOpen
   }
 
   render() {
+      const { dialogOnly } = this.props
     return (
       <div>
-        <Button
+        {!this.props.dialogOnly&&<Button
             onClick={()=>this.props.openFileExplorerInProjectView()}
             color="secondary" 
+            variant="outlined"
             size="small" 
-            style={{marginRight: 32, display: "flex", alignItems: "center"}}>
+            style={{display: "flex", alignItems: "center",color: "#ddd", borderColor: "#bbb"}}>
             <StorageIcon style={{marginRight: 4, fontSize: 20}}/>FILES
-        </Button>
+        </Button>}
         <Dialog
           fullScreen
-          open={this.props.dialog.isOpen}
-          onClose={this.handleClose}
-          TransitionComponent={Transition}
+          open={this.props.dialogOnly?this.props.isOpen:this.props.dialog.isOpen}
+          onClose={this.props.dialogOnly?this.props.onClose:this.handleClose}
         >
-            <DialogContentsWithStore />
+            <DialogContentsWithStore onSelect={this.props.onSelect} dialogOnly={dialogOnly} onClose={this.props.onClose}/>
         </Dialog>
       </div>
     );

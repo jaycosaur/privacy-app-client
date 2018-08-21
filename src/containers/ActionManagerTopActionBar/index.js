@@ -39,7 +39,7 @@ const Index = (props) => {
 
     return (
         <MainViewTopActionBarContainer color="primary" actions={actions} icon={<TOCIcon style={{color: "white", marginRight:8}}/> }>
-            <Typography noWrap className={classes.strongTitle} variant="title">
+            <Typography noWrap className={classes.strongTitle} variant="subheading">
                 Your Compliance Workspace
             </Typography>
         </MainViewTopActionBarContainer>

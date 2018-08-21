@@ -1,4 +1,4 @@
-import { db } from './../../config/firebase'
+import { auth, db } from './../../config/firebase'
 import algoliasearch from 'algoliasearch'
 
 //actions
@@ -8,6 +8,18 @@ var client = algoliasearch('FEQZM17GZV', '0f26c164ae44f21a6bfffa4941e6ec99')
 var legislationIndex = client.initIndex('news')
 var newsIndex = client.initIndex('news')
 const mainBaseIndex = client.initIndex('main_base')
+
+export function sendVerificationEmail(){
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'SEND_USER_VERIFICATION_EMAIL') {
+            dispatch({
+                type: "SEND_USER_VERIFICATION_EMAIL",
+                payload: auth.currentUser.sendEmailVerification()
+            })
+        }
+        return next(action)
+    }
+}
 
 export function afterOrganisationalInfoFulfilled(){
     return ({ dispatch, getState }) => next => action => {
@@ -198,7 +210,7 @@ export function saveSearchToUser() {
 export function fetchResultsFromAlgolia() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_SEARCH') {
-            const { type, query, attrs, page=0 } = action.payload
+            const { type, query, attrs, page=0, filters=null } = action.payload
             let index = null
             switch(type){
                 case 'REGULATION':
@@ -213,7 +225,7 @@ export function fetchResultsFromAlgolia() {
                 default:
                     index = mainBaseIndex
             }
-            const payload = index.search({ query: query, ...attrs, page })
+            const payload = index.search({ query: query, ...attrs, page, filters })
 
             dispatch({
                 type: "FETCH_ALGOLIA_RESULTS", 

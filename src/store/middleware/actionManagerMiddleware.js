@@ -6,6 +6,21 @@ import moment from 'moment'
 // get
 // delete
 
+const baseItemRef = ({id}) => db.collection("base-items").doc(id)
+
+
+export function getBaseItemInformation() {
+    return ({ dispatch }) => next => action => {
+        if (action.type === 'GET_BASE_ITEM_INFORMATION') {
+            return dispatch({ 
+                type: "GET_BASE_ITEM_INFORMATION", 
+                payload:  baseItemRef({id: action.meta.id}).get().then(res=>res.data()),
+                meta: action.meta})
+        }
+        return next(action)
+    }
+}
+
 const projectsRef = ({ organisationId }) => db.collection("organisations").doc(organisationId).collection('projects')
 const projectRef = ({ organisationId, projectId }) => db.collection("organisations").doc(organisationId).collection('projects').doc(projectId)
 
@@ -854,6 +869,23 @@ export function getfilesInProjectSubscription() {
 export function onOpenFileExplorerGetFiles() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'OPEN_FILE_EXPLORER_IN_PROJECT_VIEW') {
+            let state = getState()
+            const { actionManager: { selectedProject: { projectId }}} = state
+            const isSubscribed = state.actionManager.projects[projectId].isSubscribedToStorage
+            if(!isSubscribed){
+                dispatch({
+                    type: "SUBSCRIBE_TO_STORAGE_IN_PROJECT", 
+                    payload: { projectId }
+                })
+            }
+        }
+        return next(action)
+    }
+}
+
+export function onStorageGetFiles() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'ON_STORAGE_GET_FILES') {
             let state = getState()
             const { actionManager: { selectedProject: { projectId }}} = state
             const isSubscribed = state.actionManager.projects[projectId].isSubscribedToStorage

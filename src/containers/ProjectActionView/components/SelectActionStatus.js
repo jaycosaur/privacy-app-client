@@ -57,7 +57,7 @@ class SelectTeamMember extends React.Component {
                 aria-haspopup="true"
                 onClick={this.handleClick}
                 color={isUrgent?"secondary":value==="TODO"?"primary":(value==="INPROGRESS"?"secondary":"default")}
-                style={{color: value==="DONE"?"green":(isDue&&!isUrgent)?"red":null,opacity: 0.9, marginRight: 8 }}
+                style={{color: value==="DONE"?"white":(isDue&&!isUrgent)?"red":null,opacity: 0.9, marginRight: 8, background: value==="DONE"&&"#2ECC71"}}
             >
                 {value!=="DONE"?(isUrgent?"URGENT":isDue?"OVERDUE":getStateFromValue(value).text):getStateFromValue(value).text}
             </Button>,

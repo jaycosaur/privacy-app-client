@@ -8,6 +8,7 @@ import Avatar from '@material-ui/core/Avatar';
 import SettingsIcon from '@material-ui/icons/Settings'
 import LinearProgress from '@material-ui/core/LinearProgress';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import Button from '@material-ui/core/Button';
 
 import LoyaltyIcon from '@material-ui/icons/Loyalty'
 
@@ -17,6 +18,7 @@ import WidgetsIcon from '@material-ui/icons/Widgets'
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive'
 import ShowChartIcon from '@material-ui/icons/ShowChart'
 import ReceiptIcon from '@material-ui/icons/Receipt'
+import WarningIcon from '@material-ui/icons/Warning'
 
 import CreditCardIcon from '@material-ui/icons/CreditCard'
 
@@ -123,18 +125,18 @@ const AccountView = (props) => {
     ]
     return (
         [isLoading&&<LinearProgress color="secondary" variant="query" />,
-        <AppBar position="static">
+        props.user&&!props.user.emailVerified&&<AppBar position="static" color="secondary">
             <Toolbar variant="dense">
-            <IconButton color="inherit" aria-label="Menu">
-                <MenuIcon />
-            </IconButton>
-            <Typography variant="subheading"
-                color="inherit">
-                You Have Not Verified Your Email Address
-            </Typography>
+                <WarningIcon style={{marginRight: 8}}/>
+                <Typography variant="subheading"
+                    color="inherit">
+                    You Have Not Verified Your Email Address
+                </Typography>
+                <div style={{flex: 1}} />
+                <Button onClick={()=>props.sendVerificationEmail()} variant="outlined" disabled={props.emailVerificationSent}>{props.emailVerificationSent?"Sent":"send verification email"}</Button>
             </Toolbar>
         </AppBar>,
-        <div style={{padding: 32, height: "100%", overflow: "scroll", background: "#ffa9c4"}}>
+        <div style={{padding: 32, height: "100%", overflow: "scroll", background: "White"}}>
             {lastLoaded&&<Row gutter={16} style={{width: "100%"}}>
                 <Divider style={{padding: "0 120px"}}><h2>Your Details</h2></Divider>
                 <Section>
@@ -155,7 +157,9 @@ const AccountView = (props) => {
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        accountInformation: state.user.accountInformation
+        accountInformation: state.user.accountInformation,
+        user: state.user.user,
+        emailVerificationSent: state.user.emailVerificationSent
     }
 }
 

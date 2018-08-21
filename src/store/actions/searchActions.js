@@ -37,11 +37,11 @@ export const submitBaseSearch = ({query, filters, page}) => {
     }
 }
 
-export const submitActionManagerSearch = ({query, filters}) => {
+export const submitActionManagerSearch = ({query, filters=null}) => {
     return {
         type: 'GET_SEARCH',
         payload: { 
-            filters: null,
+            filters: filters,
             key: 'action-manager-search', 
             query,
         }

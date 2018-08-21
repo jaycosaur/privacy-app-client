@@ -119,7 +119,7 @@ class NavBar extends React.Component {
         const open = Boolean(anchorEl)
 
         return (
-            <AppBar className={classes.appBar} position="fixed" color={isSignedIn?"default":"primary"} style={{background: !isSignedIn&&"none"}} elevation={!isSignedIn?0:1}>
+            <AppBar className={classes.appBar} position="fixed" color={isSignedIn?"default":"primary"} style={{background: isSignedIn?"white":"none", borderBottom: isSignedIn&&"1px solid #ddd"}} elevation={!isSignedIn?0:1} elevation={0}>
                 <Toolbar>
                     <div style={{flex: 1, display: "flex", alignItems: "center"}}>
                         {isSignedIn&&<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={()=>this.props.toggleAuthViewSideDrawer()}>

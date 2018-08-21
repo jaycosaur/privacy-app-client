@@ -34,7 +34,6 @@ const styles = (theme) => {
         height: `calc(${heightOfCard} - ${theme.mixins.toolbar.minHeight}px)`,
         display: "flex",
         justifyContent: "center",
-        alignItems: "center"
     },
     buttonCard: {
 

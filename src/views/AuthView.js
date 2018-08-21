@@ -153,13 +153,58 @@ const SideDrawerToggleContainer = (props) => {
                     </ListItem>
                 </Link>
                 <Divider className={classes.divider}/>
-                <Link to="/search/">
-                <ListItem button>
-                    <ListItemIcon>
-                        <Icon className={classnames(classes.icon,'fas fa-search')} />
-                    </ListItemIcon>
-                    <ListItemText inset primary="Track and Watch" />
+                
+                    <ListItem button disabled>
+                        <ListItemIcon>
+                            <Icon className={classnames(classes.icon,'fas fa-search')} />
+                        </ListItemIcon>
+                        <ListItemText inset primary="Track and Watch" />
+                    </ListItem>
+                
+                
+                    <ListItem button disabled>
+                        <ListItemIcon><Icon className={classnames(classes.icon, 'fas fa-balance-scale')} /></ListItemIcon>
+                        <ListItemText primary="Regulatory Developments" />
+                    </ListItem>
+                
+                
+                    <ListItem button disabled>
+                        <ListItemIcon><Icon className={classnames(classes.icon,'fas fa-newspaper')} /></ListItemIcon>
+                        <ListItemText primary="Media & Commentary" />
+                    </ListItem>
+                
+                <ListItem button disabled>
+                    <ListItemIcon><Icon className={classnames(classes.icon,'fas fa-book')} /></ListItemIcon>
+                    <ListItemText primary="Research & Reports" />
                 </ListItem>
+                <Divider />
+                
+                    <ListItem button disabled>
+                        <ListItemIcon><StarIcon /></ListItemIcon>
+                        <ListItemText primary="Your Watchlists" />
+                    </ListItem>
+                
+                
+                    <ListItem button disabled>
+                        <ListItemIcon><BookmarksIcon /></ListItemIcon>
+                        <ListItemText primary="Reading List" />
+                    </ListItem>
+                <ListItem button disabled>
+                    <ListItemIcon><HistoryIcon /></ListItemIcon>
+                    <ListItemText primary="Recent Searches" />
+                </ListItem>
+                <ListItem button disabled>
+                    <ListItemIcon><DraftsIcon /></ListItemIcon>
+                    <ListItemText primary="Your Mail List" />
+                </ListItem>
+                {/*
+                <Link to="/search/">
+                    <ListItem button>
+                        <ListItemIcon>
+                            <Icon className={classnames(classes.icon,'fas fa-search')} />
+                        </ListItemIcon>
+                        <ListItemText inset primary="Track and Watch" />
+                    </ListItem>
                 </Link>
                 <Link to="/search/regulation">
                     <ListItem button>
@@ -194,12 +239,11 @@ const SideDrawerToggleContainer = (props) => {
                     <ListItemIcon><HistoryIcon /></ListItemIcon>
                     <ListItemText primary="Recent Searches" />
                 </ListItem>
-                <Link to="/mailing-list">
-                    <ListItem button>
-                        <ListItemIcon><DraftsIcon /></ListItemIcon>
-                        <ListItemText primary="Your Mail List" />
-                    </ListItem>
-                </Link>
+                <ListItem button disabled>
+                    <ListItemIcon><DraftsIcon /></ListItemIcon>
+                    <ListItemText primary="Your Mail List" />
+                </ListItem>
+                */}
             </List>
             <Hidden mdDown>
                 <div className={classes.sidebarFooter}>

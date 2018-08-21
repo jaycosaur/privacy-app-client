@@ -22,6 +22,10 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import AlgoliaSearch from './AlgoliaSearch'
+import * as actions from './../../../store/actions/actionManagerActions'
+
+import StorageDialogView from './../containers/StorageDialogView'
+
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -55,6 +59,29 @@ class SelectTeamMember extends React.Component {
         this.props.handleChange&&this.props.handleChange({id: {itemRef: id, itemType: "baseitem"}})
     }
 
+    handleSelectStorage = (id) => {
+        this.handleClose()
+        this.props.handleChange&&this.props.handleChange({id: {itemRef: id, itemType: "teamstorage"}})
+    }
+
+    componentDidMount() {
+        let itemType = null
+        let itemRef = null
+        const { hasValue } = this.props
+        if (hasValue&&typeof hasValue === "string"){
+            itemType = "baseitem"
+            itemRef = hasValue
+        }
+
+        if (hasValue&&typeof hasValue === "object"){
+            itemType = hasValue.itemType
+            itemRef = hasValue.itemRef
+        }
+        if (hasValue&&itemType==="baseitem"&&!this.props.baseItems[itemRef]){
+            this.props.getBaseItemInformation({id: itemRef})
+        }
+    }
+
     render() {
         const { anchorEl } = this.state;
 
@@ -76,6 +103,7 @@ class SelectTeamMember extends React.Component {
         ]
         let itemType = null
         let itemRef = null
+        let isLoading = null
 
         if (hasValue&&typeof hasValue === "string"){
             itemType = "baseitem"
@@ -87,12 +115,29 @@ class SelectTeamMember extends React.Component {
             itemRef = hasValue.itemRef
         }
 
+        if(itemType==="baseitem"){
+            isLoading = this.props.baseItems[itemRef]&&this.props.baseItems[itemRef].isLoading
+        }
+
+        const item = itemRef&&!isLoading&&this.props.baseItems[itemRef]
+
+        const maxChars = (text,chars) => `${[...text].slice(0, chars).join("")}${text.length>chars?"...":""}`
         return (
             [<Button
                 onClick={this.handleClick}
-                size="small" variant="outlined" style={{background: "white",marginLeft: 8}}
+                size="small" variant="outlined" 
+                style={{
+                    background: "white",
+                    marginLeft: 8,
+                    fontSize: item&&item.title&&7,
+                    maxWidth: 160
+                }}
                 >
-                {itemRef?[...itemRef].slice(0,12).join(""):<span style={{color: "#bbb"}}>Not Assigned</span>}{itemType==="teamstorage"?<CloudIcon style={{fontSize: 20, color: "#bbb", marginLeft: 8}}/>:<DescriptionIcon style={{fontSize: 20, color: "#bbb", marginLeft: 8}}/>}
+                {isLoading?<div style={{width: 100, height: 10, borderRadius: 4, margin: 4}}/>
+                    :(
+                    itemRef
+                        ?(!isLoading?item&&item.title?maxChars(item.title,40):"Cannot find...":null)
+                        :<span style={{color: "#bbb"}}>SELECT</span>)}{itemType==="teamstorage"?<CloudIcon style={{fontSize: 20, color: "#bbb", marginLeft: 8}}/>:<DescriptionIcon style={{fontSize: 20, color: "#bbb", marginLeft: 8}}/>}
             </Button>,
             <Menu
                 id="simple-menu"
@@ -131,7 +176,14 @@ class SelectTeamMember extends React.Component {
                 <DialogContent style={{width: "100%"}}>
                     <AlgoliaSearch selectRecord={this.handleSelect}/>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
+            <StorageDialogView 
+                isOpen={this.state.menuSelection==="teamstorage"}
+                onClose={this.handleClose} 
+                hideButton={true}
+                onSelect={this.handleSelectStorage}
+                dialogOnly
+                />
             ]
         )
 }
@@ -140,6 +192,7 @@ class SelectTeamMember extends React.Component {
 const mapStateToProps = (state, props) => {
     return {
         teamUsers: state.organisation.users,
+        baseItems: state.actionManager.baseItems
     }
 }
-export default connect(mapStateToProps)(SelectTeamMember)
+export default connect(mapStateToProps, actions)(SelectTeamMember)

@@ -40,7 +40,7 @@ const Index = (props) => {
     return (
         <MainViewTopActionBarContainer color="primary" actions={actions}>
             <TeamIcon style={{color: "white", marginRight:8}}/> 
-            <Typography className={classes.strongTitle} variant="title">
+            <Typography className={classes.strongTitle} variant="subheading">
                 Manage your organisation's team, invite more users to join
             </Typography>
         </MainViewTopActionBarContainer>

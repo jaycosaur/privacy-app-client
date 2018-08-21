@@ -14,6 +14,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 
 import Input from '@material-ui/core/Input';
 import FormHelperText from '@material-ui/core/FormHelperText';
@@ -22,6 +24,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import EmailIcon from '@material-ui/icons/Email';
 import TeamIcon from '@material-ui/icons/Group';
 import Tooltip from '@material-ui/core/Tooltip';
+import CloseIcon from '@material-ui/icons/Clear';
 
 import DomainIcon from '@material-ui/icons/Domain';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
@@ -60,8 +63,6 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { Field, reduxForm } from 'redux-form';
 import TextField from '@material-ui/core/TextField'
 
-import Toolbar from '@material-ui/core/Toolbar';
-
 const styles = theme => ({
     card: {
         minWidth: 275,
@@ -75,7 +76,7 @@ const styles = theme => ({
         marginBottom: theme.spacing.unit*4,
     },
     root: {
-        padding: theme.spacing.unit*4
+        padding: theme.spacing.unit*2
     },
     blankRoot: {
         height: "80vh",
@@ -348,6 +349,63 @@ class IconButtonWithConfirm extends React.Component {
     }
 }
 
+class PlanSelectorDialog extends React.Component {
+    state = {
+        open: false,
+    };
+    
+    handleClickOpen = () => {
+        this.setState({ open: true });
+    };
+    
+    handleClose = () => {
+        this.setState({ open: false });
+    };
+
+    handleAccept = () => {
+        this.props.onClick()
+        this.handleClose()
+    }
+    
+    render() {
+        return (
+            [<Button disabled={this.props.disabled} onClick={this.handleClickOpen} variant="contained" color="primary" style={{color: "white"}}>
+                {this.props.children}
+            </Button>,
+            <Dialog
+                key= "dialog"
+                open={this.state.open}
+                onClose={this.handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <AppBar position="static" color="secondary">
+                    <Toolbar>
+                        <Typography variant="title" color="inherit">
+                            Change your plan
+                        </Typography>
+                        <IconButton onClick={this.handleClose} color="primary">
+                            <CloseIcon />
+                        </IconButton>
+                    </Toolbar>
+                </AppBar>
+                <div>
+                    <Grid container spacing={8} justify="center">
+                        <Card style={{width: 160, height: 500}}>
+                        </Card>
+                        <Card style={{width: 160, height: 500}}>
+                        </Card>
+                    </Grid>
+                </div>
+                <DialogActions>
+                    <Button onClick={this.handleAccept} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                </DialogActions>
+            </Dialog>])
+    }
+}
+
 class TeamManagerView extends React.Component {
     state = {
 
@@ -365,6 +423,7 @@ class TeamManagerView extends React.Component {
         const { classes, organisation } = this.props
         const { name, organisationId, users, website, isCurrentUserAdmin, pendingUsers } = organisation
         const { actionCount, currentData, plan, planLimits, projectCount, taskCount, userCount } = organisation
+        
         const AccountInfoListItem = (props) => (
             <ListItem dense className={classes.listItem}>
                 <Avatar>
@@ -391,7 +450,7 @@ class TeamManagerView extends React.Component {
                             </div>
                         </div>
                     )}
-                    {organisationId&&<Grid container spacing={24}>
+                    {organisationId&&<Grid container spacing={16}>
                         <Grid item xs={4}>
                             <Card style={{marginBottom: 16}}>
                                 <CardHeader
@@ -427,9 +486,9 @@ class TeamManagerView extends React.Component {
                                                     {<DomainIcon />}
                                                 </Avatar>
                                                 <ListItemText primary={plan} secondary={`Current Plan`} />
-                                                <Button variant="contained" color="primary" style={{color: "white"}} disabled>
+                                                <PlanSelectorDialog disabled>
                                                     UPGRADE
-                                                </Button>
+                                                </PlanSelectorDialog>
                                             </ListItem>
                                         </List>
                                     </Card>

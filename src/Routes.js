@@ -81,6 +81,11 @@ const MailingList = Loadable({
   loading: Loading,
 });
 
+const MLView = Loadable({
+  loader: () => import('./views/MLView'),
+  loading: Loading,
+});
+
 
 
 const Routes = (props) => {
@@ -112,6 +117,7 @@ const Routes = (props) => {
         <AuthenticatedRoute key="project-view" path='/compliance-workspace/:projectId/:actionId' props={{isSignedIn: props.isSignedIn}} component={Tasklist}/>
         <AuthenticatedRoute key="reading-list" path="/reading-list" props={{isSignedIn: props.isSignedIn}} component={ReadingList}/>
         <AuthenticatedRoute key="mailing-list" path="/mailing-list" props={{isSignedIn: props.isSignedIn}} component={MailingList}/>
+        <AuthenticatedRoute key="mailing-list" path="/ML" props={{isSignedIn: props.isSignedIn}} component={MLView}/>
         
         {/* <AuthenticatedRoute key="contacts" path='/contacts' exact props={{isSignedIn: props.isSignedIn}} component={ContactsView}/>
         <AuthenticatedRoute key="contacts-id" path='/contacts/{cid}/' props={{isSignedIn: props.isSignedIn}} component={ContactsView}/> */}

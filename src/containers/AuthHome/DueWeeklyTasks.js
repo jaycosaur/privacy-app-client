@@ -159,7 +159,7 @@ class HomeView extends React.Component {
                         </Tooltip>}
                     </Toolbar>
                 </AppBar>
-                <div style={{height: "85%", overflow: "scroll", display: "flex", justifyContent: "center", alignItems: "center"}}>
+                <div style={{height: "85%", overflow: "scroll", display: "flex", justifyContent: "center"}}>
                     {!isFetching&&tasksArray&&tasksArray.length===0&&<Typography variant="caption">Savour this moment. You have no assigned obligations.</Typography>}
                     <List component="nav" dense>
                         {(isFetching)&&[...Array(6)].map((k)=><ListItemLoader key={k}/>)}

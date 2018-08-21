@@ -6,6 +6,7 @@ import red from '@material-ui/core/colors/red';
 import Moment from 'react-moment'
 import moment from 'moment'
 import { withStyles } from '@material-ui/core/styles';
+import ButtonBase from '@material-ui/core/ButtonBase'
 
 import ActionManagerTopActionBar from '../containers/ActionManagerTopActionBar'
 import AddIcon from '@material-ui/icons/Add';
@@ -43,7 +44,7 @@ const styles = theme => ({
         marginBottom: theme.spacing.unit*4,
     },
     root: {
-        padding: theme.spacing.unit*4,
+        padding: theme.spacing.unit*2,
         [theme.breakpoints.down('sm')]: {
             padding: 0
         }
@@ -107,40 +108,42 @@ class ActionManager extends React.Component {
     const Dummy = (props) => <div {...props} style={{...props.style, background: props.alt?"#eee":"#ddd"}} />
 
     const ProjectCardLoader = () => (
-        <Card style={{ marginBottom: 16, opacity:0.6, position: 'relative', background: "#eee"}} elevation={0}>
-            <div className={classes.projectCardRoot}>
-                <Card className={classes.projectCardColor} elevation={0} style={{background: "#ddd"}}>
-                    <div style={{ display: "flex", justifyContent: "center", marginTop: 8, color: "white", borderRadius: 100 }}>
-                        <Dummy alt style={{width: 24, height: 24, borderRadius: 50}}/>
-                    </div>
-                </Card>
-                <div className={classes.projectCardMainPanel}>
-                    <CardContent>                        
-                        <Dummy style={{width: 400, height: 24, borderRadius: 4, marginBottom: 8}}/>
-                        <Dummy style={{width: 300, height: 42, borderRadius: 4, marginBottom: 14}}/>
-                        <Dummy style={{width: 200, height: 21, borderRadius: 4, marginBottom: 14}}/>
-                        <Dummy style={{width: 200, height: 21, borderRadius: 4, marginBottom: 14}}/>
-                    </CardContent>
-                    <CardActions>
-                        <Dummy style={{width: 80, height: 32, borderRadius: 4, marginRight: 8}}/>
-                        <Dummy style={{width: 80, height: 32, borderRadius: 4}}/>
-                        <div style={{ flexGrow: 1, justifyContent: "flex-end", display: "flex" }}>
-                            <Dummy style={{width: 90, height: 32, borderRadius: 40, marginRight: 8}}/>
-                            <Dummy style={{width: 90, height: 32, borderRadius: 40}}/>
+            <Card style={{ marginBottom: 16, opacity:0.6, position: 'relative', background: "#eee"}} elevation={0}>
+                <div className={classes.projectCardRoot}>
+                    <Card className={classes.projectCardColor} elevation={0} style={{background: "#ddd"}}>
+                        <div style={{ display: "flex", justifyContent: "center", marginTop: 8, color: "white", borderRadius: 100 }}>
+                            <Dummy alt style={{width: 24, height: 24, borderRadius: 50}}/>
                         </div>
-                    </CardActions>
+                    </Card>
+                    <div className={classes.projectCardMainPanel}>
+                        <CardContent>                        
+                            <Dummy style={{width: 400, height: 24, borderRadius: 4, marginBottom: 8}}/>
+                            <Dummy style={{width: 300, height: 42, borderRadius: 4, marginBottom: 14}}/>
+                            <Dummy style={{width: 200, height: 21, borderRadius: 4, marginBottom: 14}}/>
+                            <Dummy style={{width: 200, height: 21, borderRadius: 4, marginBottom: 14}}/>
+                        </CardContent>
+                        <CardActions>
+                            <Dummy style={{width: 80, height: 32, borderRadius: 4, marginRight: 8}}/>
+                            <Dummy style={{width: 80, height: 32, borderRadius: 4}}/>
+                            <div style={{ flexGrow: 1, justifyContent: "flex-end", display: "flex" }}>
+                                <Dummy style={{width: 90, height: 32, borderRadius: 40, marginRight: 8}}/>
+                                <Dummy style={{width: 90, height: 32, borderRadius: 40}}/>
+                            </div>
+                        </CardActions>
+                    </div>
+                    <Card className={classes.projectCardInfoPanel} elevation={1} style={{background: "#eee"}}>
+                        <CardContent style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                            <Dummy style={{width: 90, height: 32, borderRadius: 4, marginTop: 8}}/>
+                            <Dummy style={{width: 90, height: 32, borderRadius: 4, marginTop: 8}}/>
+                            <Dummy style={{width: 90, height: 32, borderRadius: 4, marginTop: 8}}/>
+                        </CardContent>
+                    </Card>
                 </div>
-                <Card className={classes.projectCardInfoPanel} elevation={1} style={{background: "#eee"}}>
-                    <CardContent style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                        <Dummy style={{width: 90, height: 32, borderRadius: 4, marginTop: 8}}/>
-                        <Dummy style={{width: 90, height: 32, borderRadius: 4, marginTop: 8}}/>
-                        <Dummy style={{width: 90, height: 32, borderRadius: 4, marginTop: 8}}/>
-                    </CardContent>
-                </Card>
-            </div>
-        </Card>)
-    
-    const ProjectCard = ({data, number}) => (<Card style={{ marginBottom: 16, opacity: data.isDeleting&&0.6, position: 'relative', }} key={data.projectId}>
+            </Card>)
+ButtonBase    
+    const ProjectCard = ({data, number}) => (
+        <Link to={`/compliance-workspace/${data.projectId}`}>
+        <Card elevation={0} style={{ border: "1px solid #ddd", marginBottom: 16, opacity: data.isDeleting&&0.6, position: 'relative', }} key={data.projectId}>
         {data.isDeleting&&<CircularProgress style={{
                 color: red[500],
                 position: 'absolute',
@@ -149,7 +152,7 @@ class ActionManager extends React.Component {
                 marginTop: -30,
                 marginLeft: -30,}} size={60} />}
         <div className={classes.projectCardRoot}>
-            <Card className={classes.projectCardColor} elevation={4}>
+            <Card className={classes.projectCardColor} elevation={0}>
                 <div style={{ display: "flex", justifyContent: "center", marginTop: 8, color: "white", borderRadius: 100 }}>
                     {/* <ToggleState initialState={data.isFavorited} render={(is) => is ? <StarIcon /> : <StarBorderIcon />} /> */}
                     {number}
@@ -177,7 +180,7 @@ class ActionManager extends React.Component {
                     </div>
                 </CardActions>
             </div>
-            <Card className={classes.projectCardInfoPanel} elevation={4}>
+            <Card className={classes.projectCardInfoPanel} style={{borderLeft: "1px solid #eee"}} elevation={0}>
                 <CardContent style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                     <Link to={`/action-manager/${data.projectId}?status=overdue&sort=none`}>
                         <Badge color="secondary" badgeContent={data.overdueCount || 0} className={classes.margin} onClick={()=> this.props.selectProjectInManager({projectId: data.projectId})}>
@@ -195,7 +198,7 @@ class ActionManager extends React.Component {
                 </CardContent>
             </Card>
         </div>
-    </Card>)
+    </Card></Link>)
 
     const hasProjects = projects.length!==0
 

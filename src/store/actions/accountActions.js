@@ -63,3 +63,9 @@ export const getUserRecentSearches = ({organisationName, organisationWebsite}) =
         }).then(e => message.success('Updated Organisation details.', 5)).catch(e => message.error('Error updating Organisation details.', 5))
     }
 }
+
+export const sendVerificationEmail = () => {
+    return {
+        type: "SEND_USER_VERIFICATION_EMAIL"
+    }
+}

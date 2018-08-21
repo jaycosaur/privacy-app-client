@@ -101,7 +101,7 @@ class IntegrationAutosuggest extends React.Component {
     }
 
     handleSuggestionsFetchRequested = ({ value }) => {
-        this.props.submitActionManagerSearch({query: value, key: searchStoreIndex})
+        this.props.submitActionManagerSearch({query: value, key: searchStoreIndex, filters: 'TYPE:ACTS OR TYPE:LEGISLATIVE_INSTRUMENT'})
     }
 
     handleSuggestionsClearRequested = () => {

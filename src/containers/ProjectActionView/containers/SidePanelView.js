@@ -1,4 +1,5 @@
 import React from 'react'
+import ErrorBoundary from './../../../components/ErrorBoundary'
 import {Progress} from 'antd'
 import SidePanelInfoTab from './../components/SidePanelInfoTab'
 import * as reduxActions from './../../../store/actions/actionManagerActions'
@@ -182,14 +183,14 @@ class SidePanelView extends React.Component {
                                 updateInfo={this.updateInfo}
                                 deleteAction={this.deleteAction}
                             />}
-                    {value === 1 && <TasksView 
+                    {value === 1 && <ErrorBoundary><TasksView 
                                 key="tasks-tab"
                                 data={data}
                                 hasFetched={data.hasFetchedTasks}
                                 updateTask={this.updateTask}
                                 addTask={this.addTask}
                                 deleteTask={this.deleteTask}
-                            />}
+                            /></ErrorBoundary>}
                     {value === 3 && <SidePanelFilesTab
                                 key="files-tab"
                                 data={data}

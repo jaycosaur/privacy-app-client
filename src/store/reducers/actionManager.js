@@ -20,6 +20,9 @@ const defaultState = {
             isOpen: false
         }
     },
+    baseItems: {
+
+    },
     selectedProject: {
         projectId: null,
         actionId: null,
@@ -36,6 +39,27 @@ export default(state = defaultState, action) => {
     switch(action.type) {
         case 'RESET_STATE_TO_DEFAULT':
             return {...defaultState}
+        case 'GET_BASE_ITEM_INFORMATION_PENDING':
+            return {
+                ...state,
+                baseItems: {
+                    ...state.baseItems,
+                    [action.meta.id]: {
+                        isLoading: true
+                    }
+                }
+            }
+        case 'GET_BASE_ITEM_INFORMATION_FULFILLED':
+            return {
+                ...state,
+                baseItems: {
+                    ...state.baseItems,
+                    [action.meta.id]: {
+                        isLoading: false,
+                        ...action.payload
+                    }
+                }
+            }
         case "GROUP_OBLIGATIONS_IN_PROJECT_VIEW":
             return {
                 ...state,

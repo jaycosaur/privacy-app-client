@@ -10,7 +10,7 @@ const styles = (theme) => {
             overflow: 'hidden',
             position: 'relative',
             display: 'flex',
-            maxWidth: "100vw"
+            maxWidth: "100vw",
         },
         content: {
             flexGrow: 1,

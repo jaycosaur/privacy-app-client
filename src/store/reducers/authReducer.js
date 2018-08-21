@@ -30,6 +30,8 @@ export default(state = defaultState, action) => {
             return {...defaultState}
         case 'SIGNIN_USER_PENDING':
             return {...state, isSigningIn: true, signInError: false, signInErrorMessage: null}
+        case 'SEND_USER_VERIFICATION_EMAIL_PENDING':
+            return {...state, emailVerificationSent: true}
         case 'SIGNIN_USER_FULFILLED':
             const forceProfileComplete = !action.payload.user.displayName||!action.payload.user.emailVerified||!action.payload.user.phoneNumber
             return {...state, isSigningIn: false, isSignedIn: true, ...action.payload, forceProfileComplete}

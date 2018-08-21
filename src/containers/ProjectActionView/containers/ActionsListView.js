@@ -118,16 +118,17 @@ class Item extends React.Component {
         const { actionData, id, onUrgentClick, isSelected, child } = this.props
 
         const LargerView = () => (
-            <div style={{ marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24, transition: "opacity 0.5s"}}>
+            <div style={{marginTop: child ? 8 : 16, paddingLeft:child&&16, transition: "opacity 0.5s"}}>
                 <HandleHover render={
                     (isHovered) => (
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
                             <Card 
                                 style={{ 
-                                    marginLeft: child&&40,
+                                    border: "1px solid #ddd",
+                                    marginLeft: child&&16,
                                     flexGrow: 1, 
                                     borderRadius: 10, 
-                                    background: this.state.isDeleting?"#ddd":(isHovered && "#ffa9c4"), 
+                                    background: this.state.isDeleting?"#ddd":null,//(isHovered && "#ffa9c4"), 
                                     opacity: this.state.isDeleting&&0.6,
                                     display: "flex", 
                                     justifyContent: "space-between", 
@@ -135,14 +136,12 @@ class Item extends React.Component {
                                     width: "100%",
                                     padding: "4px 16px", 
                                     overflowX: "hidden"  }} 
-                                elevation={
-                                    child?1:(isSelected?20:2)
-                                }
+                                elevation={isHovered?3:0}
                                 >
                                 <HandleHover render={
                                     (hovered) => (
                                         !hovered ? 
-                                        <div onClick={this.toggleChildren} style={{ background: isHovered ? (this.props.children ? "white" : "white") : (this.props.children ? themeColors[1] : themeColors[0]), width: 8, height: 40, borderRadius: 4, marginRight: 16 }} /> : 
+                                        <div onClick={this.toggleChildren} style={{ background: isHovered ? (this.props.children ? themeColors[1] : themeColors[0]) : (this.props.children ? themeColors[1] : themeColors[0]), width: 8, height: 40, borderRadius: 4, marginRight: 16 }} /> : 
                                             <div>
                                                 <Tooltip title="Add dependant obligation">
                                                     <IconButton aria-label="add-child" color="primary" onClick={() => this.handleAdd(this.props.id)} >
@@ -214,7 +213,7 @@ class Item extends React.Component {
                         </div>
                     )
                 } />
-                <div style={{ marginLeft: this.props.child && 60 }}>
+                <div style={{ marginLeft: this.props.child && 16 }}>
                     <HandleHover render={
                         (isHovered) => (
                             <div onClick={() => this.handleAdd(this.props.id)} style={{ minHeight: 8, marginBottom: -8, background: isHovered && themeColors[1], opacity: 0.5, marginLeft: 8, marginRight: 8 }} />
@@ -313,7 +312,7 @@ export class ListLoader extends React.Component {
         const col = "#ddd"
         const bg = "#eee"
         return (
-            <div style={{marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24, paddingLeft:child&&52 }}>
+            <div style={{marginTop: child ? 8 : 16, paddingLeft:child&&52 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", opacity: 0.6 }}>
                     <Card 
                         style={{ 

@@ -24,7 +24,7 @@ import { Field, reduxForm } from 'redux-form';
 const getInitials = (fullName) => fullName.split(" ").map(n=>n[0]).join("")
 
 const RenderUserAvatarAndName = (props) => {
-    return <Avatar className={props.className}>{props.id&&props.team[props.id].displayName?getInitials(props.team[props.id].displayName):<PeopleIcon />}</Avatar>
+    return <Avatar className={props.className}>{props.id&&props.team[props.id]&&props.team[props.id].displayName?getInitials(props.team[props.id].displayName):<PeopleIcon />}</Avatar>
 }
 
 const mstp = (state, ownProps) => {
@@ -124,14 +124,6 @@ const InfoTabView = (props) => {
                         </div>
                         <Typography variant="caption">
                             Obligation Owner
-                        </Typography>
-                    </div>
-                    <div>
-                        <div className={classes.containerCardFlex}>
-                            <Avatar className={classes.avatar}>TM</Avatar>
-                        </div>
-                        <Typography variant="caption">
-                            Link to relevant Legislation or Regulation
                         </Typography>
                     </div>
                 </CardContent> 

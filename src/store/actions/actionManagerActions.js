@@ -273,3 +273,15 @@ export const closeFileExplorerInProjectView = () => {
     }
 }
 
+export const getBaseItemInformation = ({id}) => {
+    return {
+        type: 'GET_BASE_ITEM_INFORMATION',
+        meta: { id }
+    }
+}
+
+export const onStorageGetFiles = () => {
+    return {
+        type: 'ON_STORAGE_GET_FILES'
+    }
+}

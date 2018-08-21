@@ -12,6 +12,8 @@ import actionManager from './actionManager'
 import loginFlow from './loginFlowReducer'
 import readLater from './readLaterReducer'
 import mailingList from './mailingListReducer'
+import ML from './MLReducer'
+
 
 import { reducer as formReducer } from 'redux-form'
 
@@ -27,6 +29,7 @@ const rootReducer = combineReducers({
     organisation,
     readLater,
     mailingList,
+    ML,
     router: routerReducer,
     form: formReducer,
     actionManager: actionManager

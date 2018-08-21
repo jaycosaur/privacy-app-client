@@ -56,10 +56,10 @@ const Index = (props) => {
         <MainViewTopActionBarContainer actions={actions[type]}>
             <TimelineIcon style={{color: "white", marginRight:8}}/> 
             <div style={{flex: 1, display: "flex", alignItems: "center"}}>
-                <Typography className={classes.strongTitle} variant="title">
+                <Typography className={classes.strongTitle} variant="subheading">
                     {titles[type]}
                 </Typography>
-                <Typography className={classes.strongTitle} variant="subheading">
+                <Typography className={classes.strongTitle} variant="body2">
                     1-{props.numberOfResults} of {props.numberOfResultsTotal} results in {props.fetchedIn/1000}s
                 </Typography>
             </div>

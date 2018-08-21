@@ -37,7 +37,7 @@ const Index = (props) => {
     return (
         <MainViewTopActionBarContainer color="secondary">
             <BookmarksIcon style={{color: "white", marginRight:8}}/> 
-            <Typography className={classes.strongTitle} variant="title">
+            <Typography className={classes.strongTitle} variant="subheading">
                 Your saved items
             </Typography>
         </MainViewTopActionBarContainer>

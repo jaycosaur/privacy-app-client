@@ -209,9 +209,21 @@ class ProjectTaskList extends React.PureComponent {
                 </TaskItem>
             ))
         )
-
+        const EditAction = () => (
+            <IconButton 
+                style={{marginRight: 8, color: "#eee"}}
+                color="secondary" 
+                aria-label="Add" 
+                mini
+                onClick={()=>this.props.openUpdateProjectsInManagerDialogue()}
+                >
+                <EditIcon />
+            </IconButton>)
+        
         const actions = [
             <ButtonMD 
+                variant="outlined"
+                color="secondary"
                 onClick={()=>{
                     this.props.groupObligations
                     ?this.props.ungroupObligationsInProjectView()
@@ -219,28 +231,19 @@ class ProjectTaskList extends React.PureComponent {
                     
                 }}
                 size="small" 
-                style={{display: "flex", alignItems: "center", color: this.props.groupObligations&&"white"}}>
+                style={{display: "flex", alignItems: "center", color: !this.props.groupObligations&&"#ddd", borderColor: !this.props.groupObligations&&"#bbb", marginRight: 4}}>
                 <GroupIcon style={{marginRight: 4, fontSize: 20}}/>Group
             </ButtonMD>,
             <StorageDialogView />,
             <ButtonMD 
-                variant="fab" 
                 color="secondary" 
+                variant="outlined"
                 aria-label="Add" 
-                mini
-                onClick={()=>this.props.openUpdateProjectsInManagerDialogue()}
-                >
-                <EditIcon />
-            </ButtonMD>,
-            <ButtonMD 
-                variant="fab" 
-                color="secondary" 
-                aria-label="Add" 
-                mini
+                size="small"
                 onClick={()=>this.props.createActionInProject({form:{title: null}})}
-                style={{marginLeft: 8}}
+                style={{marginLeft: 8, color: "#ddd", borderColor: "#bbb"}}
                 >
-                <AddIcon />
+                ADD ACTION
             </ButtonMD>,
             <Dialog
                 open={this.props.updateProjectIsOpen}
@@ -265,7 +268,7 @@ class ProjectTaskList extends React.PureComponent {
         const hasProjectActions = projectActions&&projectActions.length>0
 
         const TopBar = (attr) => (
-            <MainViewTopActionBarContainer color="primary" actions={actions} icon={<DoneAllIcon style={{color: "white", marginRight: 16}}/>}>
+            <MainViewTopActionBarContainer color="primary" actions={actions} icon={<EditAction />}>
                 <Typography style={{color: "white", fontWeight: 300}} noWrap variant="subheading">{project&&project.title}</Typography>
                 <Hidden smDown>
                     <Typography style={{color: "white", flex: 1, fontWeight: 300, marginLeft: 32}} variant="body1">{project&&project.description}</Typography>
