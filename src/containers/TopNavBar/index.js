@@ -13,6 +13,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 
+import moment from 'moment'
+
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -146,7 +148,15 @@ class NavBar extends React.Component {
                     <div style={{flex: 1, display: "flex", alignItems: "center"}}>
                         <div style={{flex: 1}} />
                         <Hidden xsDown>
-                            {isSignedIn&&<Button onClick={this.handleDialogueOpen()} color="secondary" variant="outlined" size="medium" style={{marginRight: 16}}>ABOUT PILOT</Button>}
+                            {isSignedIn&&this.props.organisation&&this.props.organisation.plan==="TRIAL"&&
+                                <Link to="/team?upgradeplan=open"><Button 
+                                    color="secondary" 
+                                    variant="outlined" 
+                                    size="medium" 
+                                    style={{marginRight: 16, borderColor: "#f97794", color: "#f97794"}}
+                                    >
+                                    TRIAL ({moment().isAfter(moment(this.props.organisation.createdOn).add(30,"d"))?"EXPIRED":moment(this.props.organisation.createdOn).add(30,"d").fromNow(true)} LEFT)
+                                    </Button></Link>}
                         </Hidden>
 
                         {isSignedIn && (<div>
@@ -175,25 +185,6 @@ class NavBar extends React.Component {
                             }
                     </div>
                 </Toolbar>
-                <Dialog
-                    open={this.state.dialogueOpen}
-                    onClose={this.handleDialogueClose}
-                    scroll={this.state.scroll}
-                    aria-labelledby="scroll-dialog-title"
-                    >
-                    <img src={streamers} width={"100%"} alt="" style={{position: "absolute", top: 0, left: 0, right: 0, zIndex: 0, opacity: 0.2}}/>
-                    <DialogTitle id="scroll-dialog-title" style={{zIndex: 50}}>Welcome to the Polibase Pilot! </DialogTitle>
-                    <DialogContent style={{zIndex: 50}}>
-                        <DialogContentText style={{zIndex: 50, color: "black"}}>
-                            We're hoping to get valuable feedback from our Pilot Partners on what works and what doesn't. We're working on the platform throughout the entire pilot period - so don't be alarmed if a buttons change, pages get added, and new features arrive.
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleDialogueClose} color="primary">
-                            Close
-                        </Button>
-                    </DialogActions>
-                </Dialog>
             </AppBar>)
     }
 }
@@ -203,7 +194,8 @@ class NavBar extends React.Component {
       return {
         isSignedIn: state.user.isSignedIn,
         isSigningIn: state.user.isSigningIn,
-        isSideDrawerExpanded: state.view.isSideDrawerExpanded
+        isSideDrawerExpanded: state.view.isSideDrawerExpanded,
+        organisation: state.organisation
       }
   }
   

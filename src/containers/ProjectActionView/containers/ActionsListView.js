@@ -1,6 +1,5 @@
 
 import React from 'react'
-import { DatePicker } from 'antd'
 import { themeColors, } from './../../../theme'
 import moment from 'moment';
 import HandleHover from './../components/HandleHover'
@@ -66,6 +65,7 @@ class DatePickerButton extends React.Component {
                     {this.props.value?moment(this.props.value).format("DD MMM"):<span style={{color: "#bbb"}}>Select</span>} <EventIcon style={{fontSize: 20, marginLeft: 8, color: "#bbb"}} />
                 </ButtonMD>
                 <SelectActionSchedule
+                    hasBeenCloned={this.props.hasBeenCloned}
                     handleChange={({schedule})=>this.props.handleChange({schedule})} 
                     value={this.props.scheduleValue}
                 />
@@ -116,7 +116,7 @@ class Item extends React.Component {
 
     render() {
         const { actionData, id, onUrgentClick, isSelected, child } = this.props
-
+        console.log(id, isSelected)
         const LargerView = () => (
             <div style={{marginTop: child ? 8 : 16, paddingLeft:child&&16, transition: "opacity 0.5s"}}>
                 <HandleHover render={
@@ -124,7 +124,7 @@ class Item extends React.Component {
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
                             <Card 
                                 style={{ 
-                                    border: "1px solid #ddd",
+                                    border: isSelected?"1px solid #f97794":"1px solid #ddd",
                                     marginLeft: child&&16,
                                     flexGrow: 1, 
                                     borderRadius: 10, 
@@ -186,6 +186,8 @@ class Item extends React.Component {
                                     hasValue={actionData.linkedRecord}
                                     />
                                 <DatePickerButton
+                                    hasBeenCloned={actionData.hasBeenCloned}
+                                    cloneId={actionData.cloneId}
                                     handleChange={({ schedule })=>this.props.handleUpdate({ schedule })}
                                     scheduleValue={actionData.schedule}
                                     value={actionData.dueDate?moment(actionData.dueDate):null}

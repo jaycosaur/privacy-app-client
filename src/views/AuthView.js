@@ -14,6 +14,7 @@ import StarIcon from '@material-ui/icons/Star';
 import BookmarksIcon from '@material-ui/icons/CollectionsBookmark';
 import HistoryIcon from '@material-ui/icons/History';
 import DraftsIcon from '@material-ui/icons/Drafts';
+import HelpIcon from '@material-ui/icons/Help';
 import Icon from '@material-ui/core/Icon';
 import TopNavBar from './../containers/TopNavBar'
 import { connect } from 'react-redux'
@@ -29,9 +30,8 @@ import classnames from 'classnames'
 const Footer = ({isSideDrawerExpanded}) => (
     <div style={{textAlign: "center", flexGrow: 1, margin: 8}}>
         {isSideDrawerExpanded&&<p style={{fontWeight: 700, fontSize: "1.2em", margin: 0, color: "#623aa2"}}>POLIBASE</p>}
-        {isSideDrawerExpanded&&<p style={{margin: 0}}><a href="https://en.wikipedia.org/wiki/Avocado">Powered by avocados</a></p>}
         {isSideDrawerExpanded&&<p style={{margin: 0}}><small>© 2018 ExamineChange Pty. Ltd. <br/>All rights reserved.</small></p>}
-        {isSideDrawerExpanded&&<p style={{margin: 0}}><small><a href="https://www.polibase.com.au">Disclosure</a> | <a href="https://www.polibase.com.au">Disclaimer</a></small></p>}
+        {isSideDrawerExpanded&&<p style={{margin: 0}}><small><a href="https://www.polibase.com.au" style={{color: "#f97794"}}>Disclosure</a> | <a href="https://www.polibase.com.au" style={{color: "#f97794"}}>Disclaimer</a></small></p>}
     </div>
 )
 
@@ -55,6 +55,7 @@ const styles = theme => ({
     },
     sidebarList: {
         width: 250,
+        overflow: "hidden"
     },
     padding: {
         padding: theme.spacing.unit
@@ -103,7 +104,9 @@ const styles = theme => ({
         }),
     },
       drawerPaperClose: {
-        overflowX: 'hidden',
+        overflow: 'hidden',
+        height: "100%",
+        width: "100%",
         transition: theme.transitions.create('width', {
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.leavingScreen,
@@ -150,6 +153,14 @@ const SideDrawerToggleContainer = (props) => {
                             <GroupIcon />
                             </ListItemIcon>
                             <ListItemText inset primary="Team" />
+                    </ListItem>
+                </Link>
+                <Link to="/help">
+                    <ListItem button>
+                            <ListItemIcon>
+                                <HelpIcon />
+                            </ListItemIcon>
+                            <ListItemText inset primary="Help and FAQ" />
                     </ListItem>
                 </Link>
                 <Divider className={classes.divider}/>
@@ -267,11 +278,12 @@ const SideDrawerToggleContainer = (props) => {
             elevation={20}
             >
             <div className={classes.toolbar}>
-                {width}
+
             </div>
             <div
                 tabIndex={0}
                 role="button"
+                style={{height: "100%", widht: "100%", overflow: "hidden"}}
             >
                 {sidebarList}
             </div>

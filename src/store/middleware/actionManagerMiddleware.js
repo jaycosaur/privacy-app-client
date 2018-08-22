@@ -49,10 +49,10 @@ export function updateProjectInManagerMW() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'UPDATE_PROJECT_IN_MANAGER') {
             const state = getState()
-            const { organisation: { organisationId }, actionManager: { selectedProject: { projectId } } } = state
+            const { organisation: { organisationId }, actionManager: { selectedProject: { projectId } }, user: { user: { uid } } } = state
             dispatch({ 
                 type: "UPDATE_PROJECT_IN_MANAGER", 
-                payload: projectRef({organisationId, projectId}).update({...action.payload}) 
+                payload: projectRef({organisationId, projectId}).update({...action.payload, lastUpdatedBy: uid}) 
             })
             return dispatch({type: 'CLOSE_UPDATE_PROJECTS_IN_MANAGER_DIALOGUE'})
         }
@@ -101,6 +101,55 @@ export function getProjectsInManagerSubscription() {
                         dispatch(updateProjectAction({ payload: projects }))
                     } else {
                         dispatch({type: "NO_PROJECTS_FOR_ORGANISATION"})
+                    }
+                })
+            }
+            
+        }
+        return next(action)
+    }
+}
+
+const updateLatestEventsAction = ({ payload }) => ({type: "UPDATE_UPDATE_LATEST_EVENT_IN_STORE", payload })
+const deleteLatestEventsAction = ({ projectId }) => ({type: "DELETE_LATEST_EVENT_IN_STORE", meta: { projectId }})
+const latestEventsRef = ({ organisationId }) => db.collection("organisations").doc(organisationId).collection('events')
+
+export function getLatestEventsSubscription() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'SUBSCRIBE_TO_COMPLIANCE_MANAGER_LATEST_EVENTS') {
+            let state = getState()
+            const { organisation: { organisationId }, user: { user: { uid } } } = state
+            const isSubscribed = state.actionManager.projectsStatus.isSubscribedToLatestEvents
+            if (!isSubscribed&&organisationId){
+                dispatch({
+                    type: "SUBSCRIBE_TO_COMPLIANCE_MANAGER_LATEST_EVENTS_OPEN",
+                })
+                latestEventsRef({organisationId}).orderBy("createdAtUNIX", "desc").limit(20).onSnapshot(function(querySnapshot) {
+                    state = getState()
+                    let events = {}
+                    querySnapshot.docChanges().forEach((change) => {
+                        const docData = change.doc.data()
+                        const eventId = change.doc.id
+                        const payload = {
+                            eventId, 
+                            ...docData,
+                        }
+                        if (change.type === "removed"){
+                            dispatch(deleteLatestEventsAction({ eventId }))
+                        } else {
+                            events = {
+                                ...events,
+                                [eventId]: {
+                                    ...state.actionManager.events[eventId],
+                                    ...payload
+                                }
+                            }
+                        }
+                    })
+                    if (Object.keys(events).length>0){
+                        dispatch(updateLatestEventsAction({ payload: events }))
+                    } else {
+                        dispatch({type: "NO_COMPLIANCE_MANAGER_LATEST_EVENTS"})
                     }
                 })
             }
@@ -236,12 +285,12 @@ export function updateFocusedActionInProjectMW() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === "UPDATE_ACTION_IN_PROJECT_FOCUSED") {
             const state = getState()
-            const { organisation: { organisationId },  actionManager: { selectedProject: { projectId, actionId }}} = state
+            const { organisation: { organisationId },  actionManager: { selectedProject: { projectId, actionId }}, user: { user: { uid } }} = state
             const payload = action.payload
             Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key])
             return dispatch({ 
                 type: "UPDATE_ACTION_IN_PROJECT", 
-                payload: actionRef({organisationId, actionId}).update(payload),
+                payload: actionRef({organisationId, actionId}).update({...payload, lastUpdatedBy: uid}),
                 meta: {
                     organisationId,
                     projectId,
@@ -257,11 +306,11 @@ export function updateActionInProjectMW() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === "UPDATE_ACTION_IN_PROJECT") {
             const state = getState()
-            const { organisation: { organisationId },  actionManager: { selectedProject: { projectId }}} = state
+            const { organisation: { organisationId },  actionManager: { selectedProject: { projectId }},  user: { user: { uid } }} = state
             const { actionId } = action.meta
             return dispatch({ 
                 type: "UPDATE_ACTION_IN_PROJECT", 
-                payload: actionRef({organisationId, actionId}).update(action.payload),
+                payload: actionRef({organisationId, actionId}).update({...action.payload, lastUpdatedBy: uid}),
                 meta: {
                     organisationId,
                     projectId,
@@ -456,11 +505,11 @@ export function createTaskInActionMW() {
 export function updateTaskInActionMW() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === "UPDATE_TASK_IN_ACTION") {
-            const { organisation: { organisationId }} = getState()
+            const { organisation: { organisationId }, user: { user: { uid } }} = getState()
             const { taskId } = action.meta
             return dispatch({ 
                 type: "UPDATE_TASK_IN_ACTION", 
-                payload: taskRef({ organisationId, id: taskId }).update(action.payload)
+                payload: taskRef({ organisationId, id: taskId }).update({...action.payload, lastUpdatedBy: uid})
             })
         }
         return next(action)

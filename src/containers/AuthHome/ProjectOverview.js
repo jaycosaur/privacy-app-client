@@ -24,13 +24,13 @@ import * as actions from './../../store/actions/actionManagerActions'
 import { Link } from 'react-router-dom'
 
 import { connect } from 'react-redux'
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const heightOfCard = "40vh"
 
 const styles = (theme) => {
     return ({
     expand: {
-        overflow: "scroll",
         height: `calc(${heightOfCard} - ${theme.mixins.toolbar.minHeight}px)`,
         display: "flex",
         justifyContent: "center",
@@ -91,17 +91,14 @@ class HomeView extends React.Component {
     render(){
         const { classes, actionManager: { projects }, hideNavButton,  isLoadingProjects } = this.props
 
-
-        
-
         const ProjectItem = (attrs) => {
             const highlightColor = attrs.isOverdue?red[500]:attrs.isDone?green[500]:"#ddd"
-            const message = attrs.isOverdue?[<ErrorIcon/>, "OVERDUE"]:attrs.isDone?[<DoneAllIcon/>, "DONE"]:[<HourglassIcon/>, "ON TRACK"]
+            const message = attrs.isOverdue?[<ErrorIcon />,"OVERDUE"]:attrs.isDone?[<DoneAllIcon />, "DONE"]:[<HourglassIcon />, "ON TRACK"]
             return (
                 <ListItem button component={Link} to={`compliance-workspace/${attrs.projectId}`}>
                     <div style={{height: 40, width: 4, borderRadius: 4, opacity: 0.7, background: highlightColor}}/>
-                    <ListItemText primary={attrs.title} secondary={attrs.description}/>
-                    <div style={{color: highlightColor, display: "flex", alignItems: "center"}}>
+                    <ListItemText style={{flex: 1}} primary={attrs.title} secondary={attrs.description}/>
+                    <div style={{width: "30%", color: highlightColor, display: "flex", alignItems: "center"}}>
                         {message}
                     </div>
                 </ListItem>
@@ -127,7 +124,7 @@ class HomeView extends React.Component {
                         </Tooltip>}
                     </Toolbar>
                 </AppBar>
-                <div className={classes.expand}>
+                <Scrollbars className={classes.expand}>
                     {isLoadingProjects&&!hasProjects&&<div style={{height: "100%", width: "100%", display: "flex", flexDirection: "column"}}>
                         <LinearProgress variant="query" color="secondary" style={{width: "100%"}}/>
                         <div style={{flex: 1}}/>
@@ -136,7 +133,7 @@ class HomeView extends React.Component {
                     {!isLoadingProjects&&hasProjects&&<List component="nav" dense>
                         {projectsArray.map(i=><ProjectItem key={i.projectId} {...i}/>)}
                     </List>}
-                </div>
+                </Scrollbars>
             </Card>
         )
     }

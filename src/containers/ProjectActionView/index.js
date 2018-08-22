@@ -131,7 +131,7 @@ class ComplianceActionsContainer extends React.Component {
                         </Typography>
                     </Toolbar>
                 </AppBar>
-                {this.state.expanded&&<CardContent style={{paddingTop: 0, paddingBottom: 0}}>
+                {this.state.expanded&&<CardContent style={{paddingTop: 0, paddingBottom: 16}}>
                     {this.props.children}
                 </CardContent>}
             </Card>
@@ -191,10 +191,13 @@ class ProjectTaskList extends React.PureComponent {
 
     render() {
         const { projectRefId, project, actionRefId } = this.props
+
+        const {match: {params: { actionId }}} = this.props
+        console.log(this.props.match.params)
         const getProjectActionTree = (input, handleAdd, handleDelete, handleUpdate, handleClick, parentId=null, parentRef=null, child=false) => (
             input.filter(i => i.parentActionId === parentId).length > 0 && input.filter(i => i.parentActionId === parentId).map((task,num) => (
                 <TaskItem 
-                    key={task.actionId} 
+                    key={task.actionId}
                     actionData={task} 
                     id={task.actionId} 
                     handleAdd={handleAdd} 
@@ -203,7 +206,7 @@ class ProjectTaskList extends React.PureComponent {
                     handleUpdate={(val)=>handleUpdate({toUpdate: val, actionId: task.actionId})}
                     onUrgentClick={this.props.handleToggleActionUrgency}
                     onDueDateChange={(e)=>console.log('date changed',e)}
-                    isSelected={actionRefId===task.id}
+                    isSelected={actionRefId===task.id || task.actionId===actionId}
                     child={child}
                     >{getProjectActionTree(input, handleAdd, handleDelete, handleUpdate, handleClick,task.actionId,(parentRef?`${parentRef}.${num+1}`:num+1),true)}
                 </TaskItem>
@@ -336,6 +339,11 @@ class ProjectTaskList extends React.PureComponent {
                                     {hasProjectActions&&getProjectActionTree(projectActions.filter(i=>i[this.props.groupObligations]===key), this.handleAdd, this.handleDelete, this.handleUpdate, this.handleClick)}
                                 </ComplianceActionsContainer>
                             ))}
+                            {hasProjectActions&&projectActions.filter(i=>!i[this.props.groupObligations]).length>0&&(
+                                <ComplianceActionsContainer groupBy="Compliance Type" keyText={"NOT SET"} key={"not-set"}>
+                                    {hasProjectActions&&getProjectActionTree(projectActions.filter(i=>!i[this.props.groupObligations]), this.handleAdd, this.handleDelete, this.handleUpdate, this.handleClick)}
+                                </ComplianceActionsContainer>)}
+                            
                         </div>}
                     </div>
                 </div>

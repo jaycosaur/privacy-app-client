@@ -1,5 +1,6 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const styles = (theme) => {
     return ({
@@ -29,14 +30,14 @@ const styles = (theme) => {
 const AuthView = (props) => {
     const { classes, children, topbar } = props
     return (
-        <div className={classes.root}>
+        <Scrollbars className={classes.root}>
             <div style={{flexGrow: 1}}>
                 {topbar}
                 <main className={classes.content}>
                     {children}
                 </main>
             </div>
-        </div>
+        </Scrollbars>
     )
 }
 

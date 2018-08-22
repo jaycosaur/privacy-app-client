@@ -2,14 +2,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 
-import DutyIcon from '@material-ui/icons/VerifiedUser';
-import ObligationIcon from '@material-ui/icons/Beenhere';
-import ProcessIcon from '@material-ui/icons/Update';
 import ScheduleIcon from '@material-ui/icons/Schedule';
-
+import CheckIcon from '@material-ui/icons/CheckCircle'
 
 
 
@@ -60,6 +56,7 @@ class SelectTeamMember extends React.Component {
         const { value } = this.props
         return (
             [<Button 
+                disabled={this.props.disabled||this.props.hasBeenCloned}
                 onClick={this.handleClick}
                 style={{opacity: 0.9 }}
                 aria-haspopup="true"
@@ -67,7 +64,7 @@ class SelectTeamMember extends React.Component {
                 color={value&&"secondary"}
                 style={{color: !value&&"#ccc"}}
                 >
-                <ScheduleIcon />
+                {this.props.hasBeenCloned?<CheckIcon />:<ScheduleIcon />}
             </Button>,
             <Menu
                 id="simple-menu"

@@ -1,5 +1,6 @@
 const defaultState = {
     projects: {},
+    events: {},
     projectsStatus: {
         isLoadingProjects: false,
         projectsLoadError: false,
@@ -32,7 +33,6 @@ const defaultState = {
         project: null,
         children: null,
     }
-
 }
 
 export default(state = defaultState, action) => {
@@ -138,6 +138,27 @@ export default(state = defaultState, action) => {
                 }
             }
         }
+        // LATEST EVENTS SPECIFIC REDUCERS
+        case "UPDATE_UPDATE_LATEST_EVENT_IN_STORE": {
+            return {...state, 
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    isLoadingLatestEvents: false,
+                },
+                events: {
+                    ...state.events,
+                    ...action.payload
+                }
+            }
+        }
+        case "DELETE_UPDATE_LATEST_EVENT_IN_STORE": {
+            const { [action.meta.eventId]:{...leCon}, ...remEv} = state.events
+            return {...state, 
+                events: {
+                    ...remEv
+                }
+            }
+        }
         // OTHER
         case "DELETE_PROJECT_IN_MANAGER_PENDING": {
             return {...state, 
@@ -190,6 +211,26 @@ export default(state = defaultState, action) => {
                     isSubscribedToProjects: true,
                     projectsLoadError: false, 
                     projectsLoadErrorMessage: null
+                }
+            }
+        case 'SUBSCRIBE_TO_COMPLIANCE_MANAGER_LATEST_EVENTS_OPEN':
+            return {...state, 
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    isLoadingLatestEvents: true, 
+                    isSubscribedToLatestEvents: true,
+                    latestEventsLoadError: false, 
+                    latestEventsLoadErrorMessage: null
+                }
+            }
+        case "NO_COMPLIANCE_MANAGER_LATEST_EVENTS":
+            return {...state, 
+                projectsStatus: {
+                    ...state.projectsStatus,
+                    isLoadingLatestEvents: false, 
+                    isSubscribedToLatestEvents: true,
+                    latestEventsLoadError: false, 
+                    latestEventsLoadErrorMessage: null
                 }
             }
         case 'GET_PROJECTS_IN_MANAGER_PENDING':

@@ -47,6 +47,12 @@ export const getProjectsInManager = () => {
     }
 }
 
+export const getComplianceManagerLatestEvents = () => {
+    return {
+        type: 'SUBSCRIBE_TO_COMPLIANCE_MANAGER_LATEST_EVENTS',
+    }
+}
+
 export const handleProjectFavorite = ({ isFavorited }) => {
     return {
         type: 'UPDATE_PROJECT_IN_MANAGER',

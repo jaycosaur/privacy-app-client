@@ -10,6 +10,7 @@ import DueWeeklyTasks from './../containers/AuthHome/DueWeeklyTasks';
 import ProjectOverview from './../containers/AuthHome/ProjectOverview';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import MainViewTopActionBarContainer from './../containers/MainViewTopActionBarContainer'
+import Fade from '@material-ui/core/Fade';
 
 import AuthViewRouteContainer from './AuthViewRouteContainer'
 
@@ -49,46 +50,65 @@ const PilotCard = (props) => (
         <div style={{flex: 1, background: "white"}}>
             <CardContent style={{display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between", alignItems: "space-between", alignContent: "space-between"}}>
                 <div style={{display: "flex", alignItems: "center"}}>
-                    <Typography variant="subheading" gutterBottom color="primary">Welcome to the Polibase Pilot!</Typography>
+                    <Typography variant="subheading" gutterBottom color="primary">Welcome to the Polibase Trial!</Typography>
                 </div>
-                <Typography variant="caption" color="textSecondary">We're hoping to get valuable feedback from our Pilot Partners on what works and what doesn't. We're working on the platform throughout the entire pilot period - so don't be alarmed if a buttons change, pages get added, and new features arrive.</Typography>
+                <Typography variant="caption" color="textSecondary">During the trial, you'll have full functionality of the Polibase platform - with a few limitations! At the end of the thirty days, you can upgrade to the paid version of Polibase and keep all your obligations and documents secure.</Typography>
             </CardContent>
         </div>
     </Card>
 )
 
 
-const HomeView = (props) => {
-    const { classes } = props
-    const TopBar = <MainViewTopActionBarContainer variant="dense" icon={<HeaderIcon style={{color: "white"}}/>}>
-        <Typography noWrap style={{color: "white", flex: 1, marginLeft: 8}} variant="subheading">
-            {isWidthUp('sm', props.width)?"Simple regulatory intelligence. Automating regulatory compliance for Australian organisations.":"Simple regulatory intelligence.  Automating regulatory compliance for Australian organisations."}
-        </Typography>
-    </MainViewTopActionBarContainer>
+class HomeView extends React.Component {
+    state = {
+        mounted: false
+    }
 
-    return (
-        <AuthViewRouteContainer topbar={TopBar}>
-            <Grid container spacing={isWidthUp('sm', props.width)?16:0} className={classes.root}>
-                <Grid item sm={12} md={4}>
-                    <PilotCard square={!isWidthUp('sm', props.width)}/>
-                    <ProjectOverview square={!isWidthUp('sm', props.width)} />
-                    <DueWeeklyTasks square={!isWidthUp('sm', props.width)}/>
+    componentDidMount(){
+        this.setState({
+            mounted: true
+        })
+    }
+
+    render(){
+        const { classes } = this.props
+        const { mounted } = this.state
+        const TopBar = <MainViewTopActionBarContainer variant="dense" icon={<HeaderIcon style={{color: "white"}}/>}>
+            <Typography noWrap style={{color: "white", flex: 1, marginLeft: 8}} variant="subheading">
+                {isWidthUp('sm', this.props.width)?"Simple regulatory intelligence. Automating regulatory compliance for Australian organisations.":"Simple regulatory intelligence.  Automating regulatory compliance for Australian organisations."}
+            </Typography>
+        </MainViewTopActionBarContainer>
+
+        return (
+            <AuthViewRouteContainer topbar={TopBar}>
+                <Grid container spacing={isWidthUp('sm', this.props.width)?16:0} className={classes.root}>
+                    <Grid item sm={12} md={4}>
+                        <Fade in={mounted}>
+                            <PilotCard square={!isWidthUp('sm', this.props.width)}/>
+                        </Fade>
+                        <Fade in={mounted}>
+                            <ProjectOverview square={!isWidthUp('sm', this.props.width)} />
+                        </Fade>
+                        <Fade in={mounted}>
+                            <DueWeeklyTasks square={!isWidthUp('sm', this.props.width)}/>
+                        </Fade>
+                    </Grid>
+                    <Grid item sm={12} md={8}>
+                        <LatestNews square={!isWidthUp('sm', this.props.width)}/>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <div className={classes.disclaimer}>
+                            <Typography variant="subheading" gutterBottom align="center" color="primary">DISCLAIMER</Typography>
+                            <Typography variant="caption" color="textSecondary">
+                                The Polibase (<a href="https://www.polibase.com.au" target="_blank">www.polibase.com.au</a>) is a resource for publicly available information. Nothing on this website or via any link should be used as a source of legal advice. This website does not create a legal relationship between the user and Examine Group Pty Ltd. Nor is this website intended to do so. 
+                                Please do not act or solely rely on any public information in this website. The latest versions of legislation and regulation are available on the Australian government websites referenced on each website. Updates on regulation, legislation or compliance obligations are mere guidance and do not substantiate a legal relationship. Every update should be double-checked with the respective government authority’s website and authorised producer of information. 
+                                All information is of a general nature only and must never been taken as specific or complete advice on legal or regulatory matters. Users of ‘Polibase’ should make their own independent inquiries before acting on any information and Polibase does not accept any liability on obfuscated legal or government documents. 
+                            </Typography>
+                        </div>
+                    </Grid>
                 </Grid>
-                <Grid item sm={12} md={8}>
-                    <LatestNews square={!isWidthUp('sm', props.width)}/>
-                    <LatestBlogPosts square={!isWidthUp('sm', props.width)}/>
-                </Grid>
-                <Grid item xs={12}>
-                    <div className={classes.disclaimer}>
-                        <Typography variant="subheading" gutterBottom align="center" color="primary">DISCLAIMER</Typography>
-                        <Typography variant="caption" color="textSecondary">
-                            The Polibase (<a href="https://www.polibase.com.au" target="_blank">www.polibase.com.au</a>) is a resource for publicly available information. Nothing on this website or via any link should be used as a source of legal advice. This website does not create a legal relationship between the user and Examine Group Pty Ltd. Nor is this website intended to do so. 
-                            Please do not act or solely rely on any public information in this website. The latest versions of legislation and regulation are available on the Australian government websites referenced on each website. Updates on regulation, legislation or compliance obligations are mere guidance and do not substantiate a legal relationship. Every update should be double-checked with the respective government authority’s website and authorised producer of information. 
-                            All information is of a general nature only and must never been taken as specific or complete advice on legal or regulatory matters. Users of ‘Polibase’ should make their own independent inquiries before acting on any information and Polibase does not accept any liability on obfuscated legal or government documents. 
-                        </Typography>
-                    </div>
-                </Grid>
-            </Grid>
-        </AuthViewRouteContainer>)}
+            </AuthViewRouteContainer>)
+        }
+    }
 
 export default withWidth()(withStyles(styles)(HomeView))

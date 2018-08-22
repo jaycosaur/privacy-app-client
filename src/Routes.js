@@ -86,6 +86,11 @@ const MLView = Loadable({
   loading: Loading,
 });
 
+const HelpView = Loadable({
+  loader: () => import('./views/HelpView'),
+  loading: Loading,
+});
+
 
 
 const Routes = (props) => {
@@ -118,6 +123,7 @@ const Routes = (props) => {
         <AuthenticatedRoute key="reading-list" path="/reading-list" props={{isSignedIn: props.isSignedIn}} component={ReadingList}/>
         <AuthenticatedRoute key="mailing-list" path="/mailing-list" props={{isSignedIn: props.isSignedIn}} component={MailingList}/>
         <AuthenticatedRoute key="mailing-list" path="/ML" props={{isSignedIn: props.isSignedIn}} component={MLView}/>
+        <AuthenticatedRoute key="help-view" exact path='/help' props={{isSignedIn: props.isSignedIn}} component={HelpView}/>
         
         {/* <AuthenticatedRoute key="contacts" path='/contacts' exact props={{isSignedIn: props.isSignedIn}} component={ContactsView}/>
         <AuthenticatedRoute key="contacts-id" path='/contacts/{cid}/' props={{isSignedIn: props.isSignedIn}} component={ContactsView}/> */}

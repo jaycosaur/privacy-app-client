@@ -30,6 +30,7 @@ import ProjectOverview from './../containers/AuthHome/ProjectOverview'
 import Hidden from '@material-ui/core/Hidden';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const styles = theme => ({
     card: {
@@ -182,7 +183,7 @@ ButtonBase
             </div>
             <Card className={classes.projectCardInfoPanel} style={{borderLeft: "1px solid #eee"}} elevation={0}>
                 <CardContent style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <Link to={`/action-manager/${data.projectId}?status=overdue&sort=none`}>
+                    <Link to={`/compliance-workspace/${data.projectId}?status=overdue&sort=none`}>
                         <Badge color="secondary" badgeContent={data.overdueCount || 0} className={classes.margin} onClick={()=> this.props.selectProjectInManager({projectId: data.projectId})}>
                             <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50 }}>
                                 OVERDUE
@@ -217,19 +218,21 @@ ButtonBase
                 )}
                 {organisationId&&<Grid container spacing={isWidthUp('md', this.props.width)?24:0}>
                     <Hidden smDown>
-                        <Grid item xs={12} md={8} style={{height: "83vh", overflow: "scroll"}}>
-                            {isLoadingProjects&&!hasProjects&&[<ProjectCardLoader />,
-                            <ProjectCardLoader />,
-                            <ProjectCardLoader />]}
-                            {hasProjects&&projects.sort((a,b)=>moment(a.created).isBefore(b.created)).map((i,j)=><ProjectCard data={i} key={i.projectId} number={j+1}/>)}
-                            {!isLoadingProjects&&!hasProjects&&(
-                                <div style={{height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
-                                    <img src="https://www.freeiconspng.com/uploads/rocket-png-26.png" alt="" width="260px" style={{filter: "grayscale(100%)"}}/>
-                                    <Typography style={{margin: "32px 0 16px"}} variant="headline">Hold up! It looks like you have no projects.</Typography>
-                                    <Typography style={{margin: "0px 0 48px", color: "#9e9e9e"}} variant="title"> Click on the + button to get started</Typography>
-                                    <Button variant="extendedFab" color="secondary" onClick={()=>this.props.openCreateProjectsInManagerDialogue()}><AddIcon /> Add new project </Button>
-                                </div>
-                            )}
+                        <Grid item xs={12} md={8}>
+                            <Scrollbars style={{height: "83vh"}}>
+                                {isLoadingProjects&&!hasProjects&&[<ProjectCardLoader />,
+                                <ProjectCardLoader />,
+                                <ProjectCardLoader />]}
+                                {hasProjects&&projects.sort((a,b)=>moment(a.created).isBefore(b.created)).map((i,j)=><ProjectCard data={i} key={i.projectId} number={j+1}/>)}
+                                {!isLoadingProjects&&!hasProjects&&(
+                                    <div style={{height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
+                                        <img src="https://www.freeiconspng.com/uploads/rocket-png-26.png" alt="" width="260px" style={{filter: "grayscale(100%)"}}/>
+                                        <Typography style={{margin: "32px 0 16px"}} variant="headline">Hold up! It looks like you have no projects.</Typography>
+                                        <Typography style={{margin: "0px 0 48px", color: "#9e9e9e"}} variant="title"> Click on the + button to get started</Typography>
+                                        <Button variant="extendedFab" color="secondary" onClick={()=>this.props.openCreateProjectsInManagerDialogue()}><AddIcon /> Add new project </Button>
+                                    </div>
+                                )}
+                            </Scrollbars>
                         </Grid>
                     </Hidden>
                     <Grid item xs={12} md={4}>

@@ -6,6 +6,7 @@ import * as actions from './store/actions/authActions'
 import PopOverModel from './views/PopOverModal'
 import { auth } from './config/firebase'
 import AuthView from './views/AuthView'
+import Intercom from 'react-intercom';
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
@@ -51,11 +52,19 @@ class App extends Component {
     }
 
     render(){
+
+      const user = this.props.user&&this.props.user.info&&{
+        user_id: this.props.user.info.uid,
+        email: this.props.user.info.email,
+        name: this.props.user.info.displayName
+      }
+
       return (
         <ConnectedRouter history={this.props.history}>
           <MuiThemeProvider theme={theme}>
               <PopOverModel />
               <AuthView isSignedIn={this.props.isSignedIn} loginFlow={this.props.loginFlow}/>
+              {this.props.isSignedIn&&user&&<Intercom appID="fbz8pjg0" {...user}/>}
           </MuiThemeProvider>
         </ConnectedRouter>
       );
@@ -66,7 +75,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     isSignedIn: state.user.isSignedIn,
     isSigningIn: state.user.isSigningIn,
-    loginFlow: state.loginFlow
+    loginFlow: state.loginFlow,
+    user: state.user.accountInformation
   }
 }
 

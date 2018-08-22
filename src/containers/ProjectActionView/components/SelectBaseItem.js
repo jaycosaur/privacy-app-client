@@ -80,6 +80,9 @@ class SelectTeamMember extends React.Component {
         if (hasValue&&itemType==="baseitem"&&!this.props.baseItems[itemRef]){
             this.props.getBaseItemInformation({id: itemRef})
         }
+        if (hasValue&&itemType==="teamstorage"&&!this.props.baseItems[itemRef]){
+            this.props.onStorageGetFiles()
+        }
     }
 
     render() {
@@ -104,6 +107,8 @@ class SelectTeamMember extends React.Component {
         let itemType = null
         let itemRef = null
         let isLoading = null
+        let item = null
+        let title = null
 
         if (hasValue&&typeof hasValue === "string"){
             itemType = "baseitem"
@@ -117,9 +122,15 @@ class SelectTeamMember extends React.Component {
 
         if(itemType==="baseitem"){
             isLoading = this.props.baseItems[itemRef]&&this.props.baseItems[itemRef].isLoading
+            item = itemRef&&!isLoading&&this.props.baseItems[itemRef]
+            title = item&&item.title
         }
 
-        const item = itemRef&&!isLoading&&this.props.baseItems[itemRef]
+        if(itemType==="teamstorage"){
+            isLoading = !(this.props.teamStorage&&this.props.teamStorage[itemRef])
+            item = itemRef&&!isLoading&&this.props.teamStorage[itemRef]
+            title = item&&item.name
+        }
 
         const maxChars = (text,chars) => `${[...text].slice(0, chars).join("")}${text.length>chars?"...":""}`
         return (
@@ -128,15 +139,18 @@ class SelectTeamMember extends React.Component {
                 size="small" variant="outlined" 
                 style={{
                     background: "white",
-                    marginLeft: 8,
-                    fontSize: item&&item.title&&7,
+                    marginLeft: 4,
+                    fontSize: item&&title&&9,
+                    paddingTop: item&&title&&6,
+                    paddingBottom: item&&title&&6,
+                    paddingLeft: item&&title&&4,
                     maxWidth: 160
                 }}
                 >
                 {isLoading?<div style={{width: 100, height: 10, borderRadius: 4, margin: 4}}/>
                     :(
                     itemRef
-                        ?(!isLoading?item&&item.title?maxChars(item.title,40):"Cannot find...":null)
+                        ?(!isLoading?item&&title?maxChars(title,34):"Cannot find...":null)
                         :<span style={{color: "#bbb"}}>SELECT</span>)}{itemType==="teamstorage"?<CloudIcon style={{fontSize: 20, color: "#bbb", marginLeft: 8}}/>:<DescriptionIcon style={{fontSize: 20, color: "#bbb", marginLeft: 8}}/>}
             </Button>,
             <Menu
@@ -190,9 +204,11 @@ class SelectTeamMember extends React.Component {
 }
 
 const mapStateToProps = (state, props) => {
+    const selectedProject = state.actionManager.selectedProject.projectId
     return {
         teamUsers: state.organisation.users,
-        baseItems: state.actionManager.baseItems
+        baseItems: state.actionManager.baseItems,
+        teamStorage: selectedProject&&state.actionManager.projects[selectedProject]&&state.actionManager.projects[selectedProject].storage
     }
 }
 export default connect(mapStateToProps, actions)(SelectTeamMember)

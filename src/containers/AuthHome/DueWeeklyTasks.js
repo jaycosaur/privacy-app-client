@@ -29,12 +29,13 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import * as actions from './../../store/actions/actionManagerActions'
+import { Scrollbars } from 'react-custom-scrollbars';
 
 const styles = (theme) => ({
     root: {
         padding: theme.spacing.unit*4,
         height: "92vh",
-        overflow: "scroll"
+        overflowX: "scroll"
     },
     buttonCard: {
 
@@ -141,7 +142,7 @@ class HomeView extends React.Component {
             <Chip avatar={<Avatar style={{ background: "#eee" }} />} label={<div style={{ width: 40, height: 20 }} />} />
         </ListItem>)
 
-        const tasksArray = projectsStatus&&projectsStatus.currentAssignedActions&&O2A(projectsStatus.currentAssignedActions).sort((a,b)=>moment(b.dueDate).isBefore(a.dueDate))
+        const tasksArray = projectsStatus&&projectsStatus.currentAssignedActions&&O2A(projectsStatus.currentAssignedActions).sort((a,b)=>moment(b.dueDate).isBefore(moment(a.dueDate))).filter(i=>i.status!=="DONE")
 
         return (
             <Card className={classes.bottomMargin} style={{height: "40vh", marginTop: this.props.marginTop}}>
@@ -159,13 +160,13 @@ class HomeView extends React.Component {
                         </Tooltip>}
                     </Toolbar>
                 </AppBar>
-                <div style={{height: "85%", overflow: "scroll", display: "flex", justifyContent: "center"}}>
+                <Scrollbars style={{height: "85%", display: "flex", justifyContent: "center"}}>
                     {!isFetching&&tasksArray&&tasksArray.length===0&&<Typography variant="caption">Savour this moment. You have no assigned obligations.</Typography>}
                     <List component="nav" dense>
                         {(isFetching)&&[...Array(6)].map((k)=><ListItemLoader key={k}/>)}
                         {(tasksArray&&tasksArray.length>0&&!isFetching)&&tasksArray.map(i=><ObligationItem key={i.actionId} {...i}/>)}
                     </List>
-                </div>
+                </Scrollbars>
             </Card>
         )
     }
