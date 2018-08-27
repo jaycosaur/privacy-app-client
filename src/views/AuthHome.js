@@ -11,9 +11,10 @@ import ProjectOverview from './../containers/AuthHome/ProjectOverview';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import MainViewTopActionBarContainer from './../containers/MainViewTopActionBarContainer'
 import Fade from '@material-ui/core/Fade';
-
+import { connect } from 'react-redux'
+import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom'
 import AuthViewRouteContainer from './AuthViewRouteContainer'
-
 import HeaderIcon from '@material-ui/icons/ViewCompact'
 
 const styles = (theme) => ({
@@ -37,7 +38,14 @@ const styles = (theme) => ({
         [theme.breakpoints.down('sm')]:{
             padding: "1em"
         }
-    }
+    },
+    blankRoot: {
+        height: "80vh",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+    },
 })
 
 const PilotCard = (props) => (
@@ -71,17 +79,29 @@ class HomeView extends React.Component {
     }
 
     render(){
-        const { classes } = this.props
+        const { classes, organisation } = this.props
         const { mounted } = this.state
         const TopBar = <MainViewTopActionBarContainer variant="dense" icon={<HeaderIcon style={{color: "white"}}/>}>
             <Typography noWrap style={{color: "white", flex: 1, marginLeft: 8}} variant="subheading">
                 {isWidthUp('sm', this.props.width)?"Simple regulatory intelligence. Automating regulatory compliance for Australian organisations.":"Simple regulatory intelligence.  Automating regulatory compliance for Australian organisations."}
             </Typography>
         </MainViewTopActionBarContainer>
-
+        const { organisationId } = organisation
         return (
             <AuthViewRouteContainer topbar={TopBar}>
-                <Grid container spacing={isWidthUp('sm', this.props.width)?16:0} className={classes.root}>
+                {!organisationId&&(
+                        <div className={classes.blankRoot}>
+                            <div style={{maxWidth: "700px", marginTop: -100, display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
+                                <img src={require('./../assets/OrangeRocket.png')} height={120} width={120} style={{marginBottom: 32}}/>
+                                <Typography variant="display1" gutterBottom  color="secondary" paragraph align="center">Welcome to Polibase!</Typography>
+                                <Typography variant="subheading" gutterBottom paragraph>Time to set-up your compliance workspace.</Typography>
+                                <Link to="create-new-team"><Button variant="extendedFab" color="secondary" style={{marginTop: 32, marginBottom: 32}}>Set-up your workspace</Button></Link>
+                                <Typography variant="body1">Having trouble? Click the bottom right-hand corner for help.</Typography>
+                            </div>
+                        </div>
+                    )}
+                
+                {organisationId&&<Grid container spacing={isWidthUp('sm', this.props.width)?16:0} className={classes.root}>
                     <Grid item sm={12} md={4}>
                         <Fade in={mounted}>
                             <PilotCard square={!isWidthUp('sm', this.props.width)}/>
@@ -106,9 +126,15 @@ class HomeView extends React.Component {
                             </Typography>
                         </div>
                     </Grid>
-                </Grid>
+                </Grid>}
             </AuthViewRouteContainer>)
         }
     }
 
-export default withWidth()(withStyles(styles)(HomeView))
+const mapStateToProps = (state) => {
+    return {
+        organisation: state.organisation
+    }
+}
+
+export default connect(mapStateToProps)(withWidth()(withStyles(styles)(HomeView)))

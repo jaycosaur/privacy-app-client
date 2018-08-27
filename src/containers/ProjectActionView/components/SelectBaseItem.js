@@ -26,10 +26,56 @@ import * as actions from './../../../store/actions/actionManagerActions'
 
 import StorageDialogView from './../containers/StorageDialogView'
 
+import { Field, reduxForm } from 'redux-form'
+
+import TextField from '@material-ui/core/TextField'
+
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
   }
+
+
+const validate = values => {
+const errors = {}
+const requiredFields = [ 'title']
+requiredFields.forEach(field => {
+    if (!values[ field ]) {
+    errors[ field ] = 'Required'
+    }
+})
+return errors
+}
+
+const renderTextField = ({ input: { value, onChange }, label, meta: { touched, error } }) => (
+<TextField 
+    label={(touched && error)?error:label}
+    error={touched && error}
+    value={value}
+    onChange={onChange}
+    fullWidth
+/>
+)
+
+const MaterialUiForm = props => {
+const { handleSubmit, pristine, reset, submitting } = props
+return (
+    <form onSubmit={handleSubmit} style={{width: "100%"}}>
+        <div style={{marginBottom: 24}}>
+            <Field name="title" component={renderTextField} label="Title ex. GDPR"/>
+        </div>
+        <div style={{marginBottom: 24}}>
+            <Field name="url" component={renderTextField} label="Link to source (optional)"/>
+        </div>
+        <div style={{width: "100%"}}>
+            <Button style={{float: "right", color: "white"}} color="secondary" type="submit" variant="contained" disabled={pristine || submitting}>SAVE</Button>
+        </div>
+    </form>
+)
+}
+
+
+const WrappedForm = reduxForm({form: 'sourceSelect',validate})(MaterialUiForm)
 
 class SelectTeamMember extends React.Component {
     state = {
@@ -64,6 +110,11 @@ class SelectTeamMember extends React.Component {
         this.props.handleChange&&this.props.handleChange({id: {itemRef: id, itemType: "teamstorage"}})
     }
 
+    handleCustomSelect = ({url, title}) => {
+        this.handleClose()
+        this.props.handleChange&&this.props.handleChange({id: {itemRef: url, itemType: "usercustom", title}})
+    }
+
     componentDidMount() {
         let itemType = null
         let itemRef = null
@@ -90,20 +141,38 @@ class SelectTeamMember extends React.Component {
 
         const { hasValue } = this.props
 
-        const menuItems = [
+        const menuItemsBackup = [
             {
                 value: "teamstorage",
                 text: "Team Storage",
+                disabled: true
             },
             {
                 value: "baseitem",
                 text: "Polibase",
+                disabled: true
+            },
+            {
+                value: "usercustom",
+                text: "Source",
             },
             {
                 value: null,
                 text: "Clear",
             },
         ]
+
+        const menuItems = [
+            {
+                value: "usercustom",
+                text: "Source",
+            },
+            {
+                value: null,
+                text: "Clear",
+            },
+        ]
+
         let itemType = null
         let itemRef = null
         let isLoading = null
@@ -125,7 +194,11 @@ class SelectTeamMember extends React.Component {
             item = itemRef&&!isLoading&&this.props.baseItems[itemRef]
             title = item&&item.title
         }
-
+        if(itemType==="usercustom"){
+            isLoading = false
+            item = itemRef
+            title = hasValue.title
+        }
         if(itemType==="teamstorage"){
             isLoading = !(this.props.teamStorage&&this.props.teamStorage[itemRef])
             item = itemRef&&!isLoading&&this.props.teamStorage[itemRef]
@@ -189,6 +262,16 @@ class SelectTeamMember extends React.Component {
                 <DialogTitle id="simple-dialog-title">Select legislation, research or news.</DialogTitle>
                 <DialogContent style={{width: "100%"}}>
                     <AlgoliaSearch selectRecord={this.handleSelect}/>
+                </DialogContent>
+            </Dialog>,
+            <Dialog 
+                open={this.state.menuSelection==="usercustom"} 
+                onClose={this.handleClose} 
+                TransitionComponent={Transition}
+            >
+                <DialogTitle id="simple-dialog-title">Select your source</DialogTitle>
+                <DialogContent style={{width: 500}}>
+                    <WrappedForm onSubmit={this.handleCustomSelect} initialValues={{url:itemRef, title:title}}/>
                 </DialogContent>
             </Dialog>,
             <StorageDialogView 

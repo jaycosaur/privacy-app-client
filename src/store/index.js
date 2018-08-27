@@ -4,7 +4,9 @@ import reducer from './reducers/'
 import thunk from 'redux-thunk'
 import promise from 'redux-promise-middleware'
 import { composeWithDevTools } from 'redux-devtools-extension'
-import createHistory from 'history/createBrowserHistory'
+import { connectRouter, routerMiddleware } from 'connected-react-router'
+import { createBrowserHistory } from 'history'
+
 import * as middlewareIndex from './middleware/'
 
 
@@ -13,8 +15,7 @@ import * as readLaterMiddleware from './middleware/readLaterMiddleware'
 import * as mailingListMiddleware from './middleware/mailingListMiddleware'
 import * as organisationMiddleware from './middleware/organisationMiddleware'
 
-
-export const history = createHistory()
+export const history = createBrowserHistory()
 
 const toFn = (mw) => Object.keys(mw).map(i=>mw[i]())
 
@@ -22,6 +23,7 @@ const middleware = applyMiddleware(
     logger, 
     promise(), 
     thunk, 
+    routerMiddleware(history),
     ...toFn(middlewareIndex),
     ...toFn(actionManagerMiddleware),
     ...toFn(readLaterMiddleware),
@@ -29,4 +31,4 @@ const middleware = applyMiddleware(
     ...toFn(organisationMiddleware)
 )
 
-export default createStore(reducer, composeWithDevTools(middleware));
+export default createStore(connectRouter(history)(reducer), composeWithDevTools(middleware));

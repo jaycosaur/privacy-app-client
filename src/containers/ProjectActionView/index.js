@@ -7,8 +7,9 @@ import ButtonMD from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 
 import AddIcon from '@material-ui/icons/Add';
+import BackIcon from '@material-ui/icons/KeyboardArrowLeft';
+
 import EditIcon from '@material-ui/icons/Edit';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
 
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
@@ -78,7 +79,7 @@ const MaterialUiForm = props => {
             <Field name="description" component={renderTextField} label="Project description"/>
         </DialogContent>
         <DialogActions>
-            <Link to="/action-manager">
+            <Link to="/compliance-workspace">
                 <ButtonMD variant="outlined" onClick={()=>props.handleDelete()} color="secondary">
                     Delete Project
                 </ButtonMD>
@@ -193,7 +194,7 @@ class ProjectTaskList extends React.PureComponent {
         const { projectRefId, project, actionRefId } = this.props
 
         const {match: {params: { actionId }}} = this.props
-        console.log(this.props.match.params)
+
         const getProjectActionTree = (input, handleAdd, handleDelete, handleUpdate, handleClick, parentId=null, parentRef=null, child=false) => (
             input.filter(i => i.parentActionId === parentId).length > 0 && input.filter(i => i.parentActionId === parentId).map((task,num) => (
                 <TaskItem 
@@ -234,17 +235,17 @@ class ProjectTaskList extends React.PureComponent {
                     
                 }}
                 size="small" 
-                style={{display: "flex", alignItems: "center", color: !this.props.groupObligations&&"#ddd", borderColor: !this.props.groupObligations&&"#bbb", marginRight: 4}}>
+                style={{display: "flex", alignItems: "center", color: !this.props.groupObligations&&"#fff", borderColor: !this.props.groupObligations&&"#fff", marginRight: 4}}>
                 <GroupIcon style={{marginRight: 4, fontSize: 20}}/>Group
             </ButtonMD>,
             <StorageDialogView />,
             <ButtonMD 
                 color="secondary" 
-                variant="outlined"
+                variant="contained"
                 aria-label="Add" 
                 size="small"
                 onClick={()=>this.props.createActionInProject({form:{title: null}})}
-                style={{marginLeft: 8, color: "#ddd", borderColor: "#bbb"}}
+                style={{marginLeft: 8, color: "#fff"}}
                 >
                 ADD ACTION
             </ButtonMD>,
@@ -271,11 +272,8 @@ class ProjectTaskList extends React.PureComponent {
         const hasProjectActions = projectActions&&projectActions.length>0
 
         const TopBar = (attr) => (
-            <MainViewTopActionBarContainer color="primary" actions={actions} icon={<EditAction />}>
-                <Typography style={{color: "white", fontWeight: 300}} noWrap variant="subheading">{project&&project.title}</Typography>
-                <Hidden smDown>
-                    <Typography style={{color: "white", flex: 1, fontWeight: 300, marginLeft: 32}} variant="body1">{project&&project.description}</Typography>
-                </Hidden>
+            <MainViewTopActionBarContainer color="primary" actions={actions} icon={[<Link to="/compliance-workspace"><IconButton><BackIcon style={{color: "white"}}/></IconButton></Link>,<EditAction />]}>
+                <Typography style={{color: "white", fontWeight: 300, flex: 1}} noWrap variant="subheading">{project&&project.title}</Typography>
             </MainViewTopActionBarContainer>)
 
         const LoadingTopBar = () => <MainViewTopActionBarContainer color="primary" actions={loadingActions}>

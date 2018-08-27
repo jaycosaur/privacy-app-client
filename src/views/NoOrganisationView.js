@@ -1,10 +1,8 @@
-import View from './View'
-
 import React from 'react'
 import { connect } from 'react-redux'
 import Button from '@material-ui/core/Button';
 
-import EntryFlowView from './../../views/EntryFlowView'
+import EntryFlowView from './EntryFlowView'
 import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Hidden from '@material-ui/core/Hidden';
@@ -52,38 +50,32 @@ const styles = theme => {
   )};
 
 const SignupView = (props) => {
-    const { classes, location: { pathname } } = props
-    console.log(props)
-    switch(pathname){
-        case "/awaiting-invite":
-            return (
-                <EntryFlowView
-                    leftWhite
-                    leftCard={
-                        [
-                            <Hidden mdDown>
-                                <Typography align="left" gutterBottom className={classes.mainText} style={{color: "#623aa2"}}>Join an existing team on POLIBASE.</Typography>
-                            </Hidden>,
-                        ]
-                    }
-                    rightCard={<View {...props}/>
-                    }>
-                </EntryFlowView>)
-        default: 
-            return (
-                <EntryFlowView
-                    leftCard={
-                        [
-                            <Hidden mdDown>
-                                <Typography align="left" gutterBottom className={classes.mainText}>Create a new team on POLIBASE.</Typography>
-                            </Hidden>,
-                            <Typography variant="display1" className={classes.secondaryText}>Let's setup your new team.</Typography>
-                        ]
-                    }
-                    rightCard={<View {...props}/>
-                    }>
-                </EntryFlowView>)
-    }
+    const { classes } = props
+    return (
+        <EntryFlowView
+            rightWhite
+            leftCard={
+                [
+                    <Hidden mdDown>
+                        <Typography align="left" gutterBottom className={classes.mainText}>Welcome to POLIBASE.</Typography>
+                    </Hidden>,
+                    <Typography variant="display1" className={classes.secondaryText}>Ready to get your compliance under control? Create a new team or join an existing team.</Typography>
+                ]
+            }
+            rightCard={
+                [
+                    <Typography variant="title" align="center" style={{marginBottom: 32}} gutterBottom>
+                        Has your organisation already set-up Polibase? Join the team and be part of the action!
+                        If you're setting up Polibase on behalf of your organisation - you can create a new team here!                    
+                    </Typography>,
+                    <div style={{display: "flex", justifyContent: "space-around"}}>
+                        <Button variant="extendedFab" color="primary" style={{color: "white"}} onClick={()=>props.goToNewTeam()}>CREATE A NEW TEAM</Button>
+                        <Button variant="extendedFab" color="secondary" style={{color: "white"}} onClick={()=>props.goToTeamInvite()}>JOIN AN EXISTING TEAM</Button>
+                    </div>
+                ]
+            }>
+        </EntryFlowView>
+    )
 }
 
 const mapStateToProps = (state) => {

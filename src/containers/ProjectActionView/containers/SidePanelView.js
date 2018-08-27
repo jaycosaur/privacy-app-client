@@ -183,14 +183,14 @@ class SidePanelView extends React.Component {
                                 updateInfo={this.updateInfo}
                                 deleteAction={this.deleteAction}
                             />}
-                    {value === 1 && <ErrorBoundary><TasksView 
+                    {value === 1 && <TasksView 
                                 key="tasks-tab"
                                 data={data}
                                 hasFetched={data.hasFetchedTasks}
                                 updateTask={this.updateTask}
                                 addTask={this.addTask}
                                 deleteTask={this.deleteTask}
-                            /></ErrorBoundary>}
+                            />}
                     {value === 3 && <SidePanelFilesTab
                                 key="files-tab"
                                 data={data}

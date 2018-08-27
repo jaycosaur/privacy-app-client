@@ -4,11 +4,12 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import { withStyles } from '@material-ui/core/styles';
-
+import YoutubeDialogView from './YoutubeDialogView'
 import TeamManagerTopActionBar from '../containers/TeamManagerTopActionBar'
-
+import qs from 'qs'
 import AuthViewRouteContainer from './AuthViewRouteContainer'
 import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
@@ -62,6 +63,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { Field, reduxForm } from 'redux-form';
 import TextField from '@material-ui/core/TextField'
+import Modal from '@material-ui/core/Modal';
 
 const styles = theme => ({
     card: {
@@ -420,10 +422,13 @@ class TeamManagerView extends React.Component {
     inviteNewUser = (email) => this.props.inviteUserToOrganisation({ email })
 
     render(){
-        const { classes, organisation } = this.props
-        const { name, organisationId, users, website, isCurrentUserAdmin, pendingUsers } = organisation
+        const { classes, organisation, location } = this.props
+        const { name, organisationId, users, website, isCurrentUserAdmin, pendingUsers, isLeavingOrganisation } = organisation
         const { actionCount, currentData, plan, planLimits, projectCount, taskCount, userCount } = organisation
-        
+
+        const { search } = location
+        const searchParams = qs.parse(search, { ignoreQueryPrefix: true })
+
         const AccountInfoListItem = (props) => (
             <ListItem dense className={classes.listItem}>
                 <Avatar>
@@ -450,7 +455,14 @@ class TeamManagerView extends React.Component {
                             </div>
                         </div>
                     )}
-                    {organisationId&&<Grid container spacing={16}>
+                    {
+                        organisationId&&isLeavingOrganisation&&<div className={classes.blankRoot}>
+                            <div style={{maxWidth: "800px", marginTop: -100, display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
+                                <CircularProgress color="secondary" size={100}/>
+                            </div>
+                        </div>
+                    }
+                    {organisationId&&!isLeavingOrganisation&&<Grid container spacing={16}>
                         <Grid item xs={4}>
                             <Card style={{marginBottom: 16}}>
                                 <CardHeader
@@ -466,7 +478,7 @@ class TeamManagerView extends React.Component {
                                         />
                                     }
                                     title={`Team ${name}`}
-                                    subheader={<span>Website: <a href={website} target="_blank">{website}</a></span>}
+                                    subheader={website&&<span><a href={website} target="_blank">{website}</a></span>}
                                 />
                                 <List dense subheader={<ListSubheader>Account Information</ListSubheader>}>
                                     {[   
@@ -501,19 +513,18 @@ class TeamManagerView extends React.Component {
                                         <IconButtonWithConfirm 
                                             title={`Leave ${name} team?`}
                                             text={`Are you sure you want to do this? This action cannot be undone and you will need to be reinvited to the team.`}
-                                            onClick={()=>console.log('leaving....')}
+                                            onClick={()=>this.props.leaveOrganisation()}
                                             render={()=>(<LeaveIcon />)}
                                         />
                                     </ListItem>
                                 </List>
-                                
                             </Card>
                         </Grid>
                         <Grid item xs={8}>
                             <Card>
                                 <Toolbar>
                                     <TeamIcon style={{marginRight: 8}}/> 
-                                    <Typography variant="title" id="tableTitle" style={{flex: 1}}>
+                                    <Typography variant="subheading" id="tableTitle" style={{flex: 1}}>
                                         Team Members
                                     </Typography>
                                     <AddUserDialog
@@ -553,9 +564,9 @@ class TeamManagerView extends React.Component {
                                             <TableCell>{n.email}</TableCell>
                                             <TableCell>{n.isDeleting?"Deleting User...":(n.hasSignedUp?"Registered":"Invite Sent")}</TableCell>
                                             <TableCell padding="checkbox" numeric >
-                                                <IconButton className={classes.notificationButton} aria-label="Add an alarm">
+                                                {false&&<IconButton className={classes.notificationButton} aria-label="Add an alarm">
                                                     {n.notificationsEnabled?<NotificationOnIcon />:<NotificationOffIcon />}
-                                                </IconButton>
+                                                </IconButton>}
                                                 <IconButtonWithConfirm 
                                                     title={`Delete ${n.displayName||n.email} from this organisation?`}
                                                     text={`Are you sure you want to do this?`}
@@ -577,17 +588,18 @@ class TeamManagerView extends React.Component {
                                                 {n.displayName&&n.displayName}
                                             </TableCell>
                                             <TableCell>{n.email}</TableCell>
-                                            <TableCell>{n.isDeleting?"Deleting User...":(n.hasSignedUp?"Registered":<span style={{color: "#f97794"}}>Invite Sent</span>)}</TableCell>
+                                            <TableCell>{
+                                                n.isDeleting?"Deleting User...":(n.isSending?"Sending invite...":<span style={{color: "#f97794"}}>Invite Sent</span>)}</TableCell>
                                             <TableCell padding="checkbox" numeric >
-                                                <IconButton className={classes.notificationButton} aria-label="Add an alarm" disabled>
+                                                {false&&<IconButton className={classes.notificationButton} aria-label="Add an alarm" disabled>
                                                     {n.notificationsEnabled?<NotificationOnIcon />:<NotificationOffIcon />}
-                                                </IconButton>
+                                                </IconButton>}
                                                 <IconButtonWithConfirm 
                                                     title={`Cancel invite for ${n.email}?`}
                                                     text={`Are you sure you want to do this?`}
                                                     disabled={!isCurrentUserAdmin || n.isAdmin || n.isDeleting } 
                                                     aria-label="Delete User" 
-                                                    onClick={()=>console.log({uid: n.userId})}
+                                                    onClick={()=>this.props.revokeInviteUserToOrganisation({id: n.id})}
                                                     render={()=>(<DeleteIcon />)}
                                                 />
                                             </TableCell>
@@ -597,6 +609,10 @@ class TeamManagerView extends React.Component {
                                     </TableBody>
                                 </Table>
                             </Card>
+                            <div style={{marginTop: 32, flex: 1, display: "flex", justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
+                                <Typography variant="body2" gutterBottom>Just getting started?</Typography>
+                                <YoutubeDialogView videoId="kYw93Qvhujo"><Button variant="extendedFab" color="secondary" style={{color: "white", background: "#2ECC71"}}>Watch a tutorial</Button></YoutubeDialogView>
+                            </div>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography style={{width: "100%"}}variant="caption" align="center">Organisation Id - {organisationId}</Typography>
@@ -612,7 +628,8 @@ const mapStateToProps = (state) => {
     return {
         user: state.user,
         isSignedIn: state.user.isSignedIn,
-        organisation: state.organisation
+        organisation: state.organisation,
+        isLeavingOrganisation: state.organisation.isLeavingOrganisation
     }
 }
 

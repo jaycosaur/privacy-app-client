@@ -161,7 +161,10 @@ class HomeView extends React.Component {
                     </Toolbar>
                 </AppBar>
                 <Scrollbars style={{height: "85%", display: "flex", justifyContent: "center"}}>
-                    {!isFetching&&tasksArray&&tasksArray.length===0&&<Typography variant="caption">Savour this moment. You have no assigned obligations.</Typography>}
+                    {!isFetching&&tasksArray&&tasksArray.length===0&&<div style={{padding: 32, height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: -32}}>
+                        <Typography variant="subheading" marginBottom style={{marginBottom: 16}} align="center">Savour this moment. You have no assigned obligations.</Typography>
+                        <Typography variant="caption" align="center">Your assigned actions, their status and their due dates will be shown here. You currently don't have any assigned actions, you can assign actions through projects.</Typography>
+                    </div>}
                     <List component="nav" dense>
                         {(isFetching)&&[...Array(6)].map((k)=><ListItemLoader key={k}/>)}
                         {(tasksArray&&tasksArray.length>0&&!isFetching)&&tasksArray.map(i=><ObligationItem key={i.actionId} {...i}/>)}

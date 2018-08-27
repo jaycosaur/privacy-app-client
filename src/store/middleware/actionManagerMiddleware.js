@@ -1,6 +1,6 @@
 import { db, storageRef } from './../../config/firebase'
 import moment from 'moment'
-
+import { push } from 'connected-react-router'
 // create
 // list
 // get
@@ -38,8 +38,11 @@ export function createProjectInManagerMW() {
             }
             return dispatch({ 
                 type: "CREATE_PROJECT_IN_MANAGER", 
-                payload: projectsRef({organisationId}).add(watchObject)
-            }).then(()=>dispatch({type: 'CLOSE_CREATE_PROJECTS_IN_MANAGER_DIALOGUE'}))
+                payload: projectsRef({organisationId}).add(watchObject).then((doc)=>{
+                    dispatch({type: 'CLOSE_CREATE_PROJECTS_IN_MANAGER_DIALOGUE'})
+                    dispatch(push(`/compliance-workspace/${doc.id}`))
+                })
+            })
         }
         return next(action)
     }
@@ -216,33 +219,41 @@ const actionsOwnedByUserRef = ({ organisationId, userId}) => db.collection("orga
 export function getActionsInProjectSubscription() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'SUBSCRIBE_TO_ACTIONS_IN_PROJECT') {
-            const state = getState()
-            const { organisation: { organisationId }, actionManager: { selectedProject: { projectId }}} = state
-            dispatch({
-                type: "SUBSCRIBE_TO_ACTIONS_IN_PROJECT_OPEN", meta: { projectId }
-            })
-            actionsInProjectRef({organisationId, projectId}).onSnapshot(function(querySnapshot) {
-                let actions = {}
-                querySnapshot.docChanges().forEach((change) => {
-                    const docData = change.doc.data()
-                    const actionId = change.doc.id
-                    const projectId = docData.projectId
-                    const payload = {
-                        actionId, 
-                        ...docData, 
-                    }
-                    if (change.type === "removed"){
-                        dispatch(deleteActionAction({ projectId, actionId }))
-                    } else {
-                        actions = {
-                            ...actions,
-                            [actionId]: payload
-                        }
-                    }
+            let state = getState()
+            const { organisation: { organisationId }, actionManager: { selectedProject, projects }} = state
+            const projectId = action.meta&&action.meta.projectId || selectedProject&&selectedProject.projectId
+            const isSubscribedToActions = projects&&projects[projectId]&&projects[projectId].hasLoadedActions
+            if(!isSubscribedToActions){
+                dispatch({
+                    type: "SUBSCRIBE_TO_ACTIONS_IN_PROJECT_OPEN", meta: { projectId }
                 })
-                dispatch(updateActionAction({ payload: actions, projectId }))
-                dispatch(hasFetchedActions({ projectId }))
-            })
+                
+                actionsInProjectRef({organisationId, projectId}).onSnapshot(function(querySnapshot) {
+                    let actions = {}
+                    state = getState()
+                    let projectActions = state.actionManager.projects&&state.actionManager.projects[projectId]&&state.actionManager.projects[projectId].actions
+                    querySnapshot.docChanges().forEach((change) => {
+                        const docData = change.doc.data()
+                        const actionId = change.doc.id
+                        const projectId = docData.projectId
+                        const payload = {
+                            actionId, 
+                            ...docData, 
+                        }
+                        if (change.type === "removed"){
+                            dispatch(deleteActionAction({ projectId, actionId }))
+                        } else {
+                            let prevData =  (projectActions&&projectActions[actionId])||{}
+                            actions = {
+                                ...actions,
+                                [actionId]: { ...prevData, ...payload}
+                            }
+                        }
+                    })
+                    dispatch(updateActionAction({ payload: actions, projectId }))
+                    dispatch(hasFetchedActions({ projectId }))
+                })
+            }
         }
         return next(action)
     }

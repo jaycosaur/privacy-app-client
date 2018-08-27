@@ -25,6 +25,7 @@ import { Link } from 'react-router-dom'
 
 import { connect } from 'react-redux'
 import { Scrollbars } from 'react-custom-scrollbars';
+import moment from 'moment'
 
 const heightOfCard = "40vh"
 
@@ -93,7 +94,11 @@ class HomeView extends React.Component {
 
         const ProjectItem = (attrs) => {
             const highlightColor = attrs.isOverdue?red[500]:attrs.isDone?green[500]:"#ddd"
-            const message = attrs.isOverdue?[<ErrorIcon />,"OVERDUE"]:attrs.isDone?[<DoneAllIcon />, "DONE"]:[<HourglassIcon />, "ON TRACK"]
+            const overdueActions = attrs.actions&&Object.keys(attrs.actions).map(key=>attrs.actions[key]).filter(a=>!a.status||a.status&&a.status!=="DONE").filter((a)=>a.dueDate&&moment(a.dueDate).isBefore(moment())).length
+            const doneActions = attrs.actions&&(Object.keys(attrs.actions).length>0&&Object.keys(attrs.actions).map(key=>attrs.actions[key]).filter(a=>a.status&&a.status!=="DONE").length===Object.keys(attrs.actions).map(key=>attrs.actions[key]).length)
+            const numberOfActions = attrs.actions&&Object.keys(attrs.actions).map(key=>attrs.actions[key]).length
+
+            const message = (overdueActions&&overdueActions>0)?[<ErrorIcon />,"OVERDUE"]:doneActions?[<DoneAllIcon />, "DONE"]:[<HourglassIcon />, "ON TRACK"]
             return (
                 <ListItem button component={Link} to={`compliance-workspace/${attrs.projectId}`}>
                     <div style={{height: 40, width: 4, borderRadius: 4, opacity: 0.7, background: highlightColor}}/>
@@ -110,12 +115,12 @@ class HomeView extends React.Component {
 
         return (
             <Card className={classes.bottomMargin}>
-                <AppBar position="static" color="primary">
+                <AppBar position="static" color="secondary">
                     <Toolbar variant="dense">
                         <Typography variant="subheading" color="inherit" style={{flex: 1, color: "white"}}>
                             Compliance Workspace
                         </Typography>
-                        {hideNavButton&&<Tooltip title="View in compliance workspace">
+                        {!hideNavButton&&<Tooltip title="View in compliance workspace">
                             <Link to="/compliance-workspace">
                                 <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
                                     <ViewIcon />
@@ -129,7 +134,10 @@ class HomeView extends React.Component {
                         <LinearProgress variant="query" color="secondary" style={{width: "100%"}}/>
                         <div style={{flex: 1}}/>
                     </div>}
-                    {!isLoadingProjects&&!hasProjects&&<Typography variant="caption">No Projects Yet.</Typography>}
+                    {!isLoadingProjects&&!hasProjects&&<div style={{padding: 32, height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: -32}}>
+                        <Typography variant="subheading" marginBottom style={{marginBottom: 16}}>No Projects Yet.</Typography>
+                        <Typography variant="caption" align="center">After you have added some projects in your teams compliance workspace they will appear in this list including their current status.</Typography>
+                    </div>}
                     {!isLoadingProjects&&hasProjects&&<List component="nav" dense>
                         {projectsArray.map(i=><ProjectItem key={i.projectId} {...i}/>)}
                     </List>}

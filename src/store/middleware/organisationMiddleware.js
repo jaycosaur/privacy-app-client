@@ -11,9 +11,44 @@ export function inviteUserToOrganisation() {
             const inviteUserToOrganisationCF = functions.httpsCallable('inviteUserToOrganisation');
             dispatch({
                 type: "INVITE_USER_TO_ORGANISATION",
-                payload: inviteUserToOrganisationCF({emailToInvite: action.payload.email}).then((res) => res.data).catch((error) => console.log(error)),
+                payload: inviteUserToOrganisationCF({emailToInvite: action.payload.email}).then((res) => res.data),
                 meta: {
                     email: action.payload.email
+                }
+            })
+        }
+        return next(action)
+    }
+}
+
+export function inviteMultipleUserToOrganisation() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'INVITE_MULTIPLE_USERS_TO_ORGANISATION') {
+            const inviteUserToOrganisationCF = functions.httpsCallable('inviteUserToOrganisation');
+            const emails = action.payload.emails
+            emails.forEach(email=>{
+                dispatch({
+                    type: "INVITE_USER_TO_ORGANISATION",
+                    payload: inviteUserToOrganisationCF({emailToInvite: email}).then((res) => res.data),
+                    meta: {
+                        email: email
+                    }
+                })
+            })
+        }
+        return next(action)
+    }
+}
+
+export function removeInviteUserToOrganisation() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'REVOKE_INVITE_USER_TO_ORGANISATION') {
+            const removeInviteUserToOrganisationCF = functions.httpsCallable('removeInviteUserToOrganisation');
+            dispatch({
+                type: "REVOKE_INVITE_USER_TO_ORGANISATION",
+                payload: removeInviteUserToOrganisationCF({inviteId: action.payload.inviteId}).then((res) => res.data),
+                meta: {
+                    id: action.payload.inviteId
                 }
             })
         }
@@ -28,6 +63,19 @@ export function signUpToOrganisationViaToken() {
             dispatch({
                 type: "SIGNUP_TO_ORGANISATION_VIA_TOKEN",
                 payload: acceptInviteToOrganisationCF({ invitetoken: action.payload.invitetoken }).then((res) => res.data),
+            })
+        }
+        return next(action)
+    }
+}
+
+export function leaveOrganisation() {
+    return ({ dispatch }) => next => action => {
+        if (action.type === 'LEAVE_ORGANISATION_FLOW') {
+            const leaveCurrentOrganisationCF = functions.httpsCallable('leaveCurrentOrganisation');
+            dispatch({
+                type: "LEAVE_ORGANISATION_FLOW",
+                payload: leaveCurrentOrganisationCF().then((res) => res.data).then(i=>dispatch({type: 'RESET_STATE_TO_DEFAULT'})),
             })
         }
         return next(action)
@@ -179,6 +227,20 @@ export function createNewTeamAndSetUserAsAdmin() {
             dispatch({
                 type: "CREATE_NEW_TEAM",
                 payload: createNewTeamAndSetUserAsAdminCF({ name, website, interestCategories, organisationType }).then((res) => res.data),
+            })
+        }
+        return next(action)
+    }
+}
+
+export function createNewTeamAndSetUserAsAdminAltRoute() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'CREATE_NEW_TEAM_FROM_FIELDS') {
+            const createNewComplianceTeamAndSetUserAsAdminCF = functions.httpsCallable('createNewComplianceTeamAndSetUserAsAdmin');
+            const { name, website, companySize } = action.payload
+            dispatch({
+                type: "CREATE_NEW_TEAM_FROM_FIELDS",
+                payload: createNewComplianceTeamAndSetUserAsAdminCF({ name, website, companySize }).then((res) => res.data),
             })
         }
         return next(action)

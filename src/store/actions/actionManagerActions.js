@@ -106,6 +106,13 @@ export const getActionsInProject = () => {
     }
 }
 
+export const getActionsInSpecificProject = ({projectId}) => {
+    return {
+        type: 'SUBSCRIBE_TO_ACTIONS_IN_PROJECT',
+        meta: {projectId}
+    }
+}
+
 export const deleteActionInProject = ({actionId}) => {
     return {
         type: 'DELETE_ACTION_IN_PROJECT',

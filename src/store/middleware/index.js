@@ -1,6 +1,6 @@
 import { auth, db } from './../../config/firebase'
 import algoliasearch from 'algoliasearch'
-
+import { push } from 'connected-react-router'
 //actions
 import * as teamActions from './../actions/teamActions'
 
@@ -264,6 +264,43 @@ export function getOrganisationAfterAccountLoaded() {
         return next(action)
     }
 }
+
+export function userHasNoAccountRedirect() {
+    return ({ dispatch, getState }) => next => action => {
+        const state = getState()
+        const isInvite = state.router.location.pathname==="/invite"
+        if (action.type === 'USER_HAS_NO_ORGANISATION') {
+            dispatch({type: "SHOW_FULL_SCREEN"})
+            if(!isInvite){
+                dispatch(push("/no-organisation"))
+            }
+        }
+        return next(action)
+    }
+}
+
+export function createdNewTeamRedirect() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'CREATE_NEW_TEAM_FROM_FIELDS_FULFILLED') {
+            dispatch(push("/invite-users"))
+        }
+        return next(action)
+    }
+}
+
+export function workspaceRedirect() {
+    return ({ dispatch, getState }) => next => action => {
+        if (action.type === 'REDIRECT_TO_WORKSPACE') {
+            dispatch({type: "HIDE_FULL_SCREEN"})
+            dispatch(push("/compliance-workspace"))
+        }
+        return next(action)
+    }
+}
+
+
+
+
 
 export function flushReduxStoreOnSignout() {
     return ({ dispatch, getState }) => next => action => {

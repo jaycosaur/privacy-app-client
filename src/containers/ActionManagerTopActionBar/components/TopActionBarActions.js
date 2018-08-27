@@ -93,7 +93,7 @@ const styles = () => ({
 const ActionCreator = (props) => {
     const { classes } = props
     const actionsArray = [
-            <Button variant="contained" color="secondary" aria-label="Add" className={classes.button} onClick={()=>props.openCreateProjectsInManagerDialogue()}>
+            <Button disabled={!props.hasOrganisation} variant="contained" color="secondary" aria-label="Add" className={classes.button} onClick={()=>props.openCreateProjectsInManagerDialogue()}>
                 ADD PROJECT
             </Button>,
             <Dialog
@@ -110,7 +110,8 @@ const ActionCreator = (props) => {
 
 const mapStateToProps = (state) => {
     return {
-        createDialogueIsOpen: state.actionManager.dialogs.createProject.isOpen
+        createDialogueIsOpen: state.actionManager.dialogs.createProject.isOpen,
+        hasOrganisation: state.organisation&&state.organisation.organisationId
     }
 }
 

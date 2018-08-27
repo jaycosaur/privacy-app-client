@@ -3,7 +3,12 @@ import { message } from 'antd'
 
 const usersRef = db.collection("users")
 
-
+export const createOrganisationFromFields = ({ name, website, companySize }) => {
+    return {
+        type: 'CREATE_NEW_TEAM_FROM_FIELDS',
+        payload: {  name, website, companySize  }
+    }
+}
 
 export const setNewAccountPassword = ({ newPassword, oldPassword }) => {
     return {

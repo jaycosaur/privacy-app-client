@@ -1,8 +1,9 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
 
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
+import { Link } from 'react-router-dom'
 
 import { connect } from 'react-redux'
 import * as actions from '../../../store/actions/accountActions'
@@ -33,7 +34,7 @@ const styles = () => ({
 
 const ActionCreator = (props) => {
     const { classes } = props
-    const actionsArray = null
+    const actionsArray = <Link to="/compliance-workspace"><Button variant="contained" color="secondary" style={{color: "white"}}>Your Workspace</Button></Link>
 
     return (<span>{actionsArray}</span>)
 }

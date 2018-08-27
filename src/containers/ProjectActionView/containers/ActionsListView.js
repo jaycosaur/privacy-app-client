@@ -20,6 +20,7 @@ import ExpandIcon from '@material-ui/icons/ExpandMore';
 import HideIcon from '@material-ui/icons/ExpandLess';
 import LeftIcon from '@material-ui/icons/KeyboardArrowLeft';
 import RightIcon from '@material-ui/icons/KeyboardArrowRight';
+import EditIcon from '@material-ui/icons/Edit';
 
 import Card from '@material-ui/core/Card';
 import AvatarMD from '@material-ui/core/Avatar'
@@ -32,6 +33,7 @@ import SelectBaseItem from './../components/SelectBaseItem'
 import SelectActionStatus from './../components/SelectActionStatus'
 import SelectActionSchedule from './../components/SelectActionSchedule'
 import SelectComplianceType from './../components/SelectComplianceType'
+
 
 import Tooltip from '@material-ui/core/Tooltip';
 
@@ -149,7 +151,7 @@ class Item extends React.Component {
                                                     </IconButton>
                                                 </Tooltip>
                                                 <Tooltip title={`${!this.state.showChildren?"Show":"Hide"} dependants`}>
-                                                    <IconButton aria-label="show-toggle" disabled={!this.props.children} color="primary" onClick={this.toggleChildren} >
+                                                    <IconButton aria-label="show-toggle" disabled={!this.props.children} color="primary" onClick={this.toggleChildren} style={{marginRight: 8}}>
                                                         {this.state.showChildren?<HideIcon />:<ExpandIcon/>}
                                                     </IconButton>
                                                 </Tooltip>
@@ -170,6 +172,7 @@ class Item extends React.Component {
                                     <Typography variant="subheading" style={{marginBottom: 0}}>{actionData.title||"New action!"}</Typography>
                                 </div>
                                 <div style={{flex: 1}}/>
+                                <EditShow />
                                 <SelectActionStatus 
                                     isDue={moment().isAfter(actionData.dueDate)} 
                                     isUrgent={actionData.isUrgent} 
@@ -227,6 +230,8 @@ class Item extends React.Component {
             </div>
         )
 
+        const EditShow = () => <IconButton onClick={() => this.props.handleClick(this.props.id)}><EditIcon /></IconButton>
+
         const SmallView = () => (
             <div style={{ marginTop: child ? 8 : 32, marginBottom: !this.props.children&&24, transition: "opacity 0.5s"}}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
@@ -250,6 +255,7 @@ class Item extends React.Component {
                         <div style={{height: "100%", flex: 1, display: "flex", flexDirection: "column", padding: "8px 16px", justifyContent: "space-between", alignContent: "space-between"}}>
                             <div style={{flex: 1, display: "flex"}}>
                                 <div style={{flex: 2, display: "flex"}}>
+                                    <EditShow/>
                                     <div onClick={() => this.props.handleClick(this.props.id)}>
                                         <Typography variant="subheading">{
                                             (actionData.title&&(actionData.title.length>85?`${[...actionData.title].slice(0,85).join("")}...`:actionData.title))||"New action!"

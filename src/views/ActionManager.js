@@ -6,8 +6,7 @@ import red from '@material-ui/core/colors/red';
 import Moment from 'react-moment'
 import moment from 'moment'
 import { withStyles } from '@material-ui/core/styles';
-import ButtonBase from '@material-ui/core/ButtonBase'
-
+import YoutubeDialogView from './YoutubeDialogView'
 import ActionManagerTopActionBar from '../containers/ActionManagerTopActionBar'
 import AddIcon from '@material-ui/icons/Add';
 
@@ -89,6 +88,73 @@ const styles = theme => ({
     },
   });
 
+class ProjectCard extends React.Component {
+    componentWillMount(){
+        this.props.getActionsInSpecificProject({projectId: this.props.data.projectId})
+    }
+
+    render(){
+        const {data, number, classes} = this.props
+        const overdueActions = data.actions&&Object.keys(data.actions).map(key=>data.actions[key]).filter(i=>i.status!=="DONE"&&moment(i.dueDate).isBefore(moment()))
+        return (
+        <Link to={`/compliance-workspace/${data.projectId}`}>
+        <Card elevation={0} style={{ border: "1px solid #ddd", marginBottom: 16, opacity: data.isDeleting&&0.6, position: 'relative', }} key={data.projectId}>
+        {data.isDeleting&&<CircularProgress style={{
+                color: red[500],
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                marginTop: -30,
+                marginLeft: -30,}} size={60} />}
+        <div className={classes.projectCardRoot}>
+            <Card className={classes.projectCardColor} elevation={0}>
+                <div style={{ display: "flex", justifyContent: "center", marginTop: 8, color: "white", borderRadius: 100 }}>
+                    {/* <ToggleState initialState={data.isFavorited} render={(is) => is ? <StarIcon /> : <StarBorderIcon />} /> */}
+                    {number}
+                </div>
+            </Card>
+            <div className={classes.projectCardMainPanel}>
+                <CardContent style={{display: "flex", alignSelf: "stretch", flexDirection: "column", justifyContent: "space-between", flexGrow: 1}}>
+                    <div>
+                        <Typography variant="title" gutterBottom>{data.title}</Typography>
+                        <Typography variant="subheading">{data.description}</Typography>
+                    </div>
+                    <Typography variant="caption">Created: <Moment fromNow>{data.created}</Moment></Typography>
+                </CardContent>
+                <CardActions>
+                    <Link to={`/compliance-workspace/${data.projectId}`}>
+                        <Button size="small" color="primary" disabled={data.isDeleting}>
+                            EXPLORE
+                        </Button>
+                    </Link>
+                    <div style={{ flexGrow: 1, justifyContent: "flex-end", display: "flex" }}>
+                        
+                    </div>
+                </CardActions>
+            </div>
+            <Card className={classes.projectCardInfoPanel} style={{borderLeft: "1px solid #eee"}} elevation={0}>
+                <CardContent style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                    <Link to={`/compliance-workspace/${data.projectId}?status=overdue&sort=none`}>
+                        <Badge color="secondary" badgeContent={(overdueActions&&overdueActions.length) || 0} className={classes.margin}>
+                            <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50 }}>
+                                OVERDUE
+                            </Button>
+                        </Badge>
+                    </Link>
+                    <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50, marginBottom: 8 }}>
+                        {`${data.actionCount || 0} ACTIONS`}
+                    </Button>
+                    <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50 }}>
+                        {`${data.taskCount || 0} TASKS`}
+                    </Button>
+                </CardContent>
+            </Card>
+        </div>
+    </Card></Link>
+        )
+    }
+}
+
 class ActionManager extends React.Component {
     componentDidUpdate(){
         if (this.props.organisation.hasFetched){
@@ -141,65 +207,6 @@ class ActionManager extends React.Component {
                     </Card>
                 </div>
             </Card>)
-ButtonBase    
-    const ProjectCard = ({data, number}) => (
-        <Link to={`/compliance-workspace/${data.projectId}`}>
-        <Card elevation={0} style={{ border: "1px solid #ddd", marginBottom: 16, opacity: data.isDeleting&&0.6, position: 'relative', }} key={data.projectId}>
-        {data.isDeleting&&<CircularProgress style={{
-                color: red[500],
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: -30,
-                marginLeft: -30,}} size={60} />}
-        <div className={classes.projectCardRoot}>
-            <Card className={classes.projectCardColor} elevation={0}>
-                <div style={{ display: "flex", justifyContent: "center", marginTop: 8, color: "white", borderRadius: 100 }}>
-                    {/* <ToggleState initialState={data.isFavorited} render={(is) => is ? <StarIcon /> : <StarBorderIcon />} /> */}
-                    {number}
-                </div>
-            </Card>
-            <div className={classes.projectCardMainPanel}>
-                <CardContent style={{display: "flex", alignSelf: "stretch", flexDirection: "column", justifyContent: "space-between", flexGrow: 1}}>
-                    <div>
-                        <Typography variant="title" gutterBottom>{data.title}</Typography>
-                        <Typography variant="subheading">{data.description}</Typography>
-                    </div>
-                    <Typography variant="caption">Created: <Moment fromNow>{data.created}</Moment></Typography>
-                </CardContent>
-                <CardActions>
-                    <Link to={`/compliance-workspace/${data.projectId}`} onClick={()=> this.props.selectProjectInManager({projectId: data.projectId})}>
-                        <Button size="small" color="primary" disabled={data.isDeleting}>
-                            EXPLORE
-                        </Button>
-                    </Link>
-                    <Button size="small" color="primary" disabled>
-                        SHARE
-                    </Button>
-                    <div style={{ flexGrow: 1, justifyContent: "flex-end", display: "flex" }}>
-                        
-                    </div>
-                </CardActions>
-            </div>
-            <Card className={classes.projectCardInfoPanel} style={{borderLeft: "1px solid #eee"}} elevation={0}>
-                <CardContent style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                    <Link to={`/compliance-workspace/${data.projectId}?status=overdue&sort=none`}>
-                        <Badge color="secondary" badgeContent={data.overdueCount || 0} className={classes.margin} onClick={()=> this.props.selectProjectInManager({projectId: data.projectId})}>
-                            <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50 }}>
-                                OVERDUE
-                            </Button>
-                        </Badge>
-                    </Link>
-                    <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50, marginBottom: 8 }}>
-                        {`${data.actionCount || 0} ACTIONS`}
-                    </Button>
-                    <Button size="small" variant="contained" style={{ flexGrow: 1, borderRadius: 50 }}>
-                        {`${data.taskCount || 0} TASKS`}
-                    </Button>
-                </CardContent>
-            </Card>
-        </div>
-    </Card></Link>)
 
     const hasProjects = projects.length!==0
 
@@ -223,13 +230,16 @@ ButtonBase
                                 {isLoadingProjects&&!hasProjects&&[<ProjectCardLoader />,
                                 <ProjectCardLoader />,
                                 <ProjectCardLoader />]}
-                                {hasProjects&&projects.sort((a,b)=>moment(a.created).isBefore(b.created)).map((i,j)=><ProjectCard data={i} key={i.projectId} number={j+1}/>)}
+                                {hasProjects&&projects.sort((a,b)=>moment(a.created).isBefore(b.created)).map((i,j)=><ProjectCard getActionsInSpecificProject={this.props.getActionsInSpecificProject} classes={classes} data={i} key={i.projectId} number={j+1}/>)}
                                 {!isLoadingProjects&&!hasProjects&&(
                                     <div style={{height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column"}}>
-                                        <img src="https://www.freeiconspng.com/uploads/rocket-png-26.png" alt="" width="260px" style={{filter: "grayscale(100%)"}}/>
-                                        <Typography style={{margin: "32px 0 16px"}} variant="headline">Hold up! It looks like you have no projects.</Typography>
-                                        <Typography style={{margin: "0px 0 48px", color: "#9e9e9e"}} variant="title"> Click on the + button to get started</Typography>
-                                        <Button variant="extendedFab" color="secondary" onClick={()=>this.props.openCreateProjectsInManagerDialogue()}><AddIcon /> Add new project </Button>
+                                        <img src="https://www.freeiconspng.com/uploads/rocket-png-26.png" alt="" width="260px" style={{filter: "grayscale(100%)", marginTop: 64}}/>
+                                        <Typography style={{margin: "32px 0 32px"}} variant="headline">Hold up! It looks like you have no projects.</Typography>
+                                        <div style={{display: "flex", justifyContent: "space-between", flex: 1}}>
+                                            <YoutubeDialogView videoId="coUzIhirhm0"><Button variant="extendedFab" color="primary" style={{color: "white", marginRight: 16, background: "#2ECC71"}}>Watch a tutorial</Button></YoutubeDialogView>
+                                            <Button variant="extendedFab" color="secondary" style={{color: "white"}} onClick={()=>this.props.openCreateProjectsInManagerDialogue()}>Add project </Button>
+                                        </div>
+                                        
                                     </div>
                                 )}
                             </Scrollbars>

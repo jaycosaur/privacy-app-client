@@ -15,12 +15,11 @@ const validate = values => {
   
 const renderTextField = ({ input: { value, onChange, onBlur }, label,multiline, meta: { touched, error } }) => (
     <TextField 
-        label={label}
-        errorText={touched && error}
+        label={(touched&&error)||label}
+        error={touched && error}
         value={value}
         onChange={onChange}
         fullWidth
-        error={error}
         multiline={multiline}
         onBlur={onBlur}
         autoFocus
@@ -35,6 +34,8 @@ const MaterialUiForm = props => {
         </form>
     )
 }
+
+const WrappedForm = reduxForm({form: `taskInputForm`, validate})(MaterialUiForm)
 
 export default class TaskInput extends React.Component {
     state = {
@@ -59,8 +60,6 @@ export default class TaskInput extends React.Component {
     }
 
     render() {
-        const WrappedForm = reduxForm({form: `taskInputForm_${this.props.id}`, validate})(MaterialUiForm)
-
         return (
             <div>
                 {!this.state.isSelected 
@@ -75,10 +74,3 @@ export default class TaskInput extends React.Component {
         )
     }
 }
-
-/*
-
-<ListItemText primary={task.description} />
-
-
-*/

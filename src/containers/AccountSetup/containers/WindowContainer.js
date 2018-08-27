@@ -69,51 +69,45 @@ const styles = theme => ({
 const WindowContainer = (props) => {
     const { classes } = props
     return (
-        <div className={props.classes.root}>
-            <div>
-                <div className={classes.flexCenter}>
-                    <Card elevation={24}>
-                        <CardContent className={classes.containerCard} style={{paddingBottom: 0}}>
-                            <div>
-                                <div className={classes.flexCenter}>
-                                    <MobileStepper
-                                        steps={props.numberOfProgressSteps}
-                                        position="static"
-                                        variant="dots"
-                                        activeStep={props.progressStepNumber}
-                                    />
-                                </div>
-                                <div className={classes.upperCard}>
-                                    <Typography variant="display1" gutterBottom className={classes.centerText} color="primary">
-                                        {props.title}
-                                    </Typography>
-                                    <Typography variant="subheading" className={classes.centerText}>
-                                        {props.subtitle}
-                                    </Typography>
-                                </div>
+                <Card elevation={24}>
+                    <CardContent className={classes.containerCard} style={{paddingBottom: 0}}>
+                        <div>
+                            <div className={classes.flexCenter}>
+                                <MobileStepper
+                                    steps={props.numberOfProgressSteps}
+                                    position="static"
+                                    variant="dots"
+                                    activeStep={props.progressStepNumber}
+                                />
                             </div>
-                            <div style={{flex: 1, overflow: "scroll", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
-                                <div className={classes.middleCard}>
-                                    {props.content}
-                                </div>
-                                {false&&<div className={classes.bottomCard}>
-                                    <Typography variant="caption" className={classes.centerText} gutterBottom>
-                                        {props.progressButtonCaption}
-                                    </Typography>
-                                </div>}
+                            <div className={classes.upperCard}>
+                                <Typography variant="display1" gutterBottom className={classes.centerText} color="primary">
+                                    {props.title}
+                                </Typography>
+                                <Typography variant="subheading" className={classes.centerText}>
+                                    {props.subtitle}
+                                </Typography>
                             </div>
-                        </CardContent>
-                        <CardActions style={{background: "none"}}>
-                            <div style={{flex: 1}}/>
-                            <Button disabled={props.isProgressButtonDisabled} variant="extendedFab" aria-label="delete" color="secondary" className={classes.progressButton} onClick={props.progressButtonOnClick}>
-                                {props.progressButtonText}
-                                {props.hideForwardIcon||<ForwardIcon/>}
-                            </Button>
-                        </CardActions>
-                    </Card>
-                </div>
-            </div>
-        </div>
+                        </div>
+                        <div style={{flex: 1, overflow: "scroll", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"}}>
+                            <div className={classes.middleCard}>
+                                {props.content}
+                            </div>
+                            {false&&<div className={classes.bottomCard}>
+                                <Typography variant="caption" className={classes.centerText} gutterBottom>
+                                    {props.progressButtonCaption}
+                                </Typography>
+                            </div>}
+                        </div>
+                    </CardContent>
+                    <CardActions style={{background: "none"}}>
+                        <div style={{flex: 1}}/>
+                        <Button disabled={props.isProgressButtonDisabled} variant="extendedFab" aria-label="delete" color="secondary" className={classes.progressButton} onClick={props.progressButtonOnClick}>
+                            {props.progressButtonText}
+                            {props.hideForwardIcon||<ForwardIcon/>}
+                        </Button>
+                    </CardActions>
+                </Card>
     )
 }
 

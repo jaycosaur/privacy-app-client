@@ -72,7 +72,7 @@ const MaterialUiForm = props => {
                 <Field name="documentReference" component={renderTextField} label="Relevant Legislation or Regulation" multiline rows={4}/>
             </DialogContent>
             <DialogActions>
-                <ButtonMD type="submit" color="primary" disabled={pristine || submitting}>
+                <ButtonMD type="submit" color="primary" variant="outlined" disabled={pristine || submitting}>
                     Update
                 </ButtonMD>
             </DialogActions>

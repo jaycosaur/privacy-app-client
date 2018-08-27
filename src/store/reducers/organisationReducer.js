@@ -1,7 +1,6 @@
 const defaultState = {
     isLoading: false,
     hasFetched: false,
-
 }
 
 export default(state = defaultState, action) => {
@@ -180,6 +179,57 @@ export default(state = defaultState, action) => {
                 ...state,
                 isLoadingOrganisationPendingUsers: false,
                 pendingUsers: [...action.payload]
+            }
+        }
+        case "INVITE_USER_TO_ORGANISATION_PENDING": {
+            return {
+                ...state,
+                pendingUsers: state.pendingUsers?[...state.pendingUsers, {id: action.meta.email, email: action.meta.email, isSending: true}]:[{id: action.meta.email, email: action.meta.email, isSending: true}]
+            }
+        }
+        case "INVITE_USER_TO_ORGANISATION_FULFILLED": {
+            return {
+                ...state,
+                pendingUsers: [...state.pendingUsers.filter(i=>i.id!==action.meta.email)]
+            }
+        }
+        case "REVOKE_INVITE_USER_TO_ORGANISATION_PENDING": {
+            return {
+                ...state,
+                pendingUsers: [...state.pendingUsers.filter(i=>i.id!==action.meta.id), ...state.pendingUsers.filter(i=>i.id===action.meta.id).map(i=>({...i, isDeleting: true}))]
+            }
+        }
+        case "REVOKE_INVITE_USER_TO_ORGANISATION_FULFILLED": {
+            return {
+                ...state,
+                pendingUsers: [...state.pendingUsers.filter(i=>i.id!==action.meta.id)]
+            }
+        }
+        case "LEAVE_ORGANISATION_FLOW_PENDING": {
+            return {
+                ...state,
+                isLeavingOrganisation: true
+            }
+        }
+        case "LEAVE_ORGANISATION_FLOW_PENDING": {
+            return {
+                ...state,
+                isLeavingOrganisation: false,
+                hasLeftOrganisation: true
+            }
+        }
+        case "CREATE_NEW_TEAM_FROM_FIELDS_PENDING": {
+            return {
+                ...state,
+                isSubmittingCreateTeam: true
+            }
+        }
+        case "CREATE_NEW_TEAM_FROM_FIELDS_FULFILLED": {
+            return {
+                ...state,
+                isSubmittingCreateTeam: false,
+                hasCreatedNewTeam: true,
+                newOrganisationId: action.payload.organisationId
             }
         }
         default: 

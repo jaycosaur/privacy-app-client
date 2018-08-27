@@ -32,7 +32,7 @@ const styles = () => ({
 //,background: "linear-gradient(45deg, rgba(98,58,162,1) 0%, rgba(249,119,148,1) 100%)"
 
 const Index = (props) => {
-    const { children, actions, color="secondary", style={},toolbarStyle={}, className, classes, icon } = props
+    const { children, actions, color="primary", style={},toolbarStyle={}, className, classes, icon } = props
     return (
         <AppBar elevation={1} position="static" color={color} className={classnames( classes.root,className)} style={{...style}}>
             <Toolbar variant="dense" style={toolbarStyle}>

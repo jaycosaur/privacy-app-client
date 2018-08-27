@@ -7,6 +7,7 @@ import PopOverModel from './views/PopOverModal'
 import { auth } from './config/firebase'
 import AuthView from './views/AuthView'
 import Intercom from 'react-intercom';
+import Raven from 'raven-js'
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
@@ -26,6 +27,10 @@ const theme = createMuiTheme({
     },
   },
 });
+
+if(process.env.NODE_ENV === "production"){
+  Raven.config('https://6757ef1240c14116835a7f2a5e05875f@sentry.io/1264321').install()
+}
 
 class App extends Component {
     state = {
@@ -51,8 +56,19 @@ class App extends Component {
       }
     }
 
-    render(){
+    componentDidUpdate(prevProps, prevState){
+      if (this.props.user.isSignedIn&&prevProps.user.info!==this.props.user.info){
+        Raven.setUserContext({
+          email: this.props.user.info.email,
+          uid: this.props.user.info.uid
+        });
+      }
+      if (prevProps.user.isSignedIn!==this.props.user.isSignedIn&&!this.props.user.isSignedIn){
+        Raven.clearContext()
+      }
+    }
 
+    render(){
       const user = this.props.user&&this.props.user.info&&{
         user_id: this.props.user.info.uid,
         email: this.props.user.info.email,

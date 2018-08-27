@@ -1,6 +1,5 @@
 import React from 'react'
 import Card from '@material-ui/core/Card'
-import CardContent from '@material-ui/core/CardContent'
 
 import { withStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
@@ -12,6 +11,7 @@ import * as actions from './../../store/actions/actionManagerActions'
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import Typography from '@material-ui/core/Typography';
+import { Link } from 'react-router-dom'
 
 import CreateIcon from '@material-ui/icons/Create';
 import UpdateIcon from '@material-ui/icons/Update';
@@ -29,50 +29,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Avatar from '@material-ui/core/Avatar';
 import moment from 'moment'
-
-const def = {
-    icon: null,
-    text: null,
-}
-const getEventDisplay = (type) => {
-    switch(type){
-        case "CREATE_PROJECT":
-            return {icon: <CreateIcon />, text: ({ data:{ title }})=>`created a new project ${title}.`}
-        case "UPDATE_PROJECT":
-            return {icon: <UpdateIcon />, text: ({ data:{ title }})=>`updated the project ${title}`}
-        case "DELETE_PROJECT":
-            return {icon: <DeleteIcon />, text: ({ data:{ title }})=>`deleted the project ${title}.`}
-        case "CREATE_ACTION":
-            return {icon: <CreateIcon />, text: ()=>`created a new action!`}
-        case "UPDATE_ACTION":
-            return {icon: <UpdateIcon />, text: ()=>`updated an action.`}
-        case "DELETE_ACTION":
-            return {icon: <DeleteIcon />, text: ()=>"deleted an action."}
-        case "COMPLETED_ACTION":
-            return {icon: <CompleteIcon />, text: ()=>"marked an action as complete."}
-        case "MARK_AS_URGENT_ACTION":
-            return {icon: <UrgentIcon />, text: ()=>"marked an action as urgent."}
-        case "ASSIGN_TO_ACTION":
-            return {icon: <AssignedIcon />, text: ()=>"assigned a team member to an obligation."}
-        case "SCHEDULE_ACTION":
-            return {icon: <ScheduleIcon />, text: ()=>"scheduled an action to recur."}
-        case "UPLOADED_FILE":
-            return {icon: <UploadIcon />, text: ()=>"uploaded a new file."}
-        case "CREATE_TASK":
-            return {icon: <CreateIcon />, text: ()=>"created a new task."}
-        case "UPDATE_TASK":
-            return {icon: <UpdateIcon />, text: ()=>"updated a task."}
-        case "DELETE_TASK":
-            return {icon: <DeleteIcon />, text: ()=>"deleted a task"}
-        case "COMPLETED_TASK":
-            return {icon: <CompleteIcon />, text: ()=>"marked a task as complete."}
-        case "INVITED_TO_TEAM":
-            return {icon: <InviteIcon />, text: ()=>""}
-        default: 
-            return {icon: null, text: ""}
-    }
-
-}
+import Button from '@material-ui/core/Button';
 
 const TeamUserIcon = (props) => {
     const displayName = props.userId&&props.users&&props.users.filter(i=>i.userId===props.userId).length>0&&props.users.filter(i=>i.userId===props.userId)[0].displayName
@@ -92,6 +49,46 @@ const mapState2Props = (state) => {
 }
 
 const TeamUser = connect( mapState2Props )(TeamUserIcon)
+
+const getEventDisplay = (type) => {
+    switch(type){
+        case "CREATE_PROJECT":
+            return {icon: <CreateIcon />, text: ({ data:{ title }})=>`created a new project ${title}.`}
+        case "UPDATE_PROJECT":
+            return {icon: <UpdateIcon />, text: ({ data:{ title }})=>`updated the project ${title}`}
+        case "DELETE_PROJECT":
+            return {icon: <DeleteIcon />, text: ({ data:{ title }})=>`deleted the project ${title}.`}
+        case "CREATE_ACTION":
+            return {icon: <CreateIcon />, text: ()=>`created a new action!`}
+        case "UPDATE_ACTION":
+            return {icon: <UpdateIcon />, text: ()=>`updated an action.`}
+        case "DELETE_ACTION":
+            return {icon: <DeleteIcon />, text: ()=>"deleted an action."}
+        case "COMPLETED_ACTION":
+            return {icon: <CompleteIcon />, text: ()=>"marked an action as complete."}
+        case "MARK_AS_URGENT_ACTION":
+            return {icon: <UrgentIcon />, text: ()=>"marked an action as urgent."}
+        case "ASSIGN_TO_ACTION":
+            return {icon: <AssignedIcon />, text: (props)=><span>assigned <TeamUser userId={props.data.ownerId} displayName/> to an obligation.</span>}
+        case "SCHEDULE_ACTION":
+            return {icon: <ScheduleIcon />, text: ()=>"scheduled an action to recur."}
+        case "UPLOADED_FILE":
+            return {icon: <UploadIcon />, text: ()=>"uploaded a new file."}
+        case "CREATE_TASK":
+            return {icon: <CreateIcon />, text: ()=>"created a new task."}
+        case "UPDATE_TASK":
+            return {icon: <UpdateIcon />, text: ()=>"updated a task."}
+        case "DELETE_TASK":
+            return {icon: <DeleteIcon />, text: ()=>"deleted a task"}
+        case "COMPLETED_TASK":
+            return {icon: <CompleteIcon />, text: ()=>"marked a task as complete."}
+        case "INVITED_TO_TEAM":
+            return {icon: <InviteIcon />, text: ()=>""}
+        default: 
+            return {icon: null, text: ""}
+    }
+
+}
 
 const EventItem = (props) => {
     const type = getEventDisplay(props["EVENT_TYPE"])
@@ -218,9 +215,15 @@ class EventContainer extends React.Component {
                     </AppBar>
                     <Scrollbars
                         style={{ height: "93%", padding: 16 }}>
-                        <List dense>
-                            {hasEvents&&eventsArray.map(i=><EventItem key={i.eventId} {...i}/>)}
-                        </List>
+                        {!hasEvents&&<div style={{padding: 64, height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: -32}}>
+                        <img src="https://www.freeiconspng.com/uploads/rocket-png-26.png" alt="" width="200px" style={{filter: "grayscale(100%)"}}/>
+                        <Typography variant="subheading" marginBottom style={{marginBottom: 16, marginTop: 16}} align="center">It looks like your team is all setup but you have no events yet.</Typography>
+                        <Typography variant="body" align="center" marginBottom >Events are created from creating, deleting and updating projects, actions and tasks in your teams compliance workspace.</Typography>
+                        <Link to="/compliance-workspace"><Button variant="extendedFab" color="secondary" style={{marginTop:32, color: "white"}}>Let's get started</Button></Link>
+                    </div>}
+                        {hasEvents&&<List dense>
+                            {eventsArray.map(i=><EventItem key={i.eventId} {...i}/>)}
+                        </List>}
                     </Scrollbars>
                 </Card>
             )

@@ -15,11 +15,8 @@ import Menu from '@material-ui/core/Menu';
 
 import moment from 'moment'
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import RightIcon from '@material-ui/icons/KeyboardArrowRight'
+import LeftIcon from '@material-ui/icons/KeyboardArrowLeft'
 
 import AlgoliaSearch from './components/AlgoliaSearch'
 import TopBarAvatar from './components/TopBarAvatar'
@@ -28,6 +25,7 @@ import { Link } from 'react-router-dom'
 
 import streamers from './../../assets/Streamers.png'
 import Hidden from '@material-ui/core/Hidden';
+import classnames from 'classnames'
 
 const drawerWidth = 240;
 
@@ -44,7 +42,7 @@ const styles = theme => ({
       flex: 1,
     },
     menuButton: {
-      marginLeft: -12,
+      marginLeft: 0,
       marginRight: 20,
     },
     sidebarList: {
@@ -76,7 +74,14 @@ const styles = theme => ({
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
+        position: "absolute",
     },
+    appBarExpanded: {
+        marginLeft: 240
+    },
+    toolbarPadding: {
+        paddingLeft: theme.spacing.unit*4,
+    } ,
     toolbar: theme.mixins.toolbar,
     content: {
         flexGrow: 1,
@@ -86,9 +91,25 @@ const styles = theme => ({
         overflow: "scroll"
     },
     drawerPaper: {
-        position: 'relative',
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen*1,
+          }),
         width: drawerWidth,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
     },
+    drawerPaperClose: {
+        transition: theme.transitions.create('width', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen*1,
+        }),
+        width: theme.spacing.unit * 7,
+        [theme.breakpoints.up('sm')]: {
+          width: theme.spacing.unit * 9,
+        },
+    }
   })
 
 class NavBar extends React.Component {
@@ -116,35 +137,39 @@ class NavBar extends React.Component {
     };
     
     render(){
-        const { classes, isSignedIn } = this.props
+        const { classes, isSignedIn, isSideDrawerExpanded, isFullScreen, organisation } = this.props
         const { anchorEl } = this.state
         const open = Boolean(anchorEl)
 
         return (
-            <AppBar className={classes.appBar} position="fixed" color={isSignedIn?"default":"primary"} style={{background: isSignedIn?"white":"none", borderBottom: isSignedIn&&"1px solid #ddd"}} elevation={!isSignedIn?0:1} elevation={0}>
-                <Toolbar>
+            <AppBar className={classes.appBar} position="fixed" color={isSignedIn?"default":"primary"} style={{background: (isSignedIn&&!isFullScreen)?"white":"none", borderBottom: (isSignedIn&&!isFullScreen)&&"1px solid #ddd"}} elevation={!isSignedIn?0:1} elevation={0}>
+                <Toolbar style={{paddingLeft: 0}}>
                     <div style={{flex: 1, display: "flex", alignItems: "center"}}>
-                        {isSignedIn&&<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={()=>this.props.toggleAuthViewSideDrawer()}>
-                            <MenuIcon />
+                        <div className={classnames(classes.drawerPaper, !isSideDrawerExpanded&&classes.drawerPaperClose)}>
+                            <Hidden xsDown>
+                                {isSideDrawerExpanded?(
+                                    <Link to="/" className={classnames(classes.toolbarPadding, classes.flex)}><Typography variant="title" color={(isSignedIn&&!isFullScreen)?"primary":"secondary"}>
+                                        <strong>POLIBASE</strong>
+                                    </Typography></Link>
+                                ):<Link to="/"><img src={require("../../assets/WhiteCircleLogo.png")} width={50}/></Link>}
+                            </Hidden>
+                        </div>
+                        {(isSignedIn&&!isFullScreen)&&<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={()=>this.props.toggleAuthViewSideDrawer()}>
+                            {isSideDrawerExpanded?<LeftIcon />:<RightIcon />}
                         </IconButton>}
-                        <Hidden xsDown>
-                            <Typography variant="title" color={isSignedIn?"primary":"secondary"} className={classes.flex}>
-                                <strong>POLIBASE</strong>
-                            </Typography>
-                        </Hidden>
                     </div>
                     <Hidden smUp>
                         <div style={{flex: 1, display: "flex", alignItems: "center"}}>
-                            <Typography variant="title" color={isSignedIn?"primary":"secondary"} className={classes.flex}>
+                        <Link to="/" className={classes.flex}><Typography variant="title" color={(isSignedIn&&!isFullScreen)?"primary":"secondary"}>
                                 <strong>POLIBASE</strong>
-                            </Typography>
+                            </Typography></Link>
                         </div>
                     </Hidden>
-                    <Hidden smDown>
+                    {false&&<Hidden smDown>
                         <div style={{alignItems: "center", justifyContent: "center"}}>
                             {isSignedIn&&<div style={{flexGrow: 1}}><AlgoliaSearch/></div>}
                         </div>
-                    </Hidden>
+                    </Hidden>}
                     <div style={{flex: 1, display: "flex", alignItems: "center"}}>
                         <div style={{flex: 1}} />
                         <Hidden xsDown>
@@ -163,7 +188,7 @@ class NavBar extends React.Component {
                             <IconButton
                                 aria-owns={open ? 'menu-appbar' : null}
                                 aria-haspopup="true"
-                                onClick={this.handleMenu}
+                                onClick={(e)=>this.handleMenu(e)}
                                 color="inherit"
                             >
                                 <TopBarAvatar />
@@ -171,14 +196,14 @@ class NavBar extends React.Component {
                             <Menu
                                 id="menu-appbar"
                                 anchorEl={anchorEl}
-                                open={open&&this.state.menuOpen}
+                                open={this.state.menuOpen}
                                 onClose={this.handleClose}
                             >
-                                <Link to="/myaccount"><MenuItem onClick={this.handleClose}>MY ACCOUNT</MenuItem></Link>
+                                {organisation.id&&<Link to="/myaccount"><MenuItem onClick={this.handleClose}>MY ACCOUNT</MenuItem></Link>}
                                 <MenuItem onClick={this.props.doSignOut}>LOGOUT</MenuItem>
                             </Menu>
                             </div>)}
-                            {!isSignedIn && (
+                            {false&&!isSignedIn && (
                                 <span style={{float: 'right', margin: "auto"}}>
                                     <Link to="/signin"><Button variant="contained" color="secondary"><strong>SIGN-IN</strong></Button></Link>                        
                                 </span>)
@@ -195,7 +220,8 @@ class NavBar extends React.Component {
         isSignedIn: state.user.isSignedIn,
         isSigningIn: state.user.isSigningIn,
         isSideDrawerExpanded: state.view.isSideDrawerExpanded,
-        organisation: state.organisation
+        organisation: state.organisation,
+        isFullScreen: state.view.isFullScreen
       }
   }
   

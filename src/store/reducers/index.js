@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux'
-import { routerReducer } from 'react-router-redux'
 import user from './authReducer'
 import popover from './popoverModalReducer'
 import filter from './filterReducer'
@@ -30,7 +29,6 @@ const rootReducer = combineReducers({
     readLater,
     mailingList,
     ML,
-    router: routerReducer,
     form: formReducer,
     actionManager: actionManager
 })

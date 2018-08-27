@@ -7,13 +7,18 @@ import Divider from '@material-ui/core/Divider';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListIcon from '@material-ui/icons/List'
 import HomeIcon from '@material-ui/icons/Home'
 import GroupIcon from '@material-ui/icons/Group'
+import Collapse from '@material-ui/core/Collapse';
 import StarIcon from '@material-ui/icons/Star';
 import BookmarksIcon from '@material-ui/icons/CollectionsBookmark';
 import HistoryIcon from '@material-ui/icons/History';
 import DraftsIcon from '@material-ui/icons/Drafts';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
 import HelpIcon from '@material-ui/icons/Help';
 import Icon from '@material-ui/core/Icon';
 import TopNavBar from './../containers/TopNavBar'
@@ -26,12 +31,58 @@ import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Hidden from '@material-ui/core/Hidden';
 import classnames from 'classnames'
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Dialog from '@material-ui/core/Dialog';
+import Button from '@material-ui/core/Button';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+
+const disclaimer = "All material linked or otherwise accessible on this site is sourced for the sole purpose of enabling the provision of professional advice as per fair usage requirements. Content is not a reproduction or copy but rather a portal to source material from where further insights can be derived at the users own discretion as referred on."
+
+
+class InfoModal extends React.Component {
+    state = {
+        open: false
+    }
+    handleOpen = () => {
+        this.setState({open: true})
+    }
+    handleClose = () => {
+        this.setState({open: false})
+    }
+    render() {
+        return (
+            [<span onClick={this.handleOpen}>
+                {this.props.children}
+            </span>,
+            <Dialog
+                open={this.state.open}
+                onClose={this.handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Polibase Disclaimer"}</DialogTitle>
+                <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {disclaimer}
+                </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={this.handleClose} color="primary" autoFocus>
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>]
+        )
+    }
+}
 
 const Footer = ({isSideDrawerExpanded}) => (
     <div style={{textAlign: "center", flexGrow: 1, margin: 8}}>
         {isSideDrawerExpanded&&<p style={{fontWeight: 700, fontSize: "1.2em", margin: 0, color: "#623aa2"}}>POLIBASE</p>}
         {isSideDrawerExpanded&&<p style={{margin: 0}}><small>© 2018 ExamineChange Pty. Ltd. <br/>All rights reserved.</small></p>}
-        {isSideDrawerExpanded&&<p style={{margin: 0}}><small><a href="https://www.polibase.com.au" style={{color: "#f97794"}}>Disclosure</a> | <a href="https://www.polibase.com.au" style={{color: "#f97794"}}>Disclaimer</a></small></p>}
+        {isSideDrawerExpanded&&<p style={{margin: 0}}><small><InfoModal><a style={{color: "#f97794"}}>Polibase Disclaimer</a></InfoModal></small></p>}
     </div>
 )
 
@@ -124,12 +175,67 @@ const styles = theme => ({
     },
   })
 
+class ComplianceDropDown extends React.Component{
+    state = {
+        open: false
+    }
+
+    toggleMenu = () => {
+        this.setState(state=>({open: !state.open}))
+    }
+    render(){
+        const { hasOrganisation, projects, isSideDrawerExpanded } = this.props
+
+        const projectsArray = projects&&Object.keys(projects).map(key=>projects[key])
+
+        const cropToMax = (string) => `${[...string].slice(0,25).join("")}${string.length>25?"...":""}`
+
+        return (
+            [ <Link to="/compliance-workspace"><ListItem button>
+                        
+                            <ListItemIcon>
+                                <ListIcon />
+                            </ListItemIcon>
+                            <ListItemText inset primary="Workspace" />
+                            {hasOrganisation&&<ListItemSecondaryAction>
+                                <IconButton aria-label="Show Projects" onClick={this.toggleMenu} style={{marginRight: 8}}>
+                                    {this.state.open ? <ExpandLess /> : <ExpandMore />}
+                                </IconButton>
+                        </ListItemSecondaryAction>}
+                    </ListItem></Link>,
+                <Collapse in={isSideDrawerExpanded&&this.state.open} timeout="auto" unmountOnExit>
+                    <div style={{paddingLeft: 16}}>
+                        {
+                            projectsArray&&projectsArray.map(i=>(
+                                <Link to={`/compliance-workspace/${i.projectId}`}>
+                                    <ListItem button dense>
+                                        <ListItemText primary={cropToMax(i.title)} />
+                                    </ListItem>
+                                </Link>
+                            ))
+                        }
+                       
+                    </div>
+                </Collapse>]
+        )
+    }
+}
+
+const withProjects = (state) => {
+    return {
+        projects: state.actionManager.projects,
+        hasOrganisation: state.organisation&&state.organisation.organisationId,
+        isSideDrawerExpanded: state.view.isSideDrawerExpanded
+    }
+}
+
+const ComplianceDropDownWithStore = connect(withProjects)(ComplianceDropDown)
+
 const SideDrawerToggleContainer = (props) => {
-    const { classes, isSideDrawerExpanded, width } = props
+    const { classes, isSideDrawerExpanded, width, isFullScreen } = props
     const sidebarList = (
         <div className={classes.sidebarList}>
             <List
-                dense={true}
             >
                 <Link to="/home">
                     <ListItem button>
@@ -139,14 +245,7 @@ const SideDrawerToggleContainer = (props) => {
                             <ListItemText inset primary="Home" />
                     </ListItem>
                 </Link>
-                <Link to="/compliance-workspace">
-                    <ListItem button>
-                            <ListItemIcon>
-                                <ListIcon />
-                            </ListItemIcon>
-                            <ListItemText inset primary="Compliance Workspace" />
-                    </ListItem>
-                </Link>
+                <ComplianceDropDownWithStore />
                 <Link to="/team">
                     <ListItem button>
                             <ListItemIcon>
@@ -164,7 +263,7 @@ const SideDrawerToggleContainer = (props) => {
                     </ListItem>
                 </Link>
                 <Divider className={classes.divider}/>
-                
+                {/* 
                     <ListItem button disabled>
                         <ListItemIcon>
                             <Icon className={classnames(classes.icon,'fas fa-search')} />
@@ -207,7 +306,7 @@ const SideDrawerToggleContainer = (props) => {
                 <ListItem button disabled>
                     <ListItemIcon><DraftsIcon /></ListItemIcon>
                     <ListItemText primary="Your Mail List" />
-                </ListItem>
+                </ListItem> */}
                 {/*
                 <Link to="/search/">
                     <ListItem button>
@@ -268,7 +367,7 @@ const SideDrawerToggleContainer = (props) => {
         )
     return (
         //Just make Drawer to test
-        isWidthUp("lg",width)?
+        !isFullScreen&&(isWidthUp("lg",width)?
         <Drawer
             classes={{
                 paper: isSideDrawerExpanded?classes.drawerPaper:[classes.drawerPaper,classes.drawerPaperClose].join(" "),
@@ -302,13 +401,14 @@ const SideDrawerToggleContainer = (props) => {
             >
                 {sidebarList}
             </div>
-        </SwipeableDrawer>
+        </SwipeableDrawer>)
     )
 }
 
 const mapStateToProps = (state) => {
     return {
-        isSideDrawerExpanded: state.view.isSideDrawerExpanded
+        isSideDrawerExpanded: state.view.isSideDrawerExpanded,
+        isFullScreen: state.view.isFullScreen
     }}
 
 const SideDrawerToggleContainerWithStore = connect(mapStateToProps, menuActions)(withWidth()(withStyles(styles, { withTheme: true })(SideDrawerToggleContainer)))
@@ -329,7 +429,7 @@ const OverLoginFlowPanel = (props) => {
 
 
 const AuthView = (props) => {
-    const { classes, isSignedIn, loginFlow } = props
+    const { classes, isSignedIn, loginFlow, isNavHidden, isSideHidden, isFullScreen } = props
     return (
         <div className={classes.root}>
             <OverLoginFlowPanel loginFlow={loginFlow} classes={classes}/>

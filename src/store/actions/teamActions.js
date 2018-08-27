@@ -23,10 +23,44 @@ export const getOrganisationInformation = ({ organisationId }) => {
     }
 }
 
+export const leaveOrganisation = () => {
+    return {
+        type: 'LEAVE_ORGANISATION_FLOW',
+    }
+}
+
 export const inviteUserToOrganisation = ({ email }) => {
     return {
         type: 'INVITE_USER_TO_ORGANISATION',
         payload: { email }
+    }
+}
+
+export const inviteMultipleUsersToOrganisation = ({ emails }) => {
+    return {
+        type: 'INVITE_MULTIPLE_USERS_TO_ORGANISATION',
+        payload: { emails }
+    }
+}
+
+export const redirectToWorkspace = () => {
+    return {
+        type: 'REDIRECT_TO_WORKSPACE',
+    }
+}
+
+export const hideFullScreen = () => {
+    return {
+        type: 'HIDE_FULL_SCREEN',
+    }
+}
+
+
+
+export const revokeInviteUserToOrganisation = ({ id }) => {
+    return {
+        type: 'REVOKE_INVITE_USER_TO_ORGANISATION',
+        payload: { inviteId: id }
     }
 }
 

@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import FullPageLoader from './../components/FullPageLoader'
+import qs from 'qs'
 
 class TeamInviteAccept extends Component {
     // take token
@@ -20,12 +21,14 @@ class TeamInviteAccept extends Component {
     componentDidUpdate() {
         if(this.props.organisation.hasJoinedOrganisation){
             this.props.getOrganisationInformation({ organisationId: this.props.organisation.organisationId})
-            this.props.history.push('/team/success')
+            this.props.hideFullScreen()
+            this.props.history.push('/invite-accepted')
         }
     }
     render() {
-        const { invitetoken } = this.props.match.params
         const { organisation: { isJoiningOrganisation, hasJoinedOrganisation, organisationJoinRejected, rejectionMessage} } = this.props
+        const { id } = qs.parse(this.props.location.search, { ignoreQueryPrefix: true })
+        const invitetoken = id
         return (
             <div style={{width: "100%", height: "95vh", display: "flex", justifyContent: "center", alignItems: "center", background: "#623aa2", flexDirection: "column"}}>
                 {!organisationJoinRejected?((isJoiningOrganisation||hasJoinedOrganisation)?[<FullPageLoader />,<Typography variant="subheading" align="center" gutterBottom style={{color: "white", marginTop: 16}}>Just cutting your key...</Typography> ]

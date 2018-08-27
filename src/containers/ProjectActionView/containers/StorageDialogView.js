@@ -152,7 +152,7 @@ class FullScreenDialog extends React.Component {
             color="secondary" 
             variant="outlined"
             size="small" 
-            style={{display: "flex", alignItems: "center",color: "#ddd", borderColor: "#bbb"}}>
+            style={{display: "flex", alignItems: "center",color: "#fff", borderColor: "#fff"}}>
             <StorageIcon style={{marginRight: 4, fontSize: 20}}/>FILES
         </Button>}
         <Dialog

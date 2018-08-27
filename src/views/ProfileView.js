@@ -127,13 +127,14 @@ const AccountView = (props) => {
         [isLoading&&<LinearProgress color="secondary" variant="query" />,
         props.user&&!props.user.emailVerified&&<AppBar position="static" color="secondary">
             <Toolbar variant="dense">
-                <WarningIcon style={{marginRight: 8}}/>
+                <WarningIcon style={{marginRight: 8, color: "white"}}/>
                 <Typography variant="subheading"
-                    color="inherit">
+                    color="inherit"
+                    style={{color: "white"}}>
                     You Have Not Verified Your Email Address
                 </Typography>
                 <div style={{flex: 1}} />
-                <Button onClick={()=>props.sendVerificationEmail()} variant="outlined" disabled={props.emailVerificationSent}>{props.emailVerificationSent?"Sent":"send verification email"}</Button>
+                <Button onClick={()=>props.sendVerificationEmail()} variant="outlined" style={{color: "white"}} disabled={props.emailVerificationSent}>{props.emailVerificationSent?"Sent":"send verification email"}</Button>
             </Toolbar>
         </AppBar>,
         <div style={{padding: 32, height: "100%", overflow: "scroll", background: "White"}}>

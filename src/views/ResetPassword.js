@@ -1,65 +1,157 @@
 import React from 'react'
-import { Col, Row, Card, message } from 'antd'
-import { themeColors, primaryThemeShades, highlightThemeShades } from './../theme'
-import { Form, Icon, Input, Button } from 'antd';
+import { message } from 'antd'
 import { connect } from 'react-redux'
 import * as authActions from './../store/actions/authActions'
-import { push } from 'react-router-redux'
+import { Link } from 'react-router-dom'
+import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 
-const FormItem = Form.Item;
+import EntryFlowView from './EntryFlowView'
+import { withStyles } from '@material-ui/core/styles';
+import { Field, reduxForm } from 'redux-form';
+import Typography from '@material-ui/core/Typography';
+import Hidden from '@material-ui/core/Hidden';
+import Recaptcha from 'react-recaptcha'
 
-class NormalLoginForm extends React.Component {
-    handleSubmit = (e) => {
-      e.preventDefault();
-      this.props.form.validateFields((err, values) => {
-        if (!err) {
-          this.props.handleSubmit(values)
-        }
-      });
+const styles = theme => {
+    return ({
+      mainText: {
+          [theme.breakpoints.down('sm')]: {
+              ...theme.typography.display1,
+              color: theme.palette.secondary.main,
+              fontWeight: 500,
+          },
+          [theme.breakpoints.up('md')]: {
+              ...theme.typography.display4,
+              color: theme.palette.secondary.main,
+              fontWeight: 500,
+          },
+      },
+      secondaryText: {
+          color: theme.palette.secondary.light,
+          fontWeight: 300,
+          [theme.breakpoints.down('sm')]: {
+              ...theme.typography.display2,
+              color: theme.palette.secondary.light,
+              fontWeight: 300,
+              textAlign: "center",
+              marginTop: 64
+          },
+      },
+      formCard: {
+          maxWidth: 400,
+          [theme.breakpoints.down('xs')]: {
+              height: "60%"
+          },
+      },
+      mainButton: {
+          marginTop: 16, 
+          width: "100%",
+          height: 64,
+          color: "white"
+      }
     }
-    render() {
-      const { getFieldDecorator } = this.props.form;
-      return (
-        <Form onSubmit={this.handleSubmit} className="login-form">
-          <FormItem>
-            {getFieldDecorator('email', {
-              rules: [{ required: true, message: 'Please input your username!' }],
-            })(
-              <Input size="large" prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Email address" />
-            )}
-          </FormItem>
-          <FormItem>
-            <Button loading={this.props.isLoading} style={{marginTop: 16, width: "100%", background: highlightThemeShades[2], border: themeColors[2], height: 64}} size="large" htmlType="submit" className="login-form-button">
-              <strong>SEND EMAIL</strong>
-            </Button>
-          </FormItem>
-        </Form>
-      );
+  )};
+  
+
+
+const validate = values => {
+    const errors = {}
+    if (!values.email) {
+        errors.email = 'Required'
+    } else if (values.email.length === 0) {
+        errors.email = 'Required'
     }
+    return errors
   }
   
-  const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
+const renderTextField = ({ input: { value, onChange }, label, meta: { touched, error }, ...custom }) => (
+    <TextField 
+        label={label}
+        value={value}
+        onChange={onChange}
+        fullWidth
+        error={touched && error}
+        {...custom}
+        margin="dense"
+    />
+)
 
+const InputWrap = (props) => (
+    <Button
+        variant="contained" 
+        disableFocusRipple
+        style={{
+            width: "100%",
+            background: "white",
+            borderRadius: "50px",
+            paddingLeft: 32,
+            paddingRight: 32,
+            marginBottom: 16
+        }} >
+        {props.children}
+    </Button>
+)
+  
+class MaterialUiForm extends React.Component {
+    render(){
+      const { handleSubmit, submitting, isLoading, classes} = this.props
+      return (
+          <form onSubmit={handleSubmit} onKeyPress={e=>e.key==="Enter"&&handleSubmit}>
+              <InputWrap>
+                  <Field name="email" suggested="reset-email" component={renderTextField} placeholder="Email address"/>
+              </InputWrap>
+              <Button 
+                color="secondary" 
+                disabled={ submitting || isLoading }
+                variant="extendedFab" 
+                type="submit"
+                className={classes.mainButton}
+                >
+                <strong>SEND EMAIL</strong>{isLoading&&"..."}
+              </Button>
+              <Typography align="center" variant="subheading" style={{marginTop: 24, width: "100%"}}><Link to="/" style={{color: "white", width: "100%", textAlign: "center", fontWeight: 300}}>Already signed up?</Link></Typography>
+          </form>
+      )
+    }  
+}
 
-const Signin = (props) => {
+const WrappedForm = reduxForm({form: 'signinUserForm', validate})(MaterialUiForm)
+
+const SignupView = (props) => {
     if (props.signInError){
         message.error(props.signInErrorMessage)
     }
 
     if (props.resetEmailSent){
-        message.success('Email successfully sent, check your inbox! Redirecting to sign-in.', 3, props.pushToHome);
+        message.success('Email successfully sent, check your inbox! Redirecting to sign-in.', 3, ()=>props.history.push("/"));
     }
 
+    const { classes, resetEmailSent } = props
     return (
-        <Row style={{minHeight: "90vh", display: "flex", alignItems: "center", justifyContent: "center"}}>
-            <Col span={8}>
-                <Card hoverable >
-                    <h1 style={{color: primaryThemeShades[0], fontSize: "3.8em", marginBottom: 16}}>Reset Password</h1>
-                    <p style={{marginBottom: 32}}>We will send a link to your email address to reset your password.</p>
-                    <WrappedNormalLoginForm isLoading={props.isSigningIn} handleSubmit={props.doPasswordReset}/>
-                </Card>
-            </Col>
-        </Row>
+        <EntryFlowView
+            alternate
+            leftCard={
+                [
+                    <Hidden mdDown>
+                        <Typography variant="display4" align="left" gutterBottom className={classes.mainText}>POLIBASE.</Typography>
+                    </Hidden>,
+                    <Typography variant="display2" className={classes.secondaryText}>Making compliance simple.</Typography>
+                ]
+            }
+            rightCard={
+                [
+                    <Typography variant="display2" align="left" style={{color: "white"}} gutterBottom>Reset Password</Typography>,
+                    !resetEmailSent&&<Typography variant="subheading" align="left" style={{color: "white", marginBottom: 32}} gutterBottom>
+                        We will send a link to your email address to reset your password.
+                    </Typography>,
+                    !resetEmailSent&&<WrappedForm isLoading={props.isSigningUp} onSubmit={props.doPasswordReset} classes={classes}/>,
+                    resetEmailSent&&<Typography variant="title" align="left" style={{color: "white", marginTop: 32}} gutterBottom>
+                    Email sent successfully.
+                </Typography>
+                ]
+            }>
+        </EntryFlowView>
     )
 }
 
@@ -72,15 +164,4 @@ const mapStateToProps = (state, ownProps) => {
     }
 }
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-  return {
-    doPasswordReset: (email) => {
-      dispatch(authActions.doPasswordReset(email))
-    },
-    pushToHome: () => {
-      dispatch(push('/'))
-    }
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Signin)
+export default connect(mapStateToProps, authActions)(withStyles(styles)(SignupView))

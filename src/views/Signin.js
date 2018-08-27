@@ -5,17 +5,14 @@ import * as authActions from './../store/actions/authActions'
 import { Link } from 'react-router-dom'
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import backgroundImg from './../assets/unauthbackground.jpg';
 
-import Grid from '@material-ui/core/Grid';
+import EntryFlowView from './EntryFlowView'
 import { withStyles } from '@material-ui/core/styles';
 import { Field, reduxForm } from 'redux-form';
 import Typography from '@material-ui/core/Typography';
 import Hidden from '@material-ui/core/Hidden';
 
 const styles = theme => {
-    
-    console.log(theme)
     return ({
     root: {
       flexGrow: 1,
@@ -29,12 +26,11 @@ const styles = theme => {
         alignItems: "center",
         justifyContent: "center",
         flexDirection: "column",
-        [theme.breakpoints.up('md')]: {
-            background: "linear-gradient(to right, rgba(249,119,148,0) 0%, rgba(249,119,148,0.1) 25%, rgba(249,119,148,0.1) 100%)"
-        },
-        padding: "2em"
+        padding: "2em",
+        background: theme.palette.secondary.main
     },
     titleContainer: {
+        background: theme.palette.primary.main,
         display: "flex",
         justifyContent: "center",
         flexDirection: "column",
@@ -71,6 +67,13 @@ const styles = theme => {
         [theme.breakpoints.down('xs')]: {
             height: "60%"
         },
+    },
+    signinButton: {
+        background: theme.palette.primary.main,
+        marginTop: 16, 
+        width: "100%",
+        height: 64,
+        color: "white"
     }
   })};
   
@@ -135,18 +138,11 @@ const MaterialUiForm = props => {
               disabled={ submitting || props.isLoading}
               variant="extendedFab" 
               type="submit"
-              style={{ 
-                marginTop: 16, 
-                width: "100%",
-                height: 64,
-                color: "white"
-              }} 
-              className="login-form-button"
+              className={props.classes.signinButton}
               >
               <strong>SIGN-IN</strong>{props.isLoading&&"..."}
             </Button>
-            <Typography align="center" variant="subheading" style={{marginTop: 24, width: "100%"}}><Link to="/signin/signup" style={{color: "white", width: "100%", textAlign: "center"}}>Not a member? Signup now.</Link></Typography>
-
+            <Typography align="center" variant="subheading" style={{marginTop: 24, width: "100%"}}><Link to="/signin/signup" style={{color: "white", width: "100%", textAlign: "center", fontWeight: 300}}>Not a member? <strong>Signup now</strong>.</Link></Typography>
         </form>
     )
 }
@@ -159,40 +155,29 @@ const Signin = (props) => {
     }
     const { classes } = props
     return (
-      <div style={{
-        background: "white",
-        backgroundImage: `url(${backgroundImg})`,
-        position: "fixed",
-        backgroundSize: "cover",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-      }}>
-        <Grid container className={classes.root} spacing={0}>
-            <Hidden xsDown>
-                <Grid item sm={12} md={6} className={classes.titleContainer}>
+        <EntryFlowView
+            leftCard={
+                [
                     <Hidden mdDown>
                         <Typography variant="display4" align="left" gutterBottom className={classes.mainText}>POLIBASE.</Typography>
-                    </Hidden>
-                    <Typography variant="display2" className={classes.secondaryText}>Automating regulatory compliance for Australian organisations.</Typography>
-                </Grid>
-            </Hidden>
-            <Grid item sm={12} md={6} className={classes.formContainer}>
-                <div className={classes.formCard}>
-                    <Typography variant="title" align="left" style={{color: "white"}} gutterBottom>Sign-in</Typography>
-                    <Typography variant="subheading" align="left" style={{color: "white", marginBottom: 32}} gutterBottom>
-                        We are currently undergoing closed BETA. If you would like to be part of this BETA please drop us a line <a href="http://polibase.com.au/sign-up-for-the-pilot/" rel="noopener noreferrer" target="_blank">here.</a>
-                    </Typography>
-                    <WrappedForm isLoading={props.isSigningIn} onSubmit={props.signInWithEmailAndPassword}/>
-                </div>
-            </Grid>
-        </Grid>
-      </div>
+                    </Hidden>,
+                    <Typography variant="display2" className={classes.secondaryText}>Making compliance simple.</Typography>
+                ]
+            }
+            rightCard={
+                [
+                    <Typography variant="display2" align="left" style={{color: "white"}} gutterBottom>Sign-in</Typography>,
+                    <Typography variant="title" align="left" style={{color: "white", marginBottom: 32}} gutterBottom>
+                        Managing compliance has never been this easy.
+                    </Typography>,
+                    <WrappedForm isLoading={props.isSigningIn} onSubmit={props.signInWithEmailAndPassword} classes={classes}/>
+                ]
+            }>
+        </EntryFlowView>
     )
 }
 
-const mapStateToProps = (state, ownProps) => {
+const mapStateToProps = (state) => {
     return {
         isSigningIn: state.user.isSigningIn,
         signInError: state.user.signInError,
