@@ -13,9 +13,8 @@ import ListIcon from '@material-ui/icons/List'
 import HomeIcon from '@material-ui/icons/Home'
 import GroupIcon from '@material-ui/icons/Group'
 import Collapse from '@material-ui/core/Collapse';
-import StarIcon from '@material-ui/icons/Star';
+import StorageIcon from '@material-ui/icons/Storage';
 import BookmarksIcon from '@material-ui/icons/CollectionsBookmark';
-import HistoryIcon from '@material-ui/icons/History';
 import DraftsIcon from '@material-ui/icons/Drafts';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -37,6 +36,29 @@ import Button from '@material-ui/core/Button';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
+
+import CardContent from '@material-ui/core/CardContent';
+
+import SecurityIcon from '@material-ui/icons/Security';
+import WorkspaceIcon from '@material-ui/icons/Apps';
+import ConfigureIcon from '@material-ui/icons/DeveloperBoard';
+import IntegrateIcon from '@material-ui/icons/DeviceHub';
+import TrackIcon from '@material-ui/icons/TrackChanges';
+import ChartIcon from '@material-ui/icons/InsertChart';
+import ActivityIcon from '@material-ui/icons/InsertComment';
+import ArrowRight from '@material-ui/icons/ChevronRight';
+import ArrowLeft from '@material-ui/icons/ChevronLeft';
+
+import Card from '@material-ui/core/Card';
+
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+
+import moment from 'moment'
+
+
+
 
 const disclaimer = "All material linked or otherwise accessible on this site is sourced for the sole purpose of enabling the provision of professional advice as per fair usage requirements. Content is not a reproduction or copy but rather a portal to source material from where further insights can be derived at the users own discretion as referred on."
 
@@ -80,6 +102,7 @@ class InfoModal extends React.Component {
 
 const Footer = ({isSideDrawerExpanded}) => (
     <div style={{textAlign: "center", flexGrow: 1, margin: 8}}>
+        {!isSideDrawerExpanded&&<InfoModal><IconButton><SecurityIcon color="secondary"/></IconButton></InfoModal>}
         {isSideDrawerExpanded&&<p style={{fontWeight: 700, fontSize: "1.2em", margin: 0, color: "#623aa2"}}>POLIBASE</p>}
         {isSideDrawerExpanded&&<p style={{margin: 0}}><small>© 2018 ExamineChange Pty. Ltd. <br/>All rights reserved.</small></p>}
         {isSideDrawerExpanded&&<p style={{margin: 0}}><small><InfoModal><a style={{color: "#f97794"}}>Polibase Disclaimer</a></InfoModal></small></p>}
@@ -87,6 +110,8 @@ const Footer = ({isSideDrawerExpanded}) => (
 )
 
 const drawerWidth = 240;
+const activityDrawerWidth = 400;
+
 
 const styles = theme => ({
     root: {
@@ -95,7 +120,7 @@ const styles = theme => ({
         zIndex: 1,
         overflow: 'hidden',
         position: 'relative',
-        display: 'flex',
+        display: 'flex'
     },
     flex: {
       flex: 1,
@@ -105,7 +130,6 @@ const styles = theme => ({
       marginRight: 20,
     },
     sidebarList: {
-        width: 250,
         overflow: "hidden"
     },
     padding: {
@@ -117,7 +141,10 @@ const styles = theme => ({
         position: "absolute",
         flexGrow: 1,
         width: "100%",
-        padding: theme.spacing.unit
+        padding: theme.spacing.unit,
+        display: "flex",
+        justifyContent: "space-around",
+        alignItems: "center"
     },
     nested: {
         paddingLeft: theme.spacing.unit * 8,
@@ -138,11 +165,32 @@ const styles = theme => ({
     toolbar: theme.mixins.toolbar,
     content: {
         flexGrow: 1,
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.background.paper,
         minWidth: 0, // So the Typography noWrap works
         height: "100vh",
         overflow: "hidden",
         zIndex: 0
+    },
+    activityDrawerPaper: {
+        zIndex: 10,
+        position: 'relative',
+        whiteSpace: 'nowrap',
+        width: activityDrawerWidth,
+        transition: theme.transitions.create('width', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.enteringScreen,
+        }),
+        background: "white",
+        borderLeft: "1px solid #ddd"
+    },
+    activityDrawerPaperClose: {
+        overflow: 'hidden',
+        height: "100%",
+        width: 0,
+        transition: theme.transitions.create('width', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen,
+        }),
     },
     drawerPaper: {
         zIndex: 10,
@@ -153,6 +201,7 @@ const styles = theme => ({
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.enteringScreen,
         }),
+        background: theme.palette.primary.dark
     },
       drawerPaperClose: {
         overflow: 'hidden',
@@ -173,201 +222,103 @@ const styles = theme => ({
        height: 24,
        textAlign: "center"
     },
+    selected: {
+        background: "red"
+    }
   })
 
-class ComplianceDropDown extends React.Component{
-    state = {
-        open: false
-    }
+const SideDrawerToggleContainer = (props) => {
+    const { path, classes, isSideDrawerExpanded, width, isFullScreen } = props
 
-    toggleMenu = () => {
-        this.setState(state=>({open: !state.open}))
-    }
-    render(){
-        const { hasOrganisation, projects, isSideDrawerExpanded } = this.props
-
-        const projectsArray = projects&&Object.keys(projects).map(key=>projects[key])
-
-        const cropToMax = (string) => `${[...string].slice(0,25).join("")}${string.length>25?"...":""}`
-
+    const SideBarItem = (props) => {
+        const { selected, to, disabled, icon, primary, secondary, children, beta, dense } = props
+        const textColor =  selected?"white":"rgba(255,255,255,0.5)"
         return (
-            [ <Link to="/compliance-workspace"><ListItem button>
-                        
-                            <ListItemIcon>
-                                <ListIcon />
-                            </ListItemIcon>
-                            <ListItemText inset primary="Workspace" />
-                            {hasOrganisation&&<ListItemSecondaryAction>
-                                <IconButton aria-label="Show Projects" onClick={this.toggleMenu} style={{marginRight: 8}}>
-                                    {this.state.open ? <ExpandLess /> : <ExpandMore />}
-                                </IconButton>
-                        </ListItemSecondaryAction>}
-                    </ListItem></Link>,
-                <Collapse in={isSideDrawerExpanded&&this.state.open} timeout="auto" unmountOnExit>
-                    <div style={{paddingLeft: 16}}>
-                        {
-                            projectsArray&&projectsArray.map(i=>(
-                                <Link to={`/compliance-workspace/${i.projectId}`}>
-                                    <ListItem button dense>
-                                        <ListItemText primary={cropToMax(i.title)} />
-                                    </ListItem>
-                                </Link>
-                            ))
-                        }
-                       
-                    </div>
-                </Collapse>]
+            disabled?
+                <ListItem button dense={dense} disabled style={{color: textColor}}>
+                    <ListItemIcon style={{color: textColor}}>
+                        {icon}
+                    </ListItemIcon>
+                    <ListItemText primaryTypographyProps={{color: "inherit"}} inset primary={primary} style={{color: textColor, fontWeight: 300}}/>
+                    {children}
+                    {beta&&<Button color="secondary" size="small" variant="contained">BETA</Button>}
+                </ListItem>
+            :<Link to={to}>
+                <ListItem button dense={dense}  style={{color: textColor}}>
+                    <ListItemIcon style={{color: textColor}}>
+                        {icon}
+                    </ListItemIcon>
+                    <ListItemText primaryTypographyProps={{color: "inherit"}} inset primary={primary} style={{color: textColor, fontWeight: 300}}/>
+                    {children}
+                    {beta&&<Button color="secondary" size="small" variant="contained">BETA</Button>}
+                </ListItem>
+            </Link>
         )
     }
-}
-
-const withProjects = (state) => {
-    return {
-        projects: state.actionManager.projects,
-        hasOrganisation: state.organisation&&state.organisation.organisationId,
-        isSideDrawerExpanded: state.view.isSideDrawerExpanded
-    }
-}
-
-const ComplianceDropDownWithStore = connect(withProjects)(ComplianceDropDown)
-
-const SideDrawerToggleContainer = (props) => {
-    const { classes, isSideDrawerExpanded, width, isFullScreen } = props
     const sidebarList = (
         <div className={classes.sidebarList}>
-            <List
-            >
-                <Link to="/home">
-                    <ListItem button>
-                            <ListItemIcon>
-                                <HomeIcon />
-                            </ListItemIcon>
-                            <ListItemText inset primary="Home" />
-                    </ListItem>
-                </Link>
-                <ComplianceDropDownWithStore />
-                <Link to="/team">
-                    <ListItem button>
-                            <ListItemIcon>
-                            <GroupIcon />
-                            </ListItemIcon>
-                            <ListItemText inset primary="Team" />
-                    </ListItem>
-                </Link>
-                <Link to="/help">
-                    <ListItem button>
-                            <ListItemIcon>
-                                <HelpIcon />
-                            </ListItemIcon>
-                            <ListItemText inset primary="Help and FAQ" />
-                    </ListItem>
-                </Link>
+            <List>
+                <SideBarItem
+                    selected={path==="/sites"}
+                    to="/sites"
+                    icon={<WorkspaceIcon />}
+                    primary="Your Sites"
+                    />
+                <SideBarItem 
+                    selected={path==="/configure"}
+                    to="/configure"
+                    icon={<ConfigureIcon />}
+                    primary="Configure"
+                    />
+                <SideBarItem 
+                    selected={path==="/track"}
+                    to="/track"
+                    icon={<TrackIcon />}
+                    primary="Track"
+                    />
+                <SideBarItem
+                    selected={path==="/integrations"}
+                    to="/integrations"
+                    icon={<IntegrateIcon />}
+                    primary="Integrations"
+                    />
+                <SideBarItem
+                    selected={path==="/help"} 
+                    to="/help"
+                    icon={<HelpIcon />}
+                    primary="Help and FAQ"
+                    />
                 <Divider className={classes.divider}/>
-                {/* 
-                    <ListItem button disabled>
-                        <ListItemIcon>
-                            <Icon className={classnames(classes.icon,'fas fa-search')} />
-                        </ListItemIcon>
-                        <ListItemText inset primary="Track and Watch" />
-                    </ListItem>
-                
-                
-                    <ListItem button disabled>
-                        <ListItemIcon><Icon className={classnames(classes.icon, 'fas fa-balance-scale')} /></ListItemIcon>
-                        <ListItemText primary="Regulatory Developments" />
-                    </ListItem>
-                
-                
-                    <ListItem button disabled>
-                        <ListItemIcon><Icon className={classnames(classes.icon,'fas fa-newspaper')} /></ListItemIcon>
-                        <ListItemText primary="Media & Commentary" />
-                    </ListItem>
-                
-                <ListItem button disabled>
-                    <ListItemIcon><Icon className={classnames(classes.icon,'fas fa-book')} /></ListItemIcon>
-                    <ListItemText primary="Research & Reports" />
-                </ListItem>
-                <Divider />
-                
-                    <ListItem button disabled>
-                        <ListItemIcon><StarIcon /></ListItemIcon>
-                        <ListItemText primary="Your Watchlists" />
-                    </ListItem>
-                
-                
-                    <ListItem button disabled>
-                        <ListItemIcon><BookmarksIcon /></ListItemIcon>
-                        <ListItemText primary="Reading List" />
-                    </ListItem>
-                <ListItem button disabled>
-                    <ListItemIcon><HistoryIcon /></ListItemIcon>
-                    <ListItemText primary="Recent Searches" />
-                </ListItem>
-                <ListItem button disabled>
-                    <ListItemIcon><DraftsIcon /></ListItemIcon>
-                    <ListItemText primary="Your Mail List" />
-                </ListItem> */}
-                {/*
-                <Link to="/search/">
-                    <ListItem button>
-                        <ListItemIcon>
-                            <Icon className={classnames(classes.icon,'fas fa-search')} />
-                        </ListItemIcon>
-                        <ListItemText inset primary="Track and Watch" />
-                    </ListItem>
-                </Link>
-                <Link to="/search/regulation">
-                    <ListItem button>
-                        <ListItemIcon><Icon className={classnames(classes.icon, 'fas fa-balance-scale')} /></ListItemIcon>
-                        <ListItemText primary="Regulatory Developments" />
-                    </ListItem>
-                </Link>
-                <Link to="/search/media-and-commentary">
-                    <ListItem button>
-                        <ListItemIcon><Icon className={classnames(classes.icon,'fas fa-newspaper')} /></ListItemIcon>
-                        <ListItemText primary="Media & Commentary" />
-                    </ListItem>
-                </Link>
-                <ListItem button disabled>
-                    <ListItemIcon><Icon className={classnames(classes.icon,'fas fa-book')} /></ListItemIcon>
-                    <ListItemText primary="Research & Reports" />
-                </ListItem>
-                <Divider />
-                <Link to="/watchlist">
-                    <ListItem button>
-                        <ListItemIcon><StarIcon /></ListItemIcon>
-                        <ListItemText primary="Your Watchlists" />
-                    </ListItem>
-                </Link>
-                <Link to="/reading-list">
-                    <ListItem button>
-                        <ListItemIcon><BookmarksIcon /></ListItemIcon>
-                        <ListItemText primary="Reading List" />
-                    </ListItem>
-                </Link>
-                <ListItem button disabled>
-                    <ListItemIcon><HistoryIcon /></ListItemIcon>
-                    <ListItemText primary="Recent Searches" />
-                </ListItem>
-                <ListItem button disabled>
-                    <ListItemIcon><DraftsIcon /></ListItemIcon>
-                    <ListItemText primary="Your Mail List" />
-                </ListItem>
-                */}
+                <SideBarItem
+                    selected={path==="/activity"} 
+                    disabled
+                    to="/activity"
+                    icon={<ActivityIcon />}
+                    primary="Activity"
+                    beta
+                    />
+                <SideBarItem
+                    selected={path==="/stats"} 
+                    disabled
+                    to="/stats"
+                    icon={<ChartIcon  />}
+                    primary="Statistics"
+                    beta
+                    />
             </List>
-            <Hidden mdDown>
-                <div className={classes.sidebarFooter}>
-                    <Divider />
-                    <div className={classes.padding}>
-                        <Footer isSideDrawerExpanded={isSideDrawerExpanded}/>
-                    </div>
+            <div className={classes.sidebarFooter} style={{borderTop: "1px solid #ddd", background: "none", display: "flex", flexDirection: "column"}}>
+                <Footer isSideDrawerExpanded={isSideDrawerExpanded}/>
+                <div style={{display: "flex", justifyContent: "space-between", alignItems: "center", flex: 1}}>
+                    <IconButton onClick={()=>props.toggleAuthViewSideDrawer()}>{!isSideDrawerExpanded?<ArrowRight color="secondary"/>:<ArrowLeft  color="secondary"/>}</IconButton>
+                    {isSideDrawerExpanded&&<span style={{flex: 1, fontAlign: "center"}}>Collapse</span>}
                 </div>
-            </Hidden>
+            </div>
         </div>
         )
     return (
         //Just make Drawer to test
-        !isFullScreen&&(isWidthUp("lg",width)?
+        //!isFullScreen&&(isWidthUp("lg",width)?
+        (isWidthUp("lg",width)?
         <Drawer
             classes={{
                 paper: isSideDrawerExpanded?classes.drawerPaper:[classes.drawerPaper,classes.drawerPaperClose].join(" "),
@@ -376,13 +327,11 @@ const SideDrawerToggleContainer = (props) => {
             open={isSideDrawerExpanded}
             elevation={20}
             >
-            <div className={classes.toolbar}>
-
-            </div>
+            <div className={classes.toolbar} />
             <div
                 tabIndex={0}
                 role="button"
-                style={{height: "100%", widht: "100%", overflow: "hidden"}}
+                style={{height: "100%", width: "100%", overflow: "hidden"}}
             >
                 {sidebarList}
             </div>
@@ -408,10 +357,91 @@ const SideDrawerToggleContainer = (props) => {
 const mapStateToProps = (state) => {
     return {
         isSideDrawerExpanded: state.view.isSideDrawerExpanded,
-        isFullScreen: state.view.isFullScreen
+        isFullScreen: state.view.isFullScreen,
+        path: state.router.pathname
     }}
 
 const SideDrawerToggleContainerWithStore = connect(mapStateToProps, menuActions)(withWidth()(withStyles(styles, { withTheme: true })(SideDrawerToggleContainer)))
+
+const ActivityContainer = (props) => {
+    const { classes, isActivityLogHidden, width, isFullScreen } = props
+    const ActivityLog = () =>  (
+        <Card style={{border: "1px solid #ddd", background: "#fefefe", margin: 8}} elevation={0}>
+            <CardContent style={{padding: "8px 16px", display: "flex", alignItems: "center"}}>
+                <div style={{flex: 1}}>
+                    <Typography variant="button">EVENT NAME</Typography>
+                    <Typography variant="caption">{moment().format("hh:mm:SS DD/MM/YY")}</Typography>
+                </div>
+                <Button size="small" variant="outlined">VIEW</Button>
+            </CardContent>
+        </Card>)
+
+    const sidebarList = (
+        <div className={classes.sidebarList}>
+            <AppBar position="static" style={{background: "none", borderBottom: "1px solid #ddd"}} elevation={0}>
+                <Toolbar variant="dense">
+                    <Typography variant="title" color="primaryText">
+                        Site Events
+                    </Typography>
+                    <div style={{flex: 1}}/>
+                    <Link to="/track?range=latest">
+                        <Button variant="contained" size="small" color="secondary">
+                            View
+                        </Button>
+                    </Link>
+                </Toolbar>
+            </AppBar>
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <ActivityLog />
+            <div className={classes.sidebarFooter} style={{zIndex: 100, borderTop: "1px solid #ddd", background: "#fefefe"}}>
+                <IconButton onClick={()=>props.toggleActivityViewSideDrawer()}><ArrowRight /></IconButton>
+                <span style={{flex: 1, fontAlign: "center"}}>Collapse</span>
+            </div>
+        </div>
+        )
+    return (
+        //Just make Drawer to test
+        //!isFullScreen&&(isWidthUp("lg",width)?
+        <Drawer
+            classes={{
+                paper: classnames(classes.activityDrawerPaper, isActivityLogHidden&&classes.activityDrawerPaperClose),
+            }}
+            variant="permanent"
+            open={!isActivityLogHidden}
+            elevation={20}
+            >
+            <div className={classes.toolbar} />
+            <div
+                tabIndex={0}
+                role="button"
+                style={{height: "100%", width: "100%", overflow: "hidden"}}
+            >
+                {sidebarList}
+            </div>
+        </Drawer>
+    )
+}
+
+const mapSToProps = (state) => {
+    return {
+        isActivityLogHidden: state.view.isActivityLogHidden,
+        isFullScreen: state.view.isFullScreen
+    }}
+
+const ActivityContainerWithStore = connect(mapSToProps, menuActions)(withWidth()(withStyles(styles, { withTheme: true })(ActivityContainer)))
 
 const OverLoginFlowPanel = (props) => {
     const { loginFlow } = props
@@ -424,9 +454,8 @@ const OverLoginFlowPanel = (props) => {
                 />
             <h4 style={{color: "white", fontWeight: 300, marginTop: 32}}>{loginFlow.message}</h4>
         </div>
-        )
+    )
 }
-
 
 const AuthView = (props) => {
     const { classes, isSignedIn, loginFlow, isNavHidden, isSideHidden, isFullScreen } = props
@@ -434,11 +463,12 @@ const AuthView = (props) => {
         <div className={classes.root}>
             <OverLoginFlowPanel loginFlow={loginFlow} classes={classes}/>
             <TopNavBar />
-            {isSignedIn&&loginFlow.isComplete&&<SideDrawerToggleContainerWithStore/>}
+            {isSignedIn&&<SideDrawerToggleContainerWithStore/>}
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 <Routes isSignedIn={isSignedIn}/>
             </main>
+            {isSignedIn&&<ActivityContainerWithStore/>}
         </div>
     )
 }

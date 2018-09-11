@@ -31,6 +31,10 @@ import { connect } from 'react-redux'
 import * as actions from './../../store/actions/actionManagerActions'
 import { Scrollbars } from 'react-custom-scrollbars';
 
+import classnames from 'classnames'
+
+const heightOfCard = "40vh"
+
 const styles = (theme) => ({
     root: {
         padding: theme.spacing.unit*4,
@@ -75,7 +79,18 @@ const styles = (theme) => ({
     },
     menuButton: {
         color: "white"
-    }
+    },
+    scrollbarContainer: {
+        height: `calc(${heightOfCard} - ${theme.mixins.toolbar.minHeight}px)`,
+        display: "flex", justifyContent: "center"
+    },
+    cardContainer: {
+        height: heightOfCard
+    },
+    cardContainerMobile: {
+        height: "100%" 
+    },
+
 })
 
 const O2A = (o) => Object.keys(o).map(k=>o[k])
@@ -90,7 +105,7 @@ class HomeView extends React.Component {
     }
 
     render(){
-        const { classes, actionManager: { projectsStatus }, hideNavButton } = this.props
+        const { classes, actionManager: { projectsStatus }, hideNavButton, isMobile } = this.props
         const isFetching = projectsStatus.isLoadingCurrentAssignedTasksAndActions
 
         const ObligationItem = (attrs) => {
@@ -143,9 +158,9 @@ class HomeView extends React.Component {
         </ListItem>)
 
         const tasksArray = projectsStatus&&projectsStatus.currentAssignedActions&&O2A(projectsStatus.currentAssignedActions).sort((a,b)=>moment(b.dueDate).isBefore(moment(a.dueDate))).filter(i=>i.status!=="DONE")
-
+        
         return (
-            <Card className={classes.bottomMargin} style={{height: "40vh", marginTop: this.props.marginTop}}>
+            !isMobile?<Card square={this.props.square} className={classnames(classes.bottomMargin,classes.cardContainer)} style={{marginTop: this.props.marginTop}}>
                 <AppBar position="static" color="secondary">
                     <Toolbar variant="dense">
                         <Typography variant="subheading" color="inherit" style={{flex: 1, color: "white"}}>
@@ -160,7 +175,7 @@ class HomeView extends React.Component {
                         </Tooltip>}
                     </Toolbar>
                 </AppBar>
-                <Scrollbars style={{height: "85%", display: "flex", justifyContent: "center"}}>
+                <Scrollbars className={classes.scrollbarContainer}>
                     {!isFetching&&tasksArray&&tasksArray.length===0&&<div style={{padding: 32, height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: -32}}>
                         <Typography variant="subheading" marginBottom style={{marginBottom: 16}} align="center">Savour this moment. You have no assigned obligations.</Typography>
                         <Typography variant="caption" align="center">Your assigned actions, their status and their due dates will be shown here. You currently don't have any assigned actions, you can assign actions through projects.</Typography>
@@ -170,7 +185,18 @@ class HomeView extends React.Component {
                         {(tasksArray&&tasksArray.length>0&&!isFetching)&&tasksArray.map(i=><ObligationItem key={i.actionId} {...i}/>)}
                     </List>
                 </Scrollbars>
-            </Card>
+            </Card>:
+            <div>
+                <Typography align="center" variant="subheading">Your Assigned Obligations</Typography>
+                {!isFetching&&tasksArray&&tasksArray.length===0&&<div style={{padding: 32, height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: -32}}>
+                    <Typography variant="subheading" marginBottom style={{marginBottom: 16}} align="center">Savour this moment. You have no assigned obligations.</Typography>
+                    <Typography variant="caption" align="center">Your assigned actions, their status and their due dates will be shown here. You currently don't have any assigned actions, you can assign actions through projects.</Typography>
+                </div>}
+                <List component="nav" dense>
+                    {(isFetching)&&[...Array(6)].map((k)=><ListItemLoader key={k}/>)}
+                    {(tasksArray&&tasksArray.length>0&&!isFetching)&&tasksArray.map(i=><Card style={{margin: 8}}><ObligationItem key={i.actionId} {...i}/></Card>)}
+                </List>
+        </div>
         )
     }
 }

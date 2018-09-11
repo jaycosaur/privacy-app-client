@@ -31,6 +31,7 @@ import Avatar from '@material-ui/core/Avatar';
 import moment from 'moment'
 import Button from '@material-ui/core/Button';
 
+
 const TeamUserIcon = (props) => {
     const displayName = props.userId&&props.users&&props.users.filter(i=>i.userId===props.userId).length>0&&props.users.filter(i=>i.userId===props.userId)[0].displayName
     const initials = displayName&&displayName.split(" ").map(i=>[...i][0]).join("")
@@ -180,7 +181,7 @@ class EventContainer extends React.Component {
     }
 
     render(){
-        const { classes, actionManager: { events }, isLoadingLatestEvents } = this.props
+        const { classes, actionManager: { events }, isLoadingLatestEvents, isMobile } = this.props
         const bg = "#ddd"
         const LoadingItem = () => (
             <div className={classes.updateContainer}>
@@ -205,7 +206,7 @@ class EventContainer extends React.Component {
         const eventsArray = events?O2A(events).sort((a,b)=>b.createdAtUNIX-a.createdAtUNIX):[]
         const hasEvents = eventsArray.length>0
         return (
-                <Card style={{height: "82vh", overflow: "hidden"}}>
+            !isMobile?<Card style={{height: "82vh", overflow: "hidden", width: "100%"}}>
                     <AppBar position="static" color="default">
                         <Toolbar variant="dense">
                             <Typography variant="subheading" color="inherit" style={{flex: 1}}>
@@ -226,6 +227,13 @@ class EventContainer extends React.Component {
                         </List>}
                     </Scrollbars>
                 </Card>
+                :
+                <div>
+                    <Typography align="center" variant="subheading">Latest Team Activity</Typography>
+                    {hasEvents&&<List dense>
+                        {eventsArray.map(i=><Card style={{margin: 8}}><EventItem key={i.eventId} {...i}/></Card>)}
+                    </List>}
+                </div>
             )
     }
 }

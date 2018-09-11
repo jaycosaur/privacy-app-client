@@ -1,4 +1,4 @@
-export const getSearch = ({query, filters, key, page=0, searchType}) => {
+export const getSearch = ({query, filters, key, page=0, searchType, hitsPerPage}) => {
     return {
         type: 'GET_SEARCH',
         payload: { 
@@ -7,7 +7,8 @@ export const getSearch = ({query, filters, key, page=0, searchType}) => {
             type: searchType,
             query,
             saveSearch: false,
-            page
+            page,
+            hitsPerPage
         }
     }
 }

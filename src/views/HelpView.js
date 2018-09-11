@@ -133,14 +133,12 @@ export default class HelpView extends React.Component {
     render(){
         return (
         <AuthViewRouteContainer>
-            <div style={{background: "#623aa2", padding: "50px 0"}}>
-                <CardContent>
-                    <Typography variant="display1" align="center" gutterBottom style={{color: "white", marginBottom: 32, fontWeight: 300}}>Polibase Help and Frequently Asked Questions</Typography>
-                    <Typography variant="subheading" align="center" style={{color: "white"}}>HELP AND SUPPORT QUESTIONS</Typography>
-                </CardContent>
-            </div>
+            <CardContent>
+                <Typography variant="display1" gutterBottom style={{marginBottom: 16, fontWeight: 300}}>Polibase Help and Frequently Asked Questions</Typography>
+                <Typography variant="subheading">HELP AND SUPPORT QUESTIONS</Typography>
+            </CardContent>
             <Grid container spacing={16} style={{padding: 16, background: "white", minHeight: "80vh"}}>
-                <Grid item xs={3}>
+                <Grid item xs={12} md={3}>
                     <Fade in={this.state.transition}>
                         <List component="nav" subheader={<ListSubheader component="div">Help Categories</ListSubheader>}>
                             <ListItem button onClick={()=>this.selectFilter("PRODUCT")}>
@@ -164,7 +162,7 @@ export default class HelpView extends React.Component {
                         </List>
                     </Fade>
                 </Grid>
-                <Grid item xs={9}>
+                <Grid item xs={12} md={9}>
                     <Typography variant="display1" marginBottom>{this.state.filter?keyToName[this.state.filter]:"Showing All"}</Typography>
                     <Divider style={{marginBottom: 16, marginTop: 16}}/>
                     {FAQData.filter(i=>this.state.filter?i.category===this.state.filter:true).map((i,j)=>(

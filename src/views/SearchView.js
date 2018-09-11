@@ -92,9 +92,6 @@ class SearchView extends React.Component{
 
     render(){
         const { classes, shouldShowFilter, match: { params: { searchCategory } } } = this.props
-
-        //console.log(searchCategory, watchlistId)
-
         return (
             <AuthViewRouteContainer topbar={<SearchTopActionBar type={searchCategory} numberOfResults={this.state.numberOfResults} numberOfResultsTotal={this.state.numberOfResultsTotal} numberOfNew={this.state.numberOfNew} fetchedIn={this.state.fetchedIn}/>}>
                 <Collapse in={shouldShowFilter}>

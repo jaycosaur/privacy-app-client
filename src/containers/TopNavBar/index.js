@@ -10,6 +10,9 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
+
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 
@@ -75,6 +78,7 @@ const styles = theme => ({
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
         position: "absolute",
+        borderBottom: "1px solid rgba(0, 0, 0, 0.12)"
     },
     appBarExpanded: {
         marginLeft: 240
@@ -98,7 +102,9 @@ const styles = theme => ({
         width: drawerWidth,
         display: "flex",
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        borderRight:  "1px solid rgba(0, 0, 0, 0.12)",
+        height: "100%"
     },
     drawerPaperClose: {
         transition: theme.transitions.create('width', {
@@ -142,26 +148,23 @@ class NavBar extends React.Component {
         const open = Boolean(anchorEl)
 
         return (
-            <AppBar className={classes.appBar} position="fixed" color={isSignedIn?"default":"primary"} style={{background: (isSignedIn&&!isFullScreen)?"white":"none", borderBottom: (isSignedIn&&!isFullScreen)&&"1px solid #ddd"}} elevation={!isSignedIn?0:1} elevation={0}>
+            <AppBar className={classes.appBar} position="fixed" color={isSignedIn?"default":"primary"} style={{background: (isSignedIn)?"white":"none", borderBottom: (isSignedIn&&!isFullScreen)&&"1px solid #ddd"}} elevation={!isSignedIn?0:1} elevation={0}>
                 <Toolbar style={{paddingLeft: 0}}>
-                    <div style={{flex: 1, display: "flex", alignItems: "center"}}>
+                    <div style={{flex: 1, display: "flex", alignItems: "center", height: "100%"}}>
                         <div className={classnames(classes.drawerPaper, !isSideDrawerExpanded&&classes.drawerPaperClose)}>
                             <Hidden xsDown>
                                 {isSideDrawerExpanded?(
                                     <Link to="/" className={classnames(classes.toolbarPadding, classes.flex)}><Typography variant="title" color={(isSignedIn&&!isFullScreen)?"primary":"secondary"}>
-                                        <strong>POLIBASE</strong>
+                                        <strong>PRIVTALK</strong>
                                     </Typography></Link>
                                 ):<Link to="/"><img src={require("../../assets/WhiteCircleLogo.png")} width={50}/></Link>}
                             </Hidden>
                         </div>
-                        {(isSignedIn&&!isFullScreen)&&<IconButton className={classes.menuButton} color="inherit" aria-label="Menu" onClick={()=>this.props.toggleAuthViewSideDrawer()}>
-                            {isSideDrawerExpanded?<LeftIcon />:<RightIcon />}
-                        </IconButton>}
                     </div>
                     <Hidden smUp>
                         <div style={{flex: 1, display: "flex", alignItems: "center"}}>
                         <Link to="/" className={classes.flex}><Typography variant="title" color={(isSignedIn&&!isFullScreen)?"primary":"secondary"}>
-                                <strong>POLIBASE</strong>
+                                <strong>PRIVTALK</strong>
                             </Typography></Link>
                         </div>
                     </Hidden>
@@ -199,10 +202,11 @@ class NavBar extends React.Component {
                                 open={this.state.menuOpen}
                                 onClose={this.handleClose}
                             >
-                                {organisation.id&&<Link to="/myaccount"><MenuItem onClick={this.handleClose}>MY ACCOUNT</MenuItem></Link>}
+                                {organisation.organisationId&&<Link to="/myaccount"><MenuItem onClick={this.handleClose}>MY ACCOUNT</MenuItem></Link>}
                                 <MenuItem onClick={this.props.doSignOut}>LOGOUT</MenuItem>
                             </Menu>
                             </div>)}
+                            {isSignedIn && <IconButton onClick={()=>this.props.toggleActivityViewSideDrawer()}><NotificationsIcon color={this.props.isActivityLogHidden?"default":"secondary"}/></IconButton>}
                             {false&&!isSignedIn && (
                                 <span style={{float: 'right', margin: "auto"}}>
                                     <Link to="/signin"><Button variant="contained" color="secondary"><strong>SIGN-IN</strong></Button></Link>                        
@@ -221,7 +225,8 @@ class NavBar extends React.Component {
         isSigningIn: state.user.isSigningIn,
         isSideDrawerExpanded: state.view.isSideDrawerExpanded,
         organisation: state.organisation,
-        isFullScreen: state.view.isFullScreen
+        isFullScreen: state.view.isFullScreen,
+        isActivityLogHidden: state.view.isActivityLogHidden
       }
   }
   

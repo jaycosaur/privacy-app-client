@@ -306,7 +306,7 @@ class Item extends React.Component {
             </div>
         )
 
-        return isWidthUp("sm",this.props.width)?<LargerView />:<SmallView />
+        return isWidthUp("md",this.props.width)?<LargerView />:<SmallView />
     }
 }
 

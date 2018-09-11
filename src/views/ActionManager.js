@@ -98,7 +98,7 @@ class ProjectCard extends React.Component {
         const overdueActions = data.actions&&Object.keys(data.actions).map(key=>data.actions[key]).filter(i=>i.status!=="DONE"&&moment(i.dueDate).isBefore(moment()))
         return (
         <Link to={`/compliance-workspace/${data.projectId}`}>
-        <Card elevation={0} style={{ border: "1px solid #ddd", marginBottom: 16, opacity: data.isDeleting&&0.6, position: 'relative', }} key={data.projectId}>
+        <Card square elevation={0} style={{ border: "1px solid #ddd", marginBottom: 16, opacity: data.isDeleting&&0.6, position: 'relative', }} key={data.projectId}>
         {data.isDeleting&&<CircularProgress style={{
                 color: red[500],
                 position: 'absolute',
@@ -107,7 +107,7 @@ class ProjectCard extends React.Component {
                 marginTop: -30,
                 marginLeft: -30,}} size={60} />}
         <div className={classes.projectCardRoot}>
-            <Card className={classes.projectCardColor} elevation={0}>
+            <Card className={classes.projectCardColor} elevation={0} square>
                 <div style={{ display: "flex", justifyContent: "center", marginTop: 8, color: "white", borderRadius: 100 }}>
                     {/* <ToggleState initialState={data.isFavorited} render={(is) => is ? <StarIcon /> : <StarBorderIcon />} /> */}
                     {number}
@@ -246,8 +246,8 @@ class ActionManager extends React.Component {
                         </Grid>
                     </Hidden>
                     <Grid item xs={12} md={4}>
-                        <ProjectOverview hideNavButton/>
-                        <DueTasks marginTop={16} hideNavButton/>
+                        <ProjectOverview square hideNavButton isMobile={!isWidthUp('md', this.props.width)}/>
+                        <DueTasks square marginTop={16} hideNavButton isMobile={!isWidthUp('md', this.props.width)}/>
                     </Grid>
                 </Grid>}
             </div>

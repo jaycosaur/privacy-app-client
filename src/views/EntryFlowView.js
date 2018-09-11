@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { withStyles } from '@material-ui/core/styles';
 import Hidden from '@material-ui/core/Hidden';
 import classnames from 'classnames'
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 const styles = theme => {
     console.log(theme)
@@ -20,6 +21,9 @@ const styles = theme => {
     root: {
       flexGrow: 1,
       height: "100vh"
+    },
+    overflow: {
+        overflow: "auto"
     },
     formContainer: {
         display: "flex",
@@ -69,20 +73,31 @@ const styles = theme => {
     },
     white: {
         background: "white"
+    },
+    mobile: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        flexDirection: "column",
+        padding: "2em",
+        paddingTop: 100,
+        height: "100%",
+        overflow: "auto"
     }
   })};
 
 const EntryFlowView = (props) => {
     const { classes, alternate, leftWhite,  rightWhite } = props
+    const isMobile = !isWidthUp('md', props.width)
     return (
       <div className={classes.main}>
-        <Grid container className={classes.root} spacing={0}>
+        <Grid container className={classnames(classes.root, isMobile&&classes.overflow)} spacing={0}>
             <Hidden xsDown>
                 <Grid item sm={12} md={6} className={classnames(classes.titleContainer, alternate&&classes.titleContainerAlt, leftWhite&&classes.white)}>
                     {props.leftCard}
                 </Grid>
             </Hidden>
-            <Grid item sm={12} md={6} className={classnames(classes.formContainer, alternate&&classes.formContainerAlt, rightWhite&&classes.white)}>
+            <Grid item sm={12} md={6} className={classnames(classes.formContainer, alternate&&classes.formContainerAlt, rightWhite&&classes.white, isMobile&&classes.titleContainer, isMobile&&classes.mobile)}>
                 <div className={classes.formCard}>
                     {props.rightCard}
                 </div>
@@ -92,4 +107,4 @@ const EntryFlowView = (props) => {
     )
 }
 
-export default withStyles(styles)(EntryFlowView)
+export default withWidth()(withStyles(styles)(EntryFlowView))

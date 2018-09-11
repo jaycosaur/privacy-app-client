@@ -463,7 +463,7 @@ class TeamManagerView extends React.Component {
                         </div>
                     }
                     {organisationId&&!isLeavingOrganisation&&<Grid container spacing={16}>
-                        <Grid item xs={4}>
+                        <Grid item xs={12} md={4}>
                             <Card style={{marginBottom: 16}}>
                                 <CardHeader
                                     action={
@@ -520,7 +520,7 @@ class TeamManagerView extends React.Component {
                                 </List>
                             </Card>
                         </Grid>
-                        <Grid item xs={8}>
+                        <Grid item xs={12} md={8}>
                             <Card>
                                 <Toolbar>
                                     <TeamIcon style={{marginRight: 8}}/> 

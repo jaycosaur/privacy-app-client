@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader'
 import Avatar from '@material-ui/core/Avatar';
-import SettingsIcon from '@material-ui/icons/Settings'
 import LinearProgress from '@material-ui/core/LinearProgress';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Button from '@material-ui/core/Button';
@@ -25,8 +24,10 @@ import CreditCardIcon from '@material-ui/icons/CreditCard'
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+import Grid from '@material-ui/core/Grid';
+
 
 const billingData = [
     {
@@ -48,33 +49,35 @@ const billingData = [
 
 const MenuItem = (props) => {
     return (
-        <ButtonBase
-        style={{ width: "40%", margin: 8}}
-        disabled={props.disabled}
-        >
-            <Card
-                style={{ width: "100%", opacity: props.disabled&&0.5}}
-                key={props.itemKey}
-                onClick={e => props.clickHandler(props.itemKey)}
+        <Grid item xs={12} md={6}>
+            <ButtonBase
+            style={{ width: "100%", margin: 8}}
+            disabled={props.disabled}
             >
-            <CardHeader
-                avatar={
-                <Avatar aria-label="symbol" style={{background: "none"}}>
-                    {props.avatar}
-                </Avatar>
-                }
-                title={props.title}
-                subheader={props.description}
-            />
-            </Card>
-        </ButtonBase>
+                <Card
+                    style={{ width: "100%", opacity: props.disabled&&0.5}}
+                    key={props.itemKey}
+                    onClick={e => props.clickHandler(props.itemKey)}
+                >
+                <CardHeader
+                    avatar={
+                    <Avatar aria-label="symbol" style={{background: "none"}}>
+                        {props.avatar}
+                    </Avatar>
+                    }
+                    title={props.title}
+                    subheader={props.description}
+                />
+                </Card>
+            </ButtonBase>
+        </Grid>
     )
 }
 
 const Section = (props) => (
-    <div style={{display: "flex", justifyContent: "center", alignItems: "center", width: "100%", flexWrap: "wrap"}}>
+    <Grid container spacing={isWidthUp('md', props.width)&&32}>
         {props.children}
-    </div>
+    </Grid>
 )
 
 const AccountView = (props) => {
@@ -123,6 +126,9 @@ const AccountView = (props) => {
             disabled: true
         }
     ]
+
+    const isMobile =!isWidthUp('md', props.width)
+
     return (
         [isLoading&&<LinearProgress color="secondary" variant="query" />,
         props.user&&!props.user.emailVerified&&<AppBar position="static" color="secondary">
@@ -139,16 +145,16 @@ const AccountView = (props) => {
         </AppBar>,
         <div style={{padding: 32, height: "100%", overflow: "scroll", background: "White"}}>
             {lastLoaded&&<Row gutter={16} style={{width: "100%"}}>
-                <Divider style={{padding: "0 120px"}}><h2>Your Details</h2></Divider>
-                <Section>
+                {!isMobile&&<Divider style={{padding: "0 120px"}}><h2>Your Details</h2></Divider>}
+                <Section width={props.width}>
                     {detailsData.map(item => <MenuItem clickHandler={props.doSelectItem} {...item}/>)}
                 </Section>
-                <Divider style={{padding: "0 120px"}}><h2>Plan and Usage</h2></Divider>
-                <Section>
+                {!isMobile&&<Divider style={{padding: "0 120px"}}><h2>Plan and Usage</h2></Divider>}
+                <Section width={props.width}>
                     {planData.map(item => <MenuItem clickHandler={props.doSelectItem} {...item}/>)}
                 </Section>
-                <Divider style={{padding: "0 120px"}}><h2>Billing and Payments</h2></Divider>
-                <Section>
+                {!isMobile&&<Divider style={{padding: "0 120px"}}><h2>Billing and Payments</h2></Divider>}
+                <Section width={props.width}>
                     {billingData.map(item => <MenuItem clickHandler={props.doSelectItem} {...item}/>)}
                 </Section>    
             </Row>}
@@ -174,4 +180,4 @@ class ProfileView extends React.Component {
   }
 }
 
-export default connect(mapStateToProps, actions)(ProfileView)
+export default connect(mapStateToProps, actions)(withWidth()(ProfileView))

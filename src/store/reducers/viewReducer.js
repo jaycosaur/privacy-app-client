@@ -1,8 +1,9 @@
 const defaultState = {
-    isSideDrawerExpanded: true,
+    isSideDrawerExpanded: false,
     isNavHidden: false,
     isSideHidden: false,
-    isFullScreen: false
+    isFullScreen: false,
+    isActivityLogHidden: false,
 }
 
 export default(state = defaultState, action) => {
@@ -19,6 +20,8 @@ export default(state = defaultState, action) => {
             return {...state, isFullScreen: true}
         case 'HIDE_FULL_SCREEN':
             return {...state, isFullScreen: false}
+        case 'TOGGLE_ACTIVITY_LOG':
+            return {...state, isActivityLogHidden: !state.isActivityLogHidden}
         default: 
             return state
     }

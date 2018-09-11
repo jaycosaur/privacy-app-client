@@ -4,9 +4,10 @@ import { connect } from 'react-redux'
 import * as authActions from './../store/actions/authActions'
 import { Link } from 'react-router-dom'
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import TextField from '@material-ui/core/TextField';
 
-import EntryFlowView from './EntryFlowView'
 import { withStyles } from '@material-ui/core/styles';
 import { Field, reduxForm } from 'redux-form';
 import Typography from '@material-ui/core/Typography';
@@ -14,6 +15,16 @@ import Hidden from '@material-ui/core/Hidden';
 
 const styles = theme => {
     return ({
+    mainCard: {
+        maxWidth: 500
+    },
+    container: {
+        flexGrow: 1,
+        paddingTop: 32,
+        display: "flex",
+        justifyContent: "center",
+        alignContent: "center",
+    },
     root: {
       flexGrow: 1,
       height: "100vh"
@@ -70,9 +81,6 @@ const styles = theme => {
     },
     signinButton: {
         background: theme.palette.primary.main,
-        marginTop: 16, 
-        width: "100%",
-        height: 64,
         color: "white"
     }
   })};
@@ -107,19 +115,18 @@ const renderTextField = ({ input: { value, onChange }, label, meta: { touched, e
 )
 
 const InputWrap = (props) => (
-    <Button
-        variant="contained" 
-        disableFocusRipple
+    <div
         style={{
             width: "100%",
-            background: "white",
-            borderRadius: "50px",
+            background: "#eee",
+            borderRadius: 8,
+            padding: 8,
             paddingLeft: 32,
             paddingRight: 32,
             marginBottom: 16
-        }} >
+        }}>
         {props.children}
-    </Button>
+    </div>
 )
   
 const MaterialUiForm = props => {
@@ -132,17 +139,21 @@ const MaterialUiForm = props => {
             <InputWrap>
                 <Field suggested="current-password" name="password" component={renderTextField} placeholder="Password" type="password"/>
             </InputWrap>
-            <div style={{marginBottom: 24, width: "100%"}}><Link to="/signin/resetpassword" style={{float: "right", color: "white"}}>Forgot password</Link></div>
-            <Button 
-              color="secondary" 
-              disabled={ submitting || props.isLoading}
-              variant="extendedFab" 
-              type="submit"
-              className={props.classes.signinButton}
-              >
-              <strong>SIGN-IN</strong>{props.isLoading&&"..."}
-            </Button>
-            <Typography align="center" variant="subheading" style={{marginTop: 24, width: "100%"}}><Link to="/signin/signup" style={{color: "white", width: "100%", textAlign: "center", fontWeight: 300}}>Not a member? <strong>Signup now</strong>.</Link></Typography>
+            <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                <Button 
+                    color="primary" 
+                    disabled={ submitting || props.isLoading}
+                    variant="contained" 
+                    size="large"
+                    type="submit"
+                    className={props.classes.signinButton}
+                    >
+                    <strong>SIGN-IN</strong>{props.isLoading&&"..."}
+                </Button>
+                <div><Link to="/signin/resetpassword">Forgot password</Link></div>
+            </div>
+            
+            <Typography align="center" variant="subheading" style={{marginTop: 24, width: "100%"}}><Link to="/signin/signup" style={{width: "100%", textAlign: "center", fontWeight: 300}}>Not a member? <strong>Signup now</strong>.</Link></Typography>
         </form>
     )
 }
@@ -155,25 +166,17 @@ const Signin = (props) => {
     }
     const { classes } = props
     return (
-        <EntryFlowView
-            leftCard={
-                [
-                    <Hidden mdDown>
-                        <Typography variant="display4" align="left" gutterBottom className={classes.mainText}>POLIBASE.</Typography>
-                    </Hidden>,
-                    <Typography variant="display2" className={classes.secondaryText}>Making compliance simple.</Typography>
-                ]
-            }
-            rightCard={
-                [
-                    <Typography variant="display2" align="left" style={{color: "white"}} gutterBottom>Sign-in</Typography>,
-                    <Typography variant="title" align="left" style={{color: "white", marginBottom: 32}} gutterBottom>
+        <div className={classes.container}>
+            <Card className={classes.mainCard}>
+                <CardContent>
+                    <Typography variant="display2" align="left" gutterBottom>Sign-in</Typography>
+                    <Typography variant="title" align="left" style={{marginBottom: 32}} gutterBottom>
                         Managing compliance has never been this easy.
-                    </Typography>,
+                    </Typography>
                     <WrappedForm isLoading={props.isSigningIn} onSubmit={props.signInWithEmailAndPassword} classes={classes}/>
-                ]
-            }>
-        </EntryFlowView>
+                </CardContent>
+            </Card>
+        </div>
     )
 }
 

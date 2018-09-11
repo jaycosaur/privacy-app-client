@@ -14,6 +14,8 @@ import * as actionManagerMiddleware from './middleware/actionManagerMiddleware'
 import * as readLaterMiddleware from './middleware/readLaterMiddleware'
 import * as mailingListMiddleware from './middleware/mailingListMiddleware'
 import * as organisationMiddleware from './middleware/organisationMiddleware'
+import * as searchMiddleware from './middleware/searchMiddleware'
+
 
 export const history = createBrowserHistory()
 
@@ -28,7 +30,8 @@ const middleware = applyMiddleware(
     ...toFn(actionManagerMiddleware),
     ...toFn(readLaterMiddleware),
     ...toFn(mailingListMiddleware),
-    ...toFn(organisationMiddleware)
+    ...toFn(organisationMiddleware),
+    ...toFn(searchMiddleware)
 )
 
 export default createStore(connectRouter(history)(reducer), composeWithDevTools(middleware));

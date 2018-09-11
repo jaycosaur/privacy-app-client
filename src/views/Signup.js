@@ -83,19 +83,18 @@ const renderTextField = ({ input: { value, onChange }, label, meta: { touched, e
 )
 
 const InputWrap = (props) => (
-    <Button
-        variant="contained" 
-        disableFocusRipple
+    <div
         style={{
             width: "100%",
             background: "white",
             borderRadius: "50px",
+            padding: 16,
             paddingLeft: 32,
             paddingRight: 32,
-            marginBottom: 16
+            marginBottom: 16,
         }} >
         {props.children}
-    </Button>
+    </div>
 )
   
 class MaterialUiForm extends React.Component {
@@ -151,14 +150,14 @@ const SignupView = (props) => {
             leftCard={
                 [
                     <Hidden mdDown>
-                        <Typography variant="display4" align="left" gutterBottom className={classes.mainText}>POLIBASE.</Typography>
+                        <Typography variant="display4" align="left" gutterBottom className={classes.mainText}>PRIVTALK.</Typography>
                     </Hidden>,
-                    <Typography variant="display2" className={classes.secondaryText}>Making compliance simple.</Typography>
+                    <Typography variant="display2" className={classes.secondaryText}>Making privicy simple.</Typography>
                 ]
             }
             rightCard={
                 [
-                    <Typography variant="display2" align="left" style={{color: "white"}} gutterBottom>Signup to Polibase</Typography>,
+                    <Typography variant="display2" align="left" style={{color: "white"}} gutterBottom>Signup to Privtalk</Typography>,
                     <Typography variant="subheading" align="left" style={{color: "white", marginBottom: 32}} gutterBottom>
                         Manage compliance across your organisation and stay on-top of ever-changing laws, all on one easy-to-use web platform. We'd love to have you on-board.
                     </Typography>,

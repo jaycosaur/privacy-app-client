@@ -2,14 +2,22 @@ const defaultState = {
     filters: [],
     keywordInput: null,
     showFilter: true,
-    selectedView: 'default'
+    selectedView: 'default',
+    searchFilter: null,
+    ranking: {
+        order: null,
+        orderBy: null
+    },
+    facets: {
+
+    }
 }
 
 const defaultFilter= {
     isActive: true,
     input: null,
     operation: null,
-    field: null
+    field: null,
 }
 
 export default(state = defaultState, action) => {
@@ -18,6 +26,16 @@ export default(state = defaultState, action) => {
             return {
                 ...state,
                 ...defaultState
+            }
+        case "CLEAR_SEARCH_FILTER":
+            return {
+                ...state,
+                searchFilter: null
+            }
+        case "UPDATE_SEARCH_FILTER":
+            return {
+                ...state,
+                searchFilter: action.payload
             }
         case 'ADD_NEW_FILTER':
             return {
@@ -80,6 +98,35 @@ export default(state = defaultState, action) => {
             return {
                 ...state,
                 selectedView: newView
+            }
+        case 'HANDLE_REQUEST_SORT_SEARCH_TABLE':
+            return {
+                ...state,
+                ranking: {
+                    order: action.payload.order,
+                    orderBy: action.payload.orderBy
+                }
+            }
+        case 'FETCH_FACET_VALUES_PENDING':
+            return {
+                ...state,
+                facets: {
+                    ...state.facets,
+                    [action.meta.facet]: {
+                        isLoading: true,
+                    }
+                }
+            }
+        case 'FETCH_FACET_VALUES_FULFILLED':
+            return {
+                ...state,
+                facets: {
+                    ...state.facets,
+                    [action.meta.facet]: {
+                        isLoading: false,
+                        hits: action.payload.facetHits
+                    }
+                }
             }
         default: 
             return state

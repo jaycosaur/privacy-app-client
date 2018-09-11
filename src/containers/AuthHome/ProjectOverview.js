@@ -26,56 +26,59 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { Scrollbars } from 'react-custom-scrollbars';
 import moment from 'moment'
-
+import classnames from 'classnames'
 const heightOfCard = "40vh"
 
 const styles = (theme) => {
     return ({
-    expand: {
-        height: `calc(${heightOfCard} - ${theme.mixins.toolbar.minHeight}px)`,
-        display: "flex",
-        justifyContent: "center",
-    },
-    buttonCard: {
+        expand: {
+            height: `calc(${heightOfCard} - ${theme.mixins.toolbar.minHeight}px)`,
+            display: "flex",
+            justifyContent: "center",
+        },
+        buttonCard: {
 
-    },
-    bigAvatar: {
-        width: 60,
-        height: 60,
-    },
-    cover: {
-        width: 90,
-        height: 90,
-        borderRadius: 10
-    },
-    coverBig: {
-        width: 120,
-        height: 120,
-    },
-    updateContainer: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingTop: theme.spacing.unit*2,
-        paddingBottom: theme.spacing.unit*2
-    },
-    fixedSide: {
+        },
+        bigAvatar: {
+            width: 60,
+            height: 60,
+        },
+        cover: {
+            width: 90,
+            height: 90,
+            borderRadius: 10
+        },
+        coverBig: {
+            width: 120,
+            height: 120,
+        },
+        updateContainer: {
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingTop: theme.spacing.unit*2,
+            paddingBottom: theme.spacing.unit*2
+        },
+        fixedSide: {
 
-    },
-    bottomMargin: {
-        height: heightOfCard,
-        marginBottom: theme.spacing.unit*2,
-    },
-    summaryInnerCard: {
-        
-    },
-    cardFlex: {
-        display: 'flex',
-        marginBottom: theme.spacing.unit*4,
-    },
-    menuButton: {
-        color: "white"
-    }
+        },
+        bottomMargin: {
+            height: heightOfCard,
+            marginBottom: theme.spacing.unit*2,
+        },
+        summaryInnerCard: {
+            
+        },
+        cardFlex: {
+            display: 'flex',
+            marginBottom: theme.spacing.unit*4,
+        },
+        menuButton: {
+            color: "white"
+        },
+        mobileRoot: {
+            height: "100%"
+        }
 })}
 
 const O2A = (o) => Object.keys(o).map(k=>o[k])
@@ -90,7 +93,7 @@ class HomeView extends React.Component {
     }
 
     render(){
-        const { classes, actionManager: { projects }, hideNavButton,  isLoadingProjects } = this.props
+        const { classes, actionManager: { projects }, hideNavButton,  isLoadingProjects, isMobile } = this.props
 
         const ProjectItem = (attrs) => {
             const highlightColor = attrs.isOverdue?red[500]:attrs.isDone?green[500]:"#ddd"
@@ -114,7 +117,7 @@ class HomeView extends React.Component {
         const hasProjects = projectsArray.length>0
 
         return (
-            <Card className={classes.bottomMargin}>
+            !isMobile?<Card className={classes.bottomMargin} square={isMobile||this.props.square}>
                 <AppBar position="static" color="secondary">
                     <Toolbar variant="dense">
                         <Typography variant="subheading" color="inherit" style={{flex: 1, color: "white"}}>
@@ -142,7 +145,20 @@ class HomeView extends React.Component {
                         {projectsArray.map(i=><ProjectItem key={i.projectId} {...i}/>)}
                     </List>}
                 </Scrollbars>
-            </Card>
+            </Card>:<div>
+                    <Typography align="center" variant="subheading">Your Teams Projects</Typography>
+                    {isLoadingProjects&&!hasProjects&&<div style={{height: "100%", width: "100%", display: "flex", flexDirection: "column"}}>
+                        <LinearProgress variant="query" color="secondary" style={{width: "100%"}}/>
+                        <div style={{flex: 1}}/>
+                    </div>}
+                    {!isLoadingProjects&&!hasProjects&&<div style={{padding: 32, height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: -32}}>
+                        <Typography variant="subheading" marginBottom style={{marginBottom: 16}}>No Projects Yet.</Typography>
+                        <Typography variant="caption" align="center">After you have added some projects in your teams compliance workspace they will appear in this list including their current status.</Typography>
+                    </div>}
+                    {!isLoadingProjects&&hasProjects&&<List component="nav" dense>
+                        {projectsArray.map(i=><Card style={{margin: 8}}><ProjectItem key={i.projectId} {...i}/></Card>)}
+                    </List>}
+            </div>
         )
     }
 }

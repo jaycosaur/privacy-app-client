@@ -1,13 +1,7 @@
 import { auth, db } from './../../config/firebase'
-import algoliasearch from 'algoliasearch'
 import { push } from 'connected-react-router'
 //actions
 import * as teamActions from './../actions/teamActions'
-
-var client = algoliasearch('FEQZM17GZV', '0f26c164ae44f21a6bfffa4941e6ec99')
-var legislationIndex = client.initIndex('news')
-var newsIndex = client.initIndex('news')
-const mainBaseIndex = client.initIndex('main_base')
 
 export function sendVerificationEmail(){
     return ({ dispatch, getState }) => next => action => {
@@ -132,29 +126,6 @@ export function getNewsSettingItems() {
     }
 }
 
-export function fetchNewsItems() {
-    return ({ dispatch, getState }) => next => action => {
-        if (action.type === 'FETCH_NEWS_SETTINGS_FULFILLED') {
-            dispatch({ type: "FETCH_NEWS_ITEMS", payload: newsIndex.search({ query: action.payload&&action.payload.searchTags&&action.payload.searchTags.join("") }) })
-        }
-        if (action.type === 'HANDLE_TAG_CHANGE') {
-            dispatch({ type: "FETCH_NEWS_ITEMS", payload: newsIndex.search({ query: action.payload.join(" ") }) })
-        }
-        return next(action)
-    }
-}
-
-const genFilterString = () => "(category:Book OR category:Ebook) AND _tags:published"
-
-export function fetchLegislationItems() {
-    return ({ dispatch, getState }) => next => action => {
-        if (action.type === 'FETCH_LEGISLATION_ITEMS') {
-            dispatch({ type: "FETCH_LEGISLATION_ITEMS", payload: legislationIndex.search({ query: action.payload.query, filters: genFilterString(action.payload.filters) }) })
-        }
-        return next(action)
-    }
-}
-
 export function getAccountInformation() {
     return ({ dispatch, getState }) => next => action => {
         if (action.type === 'GET_ACCOUNT_INFORMATION') {
@@ -180,59 +151,6 @@ export function getAccountInformationAfterUpdate() {
                     return res.data()
                 })
             })
-        }
-        return next(action)
-    }
-}
-
-export function saveSearchToUser() {
-    return ({ dispatch, getState }) => next => action => {
-        if (action.type === 'FETCH_ALGOLIA_RESULTS_FULFILLED') {
-            if (action.meta.saveSearch){
-                const state = getState()
-                const { filters, query, type } = action.meta
-                const userSearchRef = db.collection("users").doc(state.user.user.uid).collection("recentSearches")
-                const searchObject = {
-                    whenSearch: Date.now(),
-                    query: query,
-                    type: type,
-                    filters: filters
-                }
-                dispatch({
-                    type: "SAVE_NEW_SEARCH", payload: userSearchRef.add(searchObject)
-                })
-            }
-        }
-        return next(action)
-    }
-}
-
-export function fetchResultsFromAlgolia() {
-    return ({ dispatch, getState }) => next => action => {
-        if (action.type === 'GET_SEARCH') {
-            const { type, query, attrs, page=0, filters=null } = action.payload
-            let index = null
-            switch(type){
-                case 'REGULATION':
-                    index = newsIndex
-                    break
-                case 'MEDIA':
-                    index = newsIndex
-                    break
-                case 'RESEARCH':
-                    index = newsIndex
-                    break
-                default:
-                    index = mainBaseIndex
-            }
-            const payload = index.search({ query: query, ...attrs, page, filters })
-
-            dispatch({
-                type: "FETCH_ALGOLIA_RESULTS", 
-                payload: payload,
-                meta: { ...action.payload, append: page!==0 }
-            })
-           
         }
         return next(action)
     }
@@ -265,7 +183,7 @@ export function getOrganisationAfterAccountLoaded() {
     }
 }
 
-export function userHasNoAccountRedirect() {
+/* export function userHasNoAccountRedirect() {
     return ({ dispatch, getState }) => next => action => {
         const state = getState()
         const isInvite = state.router.location.pathname==="/invite"
@@ -277,7 +195,7 @@ export function userHasNoAccountRedirect() {
         }
         return next(action)
     }
-}
+} */
 
 export function createdNewTeamRedirect() {
     return ({ dispatch, getState }) => next => action => {
@@ -297,10 +215,6 @@ export function workspaceRedirect() {
         return next(action)
     }
 }
-
-
-
-
 
 export function flushReduxStoreOnSignout() {
     return ({ dispatch, getState }) => next => action => {

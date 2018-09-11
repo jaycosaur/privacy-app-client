@@ -4,14 +4,14 @@ import { connect } from 'react-redux'
 import { ConnectedRouter } from 'react-router-redux'
 import * as actions from './store/actions/authActions'
 import PopOverModel from './views/PopOverModal'
+import Talk from './views/Talk'
 import { auth } from './config/firebase'
 import AuthView from './views/AuthView'
-import Intercom from 'react-intercom';
 import Raven from 'raven-js'
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
-const theme = createMuiTheme({
+/* const theme = createMuiTheme({
   palette: {
     primary: {
       light: '#9366d4',
@@ -26,10 +26,16 @@ const theme = createMuiTheme({
       contrastText: '#000',
     },
   },
+}); */
+
+const theme = createMuiTheme({
+  typography: {
+    fontFamily: ['Work Sans', 'sans-serif']
+  }
 });
 
 if(process.env.NODE_ENV === "production"){
-  Raven.config('https://6757ef1240c14116835a7f2a5e05875f@sentry.io/1264321').install()
+  //Raven.config('https://6757ef1240c14116835a7f2a5e05875f@sentry.io/1264321').install()
 }
 
 class App extends Component {
@@ -58,13 +64,13 @@ class App extends Component {
 
     componentDidUpdate(prevProps, prevState){
       if (this.props.user.isSignedIn&&prevProps.user.info!==this.props.user.info){
-        Raven.setUserContext({
+        /* Raven.setUserContext({
           email: this.props.user.info.email,
           uid: this.props.user.info.uid
-        });
+        }); */
       }
       if (prevProps.user.isSignedIn!==this.props.user.isSignedIn&&!this.props.user.isSignedIn){
-        Raven.clearContext()
+        /* Raven.clearContext() */
       }
     }
 
@@ -78,9 +84,9 @@ class App extends Component {
       return (
         <ConnectedRouter history={this.props.history}>
           <MuiThemeProvider theme={theme}>
-              <PopOverModel />
-              <AuthView isSignedIn={this.props.isSignedIn} loginFlow={this.props.loginFlow}/>
-              {this.props.isSignedIn&&user&&<Intercom appID="fbz8pjg0" {...user}/>}
+            {false&&<Talk />}
+            <PopOverModel />
+            <AuthView isSignedIn={this.props.isSignedIn} loginFlow={this.props.loginFlow}/>
           </MuiThemeProvider>
         </ConnectedRouter>
       );
@@ -97,3 +103,10 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 export default connect(mapStateToProps, actions)(App)
+
+/* <ConnectedRouter history={this.props.history}>
+          <MuiThemeProvider theme={theme}>
+              <PopOverModel />
+              <AuthView isSignedIn={this.props.isSignedIn} loginFlow={this.props.loginFlow}/>
+          </MuiThemeProvider>
+        </ConnectedRouter> */

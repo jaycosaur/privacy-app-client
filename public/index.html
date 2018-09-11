@@ -16,115 +16,43 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
-    <script>
-      (function(h,o,t,j,a,r){
-          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-          h._hjSettings={hjid:911593,hjsv:6};
-          a=o.getElementsByTagName('head')[0];
-          r=o.createElement('script');r.async=1;
-          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-          a.appendChild(r);
-      })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-    </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script> 
+    <title>Super Private</title>
     <style>
-      .loader-background {
-        background: #623aa3;
-        display: table;
-        position: absolute;
-        height: 100%;
-        width: 100%;
-      }
-      .center-middle {
-        display: table-cell;
-        vertical-align: middle;
-      }
-      html, body {
-            height: 100%;
-            margin: 0;
-        }
-      .spinner {
-        margin: 100px auto 60px;
-        width: 40px;
-        height: 40px;
-        position: relative;
-        text-align: center;
-        
-        -webkit-animation: sk-rotate 2.0s infinite linear;
-        animation: sk-rotate 2.0s infinite linear;
-      }
-
-      .center_text {
-        margin: 0px auto;
-        width: 100%;
-        height: 40px;
-        position: relative;
-        text-align: center;
-        color: white; 
-        font-family: Arial, Helvetica, sans-serif;
-        font-weight: 200;
-      }
-
-      .dot1, .dot2 {
-        width: 60%;
-        height: 60%;
-        display: inline-block;
-        position: absolute;
-        top: 0;
-        background-color: #f77895;
-        border-radius: 100%;
-        
-        -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
-        animation: sk-bounce 2.0s infinite ease-in-out;
-      }
-
-      .dot2 {
-        top: auto;
-        bottom: 0;
-        -webkit-animation-delay: -1.0s;
-        animation-delay: -1.0s;
-      }
-
-      @-webkit-keyframes sk-rotate { 100% { -webkit-transform: rotate(360deg) }}
-      @keyframes sk-rotate { 100% { transform: rotate(360deg); -webkit-transform: rotate(360deg) }}
-
-      @-webkit-keyframes sk-bounce {
-        0%, 100% { -webkit-transform: scale(0.0) }
-        50% { -webkit-transform: scale(1.0) }
-      }
-
-      @keyframes sk-bounce {
-        0%, 100% { 
-          transform: scale(0.0);
-          -webkit-transform: scale(0.0);
-        } 50% { 
-          transform: scale(1.0);
-          -webkit-transform: scale(1.0);
-        }
-      }
-
+      @import url('https://fonts.googleapis.com/css?family=Work+Sans');
     </style>
-    <title>Polibase | Making Compliance Simple</title>
+    <script>
+      (function(win, doc){
+        var a=doc.getElementsByTagName('head')[0];
+        var r=doc.createElement('script');r.async=1; r.crossorigin=1;
+        r.src='https://unpkg.com/react@16/umd/react.development.js';
+        a.appendChild(r);
+        var r=doc.createElement('script');r.async=1; r.crossorigin=1;
+        r.src='https://unpkg.com/react-dom@16/umd/react-dom.development.js';
+        a.appendChild(r);
+        var r=doc.createElement('script');r.async=1; r.crossorigin=1;
+        r.src='https://unpkg.com/babel-standalone@6/babel.min.js';
+        a.appendChild(r);
+        doc.addEventListener("DOMContentLoaded", function(event) {
+          a=doc.body;
+          var r=doc.createElement('div')
+          r.id="priv-talk-container"
+          a.appendChild(r);
+          var a=doc.getElementsByTagName('head')[0];
+          var r=doc.createElement('script');r.type="text/babel";
+          r.src='privtalk.js';
+          a.appendChild(r);
+        });
+      }(window, document))
+    </script>
   </head>
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <div id="root">
-      <div class="loader-background">
-          <div class="center-middle">
-              <div class="spinner">
-                <div class="dot1"></div>
-                <div class="dot2"></div>
-              </div>
-              <p class="center_text"><small>Trouble loading? Press refresh.</small></p>
-          </div>
-      </div>
-    </div>
+    <div id="root"></div>
   </body>
 </html>

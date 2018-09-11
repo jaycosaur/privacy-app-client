@@ -4,12 +4,13 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import { withStyles } from '@material-ui/core/styles';
 import classnames from 'classnames'
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 
 const styles = () => ({
     root: {
         flexGrow: 1,
         zIndex: 100, 
-        maxWidth: "100vw"
+        maxWidth: "100vw",
     },
     flex: {
         flex: 1,
@@ -37,11 +38,11 @@ const Index = (props) => {
         <AppBar elevation={1} position="static" color={color} className={classnames( classes.root,className)} style={{...style}}>
             <Toolbar variant="dense" style={toolbarStyle}>
                 {icon}
-                {children}
+                {isWidthUp('md', props.width)?children:<div style={{flex: 1}}/>}
                 {actions}
             </Toolbar>
         </AppBar>
     )
 }
 
-export default withStyles(styles)(Index)
+export default withStyles(styles)(withWidth()(Index))

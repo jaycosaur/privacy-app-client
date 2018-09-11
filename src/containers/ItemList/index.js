@@ -21,8 +21,10 @@ import ListTableView from './../ListContainerViews/TableView'
 import ListTimelineView from './../ListContainerViews/TimelineView'
 
 import * as searchActions from './../../store/actions/searchActions'
+import * as searchViewActions from './../../store/actions/searchViewActions'
 import * as watchlistActions from './../../store/actions/watchlistActions'
 import moment from 'moment'
+import { debounce } from "debounce";
 
 const MEDIA_KEY = "media"
 const REG_KEY = "reg"
@@ -59,10 +61,10 @@ const searchIndexKey = (searchCat) => {
 
 const columnData = [
     { id: 'title', numeric: false, padding: "none", label: 'Legislation Title', linkKey: 'link' },
-    { id: 'chamber', numeric: false, padding: false, label: 'Chamber', shrinkText: true },
-    { id: 'status', numeric: false, padding: false, label: 'Status', shrinkText: true, isChip: true },
-    { id: 'portfolio', numeric: false, padding: false, label: 'Portfolio' },
-    { id: 'date', numeric: false, padding: false, label: 'Posted Date' },
+    { id: 'SOURCE', numeric: false, padding: false, label: 'Source', shrinkText: true, isChip: true },
+    { id: 'SUBTYPE', numeric: false, padding: false, label: 'Subtype', shrinkText: true, isChip: true },
+    { id: 'TYPE', numeric: false, padding: false, label: 'Type', shrinkText: true, isChip: true },
+    { id: 'lastUpdatedISO', numeric: false, padding: false, label: 'Last Updated' },
   ]
 
 const styles = theme => ({
@@ -176,9 +178,17 @@ class SearchView extends React.Component {
         this.loadItems(0)
     }
 
-    loadItems = (page) => {
-        (!this.props.search||!this.props.search.isLoading)&&this.props.getSearch({query: this.props.filters.filter(i=>i.field==="title").map(i=>i.input).join(" "), filters: null, key: storeKeyName(this.props.searchCategory) ,page, searchType: searchIndexKey(this.props.searchCategory)})
+    loadItemsUn = (page,itemsPerPage) => {
+        (!this.props.search||!this.props.search.isLoading)&&this.props.getSearch({
+            query: this.props.filters.filter(i=>i.field==="title").map(i=>i.input).join(" "), 
+            filters: null, 
+            key: storeKeyName(this.props.searchCategory) ,
+            page, 
+            hitsPerPage: itemsPerPage,
+            searchType: searchIndexKey(this.props.searchCategory)})
     }
+
+    loadItems = (page,itemsPerPage) => debounce(this.loadItemsUn(page,itemsPerPage),500)
 
     componentDidUpdate(prevProps, prevState, snapshot){
         const searchResults = this.props.search && this.props.search.results
@@ -187,10 +197,9 @@ class SearchView extends React.Component {
         searchMeta&&this.props.setNumberOfResultsTotal(searchMeta.nbHits)
         searchMeta&&this.props.setFetchedIn(searchMeta.processingTimeMS)
         // if(prevProps.filters.filter(i=>i.input!==null&&i.field!==null&&i.operation!==null)!==this.props.filters.filter(i=>i.input!==null&&i.field!==null&&i.operation!==null)){
-        if(prevProps.filters!==this.props.filters){
+        if(prevProps.filters!==this.props.filters || prevProps.searchFilter!==this.props.searchFilter){
             this.loadItems(0)
         }
-
     }
 
     render() {
@@ -201,6 +210,16 @@ class SearchView extends React.Component {
         const { searchCategory } = this.props
 
         const view = () => {
+            return <ListTableView 
+                        showHeader={false} 
+                        columnData={columnData} 
+                        data={searchResults.map((i,j)=>({...i, index:j, lastUpdatedISO: moment(i.lastUpdatedISO).format("ll")}))} 
+                        handleRowSelect={this.props.handleRowSelect}
+                        handleRequestSort={this.props.handleRequestSort}
+                        handleRowClearSelected={this.props.handleRowClearSelected}
+                        numberOfResults={searchMeta.nbHits}
+                        loadMore={this.loadItems}
+                        />
             switch(this.props.selectedView){
                 case "date":
                     return <div style={{height: "100%", overflow: "auto"}}>
@@ -212,7 +231,6 @@ class SearchView extends React.Component {
                                 loader={<Loader/>}
                                 useWindow={false}
                             >
-                        
                             <ListTimelineView 
                                 grouping={(searchResults.sort((a,b)=>moment(searchCategory!=="media-and-commentary"?a.createdOn:a.isoDate).isBefore(searchCategory!=="media-and-commentary"?b.createdOn:b.isoDate)).map(i=>moment(searchCategory!=="media-and-commentary"?i.createdOn:i.isoDate).format("LL")))} 
                                 itemRender={(searchResults.sort((a,b)=>moment(searchCategory!=="media-and-commentary"?a.createdOn:a.isoDate).isBefore(searchCategory!=="media-and-commentary"?b.createdOn:b.isoDate)).map((item) => <ListItem item={item} {...this.props}/>))} 
@@ -220,7 +238,15 @@ class SearchView extends React.Component {
                         </InfiniteScroll>
                     </div>
                 case "table":
-                    return <ListTableView showHeader={false} columnData={columnData} data={searchResults.map((i)=>({...i,link: "/item"}))} />
+                    return <ListTableView 
+                        showHeader={false} 
+                        columnData={columnData} 
+                        data={searchResults.map((i,j)=>({...i, index:j, lastUpdatedISO: moment(i.lastUpdatedISO).format("ll")}))} 
+                        handleRowSelect={this.props.handleRowSelect}
+                        handleRequestSort={this.props.handleRequestSort}
+                        handleRowClearSelected={this.props.handleRowClearSelected}
+                        numberOfResults={searchMeta.nbHits}
+                        />
                 default:
                     return (
                         <div style={{height: "100%", overflow: "auto"}}>
@@ -247,9 +273,10 @@ const mapStateToProps = (state,props) => {
         selectedView: state.filter.selectedView,
         search: state.search[storeKeyName(props.searchCategory)],
         filters: state.filter.filters,
+        searchFilter: state.filter.searchFilter,
         readLater: state.readLater.items
     }
 }
 
-export default connect(mapStateToProps, {...searchActions, ...watchlistActions})(withStyles(styles)(SearchView))
+export default connect(mapStateToProps, {...searchActions, ...watchlistActions, ...searchViewActions})(withStyles(styles)(SearchView))
 
